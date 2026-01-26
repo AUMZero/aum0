@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.vercel/
+.env
+.env.local
+*.log
+target/
+dist/
+target/
+# test artifacts and temporary files
+*.test.log
+.DS_Store
+
+
+
+
+
