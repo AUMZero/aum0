@@ -1,0 +1,1 @@
+- 2026-01-27: asset manager with no employees, no fees, no ability to steal.
