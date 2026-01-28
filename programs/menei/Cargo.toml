@@ -1,0 +1,23 @@
+[package]
+name = "menei"
+version = "0.3.0"
+description = "Autonomous AI-powered token analysis engine on Solana. Real-time pump.fun scanner with oracle-grade signal detection."
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "menei"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = { version = "0.29.0", features = ["init-if-needed"] }
+anchor-spl = "0.29.0"
+solana-program = "=1.17.0"
+# updated: 2026-03-06
