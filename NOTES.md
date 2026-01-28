@@ -1,1 +1,2 @@
 - 2026-01-27: asset manager with no employees, no fees, no ability to steal.
+- 2026-01-28: every trade must move drift strictly lower or revert.
