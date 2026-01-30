@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(rust)"
+
+  - package-ecosystem: "npm"
+    directory: "/sdk"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(sdk)"
+
+  - package-ecosystem: "npm"
+    directory: "/engine"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps(engine)"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+
