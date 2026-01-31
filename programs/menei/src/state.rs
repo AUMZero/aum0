@@ -38,3 +38,48 @@ impl TokenScore {
         match self.verdict {
             0 => "SKIP",
             1 => "NEUTRAL",
+            2 => "WATCHING",
+            3 => "PROPHECY_ALERT",
+            _ => "UNKNOWN",
+        }
+    }
+}
+
+#[account]
+pub struct OracleRegistry {
+    pub authority: Pubkey,
+    pub oracles: Vec<Pubkey>,
+    pub min_confidence: u8,
+    pub quorum: u8,
+    pub bump: u8,
+}
+
+impl OracleRegistry {
+    pub fn space(max_oracles: usize) -> usize {
+        8 + 32 + 4 + (32 * max_oracles) + 1 + 1 + 1
+    }
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct InitConfig {
+    pub fee_basis_points: u16,
+    pub oracle: Pubkey,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct SignalParams {
+    pub token_mint: Pubkey,
+    pub score_delta: i16,
+    pub bonding_progress: u16,
+    pub social_flags: u8,
+    pub confidence: u8,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct OracleData {
+    pub feed_id: [u8; 32],
+    pub value: i64,
+    pub timestamp: i64,
+    pub confidence: u8,
+}
+// updated: 2026-02-07
