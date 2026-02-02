@@ -2,3 +2,4 @@
 - 2026-01-28: every trade must move drift strictly lower or revert.
 - 2026-01-30: keeper takes a slice of improvement only, never the balance.
 - 2026-02-01: no owner path, no pause, no lockup.
+- 2026-02-03: index 0 = USDG; every leg touches quote.
