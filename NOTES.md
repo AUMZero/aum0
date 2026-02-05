@@ -3,3 +3,4 @@
 - 2026-01-30: keeper takes a slice of improvement only, never the balance.
 - 2026-02-01: no owner path, no pause, no lockup.
 - 2026-02-03: index 0 = USDG; every leg touches quote.
+- 2026-02-05: target weights and tolerance carved by the account itself.
