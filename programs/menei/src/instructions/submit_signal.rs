@@ -48,3 +48,24 @@ pub fn handler(ctx: Context<SubmitSignal>, params: SignalParams) -> Result<()> {
     score.score = new_score.clamp(0, MAX_SCORE as i32) as u16;
     score.signal_count = score.signal_count.saturating_add(1);
     score.bonding_progress = params.bonding_progress;
+    score.social_flags = params.social_flags;
+    score.confidence = params.confidence;
+    score.last_updated = Clock::get()?.unix_timestamp;
+
+    let state_mut = &mut ctx.accounts.protocol_state.to_account_info();
+    let mut data = state_mut.try_borrow_mut_data()?;
+    let offset = 8 + 32 + 32; // after discriminator + authority + oracle
+    let current = u64::from_le_bytes(data[offset..offset+8].try_into().unwrap());
+    data[offset..offset+8].copy_from_slice(&(current + 1).to_le_bytes());
+
+    emit!(SignalSubmitted {
+        oracle: ctx.accounts.oracle.key(),
+        token_mint: params.token_mint,
+        score_delta: params.score_delta,
+        confidence: params.confidence,
+        timestamp: Clock::get()?.unix_timestamp,
+    });
+
+    Ok(())
+}
+// updated: 2026-03-06
