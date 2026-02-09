@@ -5,3 +5,4 @@
 - 2026-02-03: index 0 = USDG; every leg touches quote.
 - 2026-02-05: target weights and tolerance carved by the account itself.
 - 2026-02-07: sum of |bps_actual - bps_target|, halved.
+- 2026-02-09: chain-native equity feeds, deviation-threshold publish.
