@@ -7,3 +7,4 @@
 - 2026-02-07: sum of |bps_actual - bps_target|, halved.
 - 2026-02-09: chain-native equity feeds, deviation-threshold publish.
 - 2026-02-12: reject any fill outside band of feed price.
+- 2026-02-15: help-only, band, always-withdraw.
