@@ -1,0 +1,25 @@
+{
+  "name": "@menei/sdk",
+  "version": "0.3.0",
+  "description": "TypeScript SDK for menei on-chain program",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --forceExit --detectOpenHandles",
+    "lint": "eslint src/ --ext .ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/web3.js": "^1.87.6",
+    "bn.js": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
+  },
+  "license": "MIT"
+}
