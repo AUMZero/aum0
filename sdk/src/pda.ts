@@ -8,3 +8,10 @@ export function deriveProtocolState(): [PublicKey, number] {
   );
 }
 
+export function deriveTokenScore(mint: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync(
+    [TOKEN_SCORE_SEED, mint.toBuffer()],
+    PROGRAM_ID
+  );
+}
+// updated: 2026-02-09
