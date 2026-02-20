@@ -23,3 +23,23 @@ export class MeneiClient {
   async getTokenScore(mint: PublicKey): Promise<TokenScoreData | null> {
     const [pda] = deriveTokenScore(mint);
     const info = await this.connection.getAccountInfo(pda);
+    if (!info) return null;
+    return this.deserializeTokenScore(info.data);
+  }
+
+  async getAllTokenScores(mints: PublicKey[]): Promise<Map<string, TokenScoreData>> {
+    const results = new Map<string, TokenScoreData>();
+    const pdas = mints.map((m) => deriveTokenScore(m)[0]);
+    const infos = await this.connection.getMultipleAccountsInfo(pdas);
+
+    for (let i = 0; i < mints.length; i++) {
+      const info = infos[i];
+      if (info) {
+        results.set(mints[i].toBase58(), this.deserializeTokenScore(info.data));
+      }
+    }
+    return results;
+  }
+
+  private deserializeProtocolState(data: Buffer): any {
+    const offset = 8; // discriminator
