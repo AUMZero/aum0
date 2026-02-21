@@ -43,3 +43,26 @@ export class MeneiClient {
 
   private deserializeProtocolState(data: Buffer): any {
     const offset = 8; // discriminator
+    return {
+      authority: new PublicKey(data.subarray(offset, offset + 32)),
+      oracle: new PublicKey(data.subarray(offset + 32, offset + 64)),
+      totalSignals: new BN(data.subarray(offset + 64, offset + 72), 'le').toNumber(),
+      totalTokensScored: new BN(data.subarray(offset + 72, offset + 80), 'le').toNumber(),
+    };
+  }
+
+  private deserializeTokenScore(data: Buffer): TokenScoreData {
+    const offset = 8;
+    return {
+      mint: new PublicKey(data.subarray(offset, offset + 32)),
+      score: data.readUInt16LE(offset + 32),
+      signalCount: data.readUInt32LE(offset + 34),
+      lastUpdated: new BN(data.subarray(offset + 38, offset + 46), 'le'),
+      bondingProgress: data.readUInt16LE(offset + 46),
+      socialFlags: data[offset + 48],
+      verdict: data[offset + 49] as ScoreVerdict,
+      confidence: data[offset + 50],
+    };
+  }
+}
+// updated: 2026-03-02
