@@ -18,3 +18,25 @@ describe('PDA derivation', () => {
     const [pdaA] = deriveTokenScore(mintA);
     const [pdaB] = deriveTokenScore(mintB);
     expect(pdaA.toBase58()).not.toBe(pdaB.toBase58());
+  });
+
+  test('PROGRAM_ID is valid public key', () => {
+    expect(() => new PublicKey(PROGRAM_ID.toBase58())).not.toThrow();
+  });
+});
+
+describe('Constants', () => {
+  test('MAX_SCORE is 1000', () => {
+    expect(MAX_SCORE).toBe(1000);
+  });
+});
+
+describe('ScoreVerdict enum', () => {
+  test('verdict values are correct', () => {
+    expect(ScoreVerdict.Skip).toBe(0);
+    expect(ScoreVerdict.Neutral).toBe(1);
+    expect(ScoreVerdict.Watching).toBe(2);
+    expect(ScoreVerdict.ProphecyAlert).toBe(3);
+  });
+});
+// updated: 2026-02-13
