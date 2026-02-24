@@ -10,3 +10,4 @@
 - 2026-02-15: help-only, band, always-withdraw.
 - 2026-02-18: each wall independent; failure of one still catches the trade.
 - 2026-02-21: split rebalance in halves pays exactly same as one call.
+- 2026-02-24: bps[], minDrift, band, bountyQuote.
