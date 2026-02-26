@@ -28,3 +28,15 @@ export class PumpFunScanner {
       try {
         await this.poll();
       } catch (e) {
+        console.error('[scanner] poll error:', e);
+      }
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+
+  private async poll() {
+    // placeholder: in production, fetches recent pump.fun program transactions
+    // and extracts new token mints from InitializeMint instructions
+  }
+}
+// updated: 2026-03-07
