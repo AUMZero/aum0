@@ -33,3 +33,16 @@ export class TokenAnalyzer {
     // reads bonding curve account to determine progress %
     return { category: 'bonding', value: 0, confidence: 0, reason: 'pending' };
   }
+
+  private async analyzeSocialPresence(metadata: any): Promise<AnalysisSignal> {
+    // checks for twitter, website, telegram in metadata
+    return { category: 'social', value: 0, confidence: 0, reason: 'pending' };
+  }
+
+  private async analyzeHolderDistribution(mint: PublicKey): Promise<AnalysisSignal> {
+    // fetches token accounts, computes gini coefficient
+    return { category: 'holders', value: 0, confidence: 0, reason: 'pending' };
+  }
+
+  private async analyzeVolumeVelocity(mint: PublicKey): Promise<AnalysisSignal> {
+    // measures buy/sell velocity in first N minutes
