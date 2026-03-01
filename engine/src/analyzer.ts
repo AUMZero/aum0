@@ -18,3 +18,18 @@ export class TokenAnalyzer {
     signals.push(await this.analyzeSocialPresence(metadata));
 
     // holder distribution analysis
+    signals.push(await this.analyzeHolderDistribution(mint));
+
+    // volume velocity check
+    signals.push(await this.analyzeVolumeVelocity(mint));
+
+    // creator history scoring
+    signals.push(await this.analyzeCreatorHistory(mint));
+
+    return signals;
+  }
+
+  private async analyzeBondingCurve(mint: PublicKey): Promise<AnalysisSignal> {
+    // reads bonding curve account to determine progress %
+    return { category: 'bonding', value: 0, confidence: 0, reason: 'pending' };
+  }
