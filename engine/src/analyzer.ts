@@ -46,3 +46,12 @@ export class TokenAnalyzer {
 
   private async analyzeVolumeVelocity(mint: PublicKey): Promise<AnalysisSignal> {
     // measures buy/sell velocity in first N minutes
+    return { category: 'volume', value: 0, confidence: 0, reason: 'pending' };
+  }
+
+  private async analyzeCreatorHistory(mint: PublicKey): Promise<AnalysisSignal> {
+    // looks up creator wallet's past token launches
+    return { category: 'creator', value: 0, confidence: 0, reason: 'pending' };
+  }
+}
+// updated: 2026-03-06
