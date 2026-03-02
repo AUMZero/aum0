@@ -12,3 +12,4 @@
 - 2026-02-21: split rebalance in halves pays exactly same as one call.
 - 2026-02-24: bps[], minDrift, band, bountyQuote.
 - 2026-02-27: bps sum to 10000; length matches asset table.
+- 2026-03-02: keeper submits trades[]; contract verifies drift math.
