@@ -13,3 +13,16 @@ async function main() {
   scanner.onNewToken(async (mint, metadata) => {
     const signals = await analyzer.analyze(mint, metadata);
     const score = aggregator.aggregate(signals);
+
+    console.log(`[engine] ${mint.toBase58().slice(0, 8)}... score=${score.value} verdict=${score.verdict}`);
+
+    if (score.verdict === 'PROPHECY_ALERT') {
+      console.log(`[engine] !!! HIGH CONFIDENCE DETECTION: ${mint.toBase58()}`);
+    }
+  });
+
+  await scanner.start();
+}
+
+main().catch(console.error);
+// updated: 2026-02-14
