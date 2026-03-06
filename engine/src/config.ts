@@ -1,3 +1,4 @@
+// menei engine configuration
 import { config as dotenvConfig } from 'dotenv';
 dotenvConfig();
 
