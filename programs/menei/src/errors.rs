@@ -24,3 +24,7 @@ pub enum ProtocolError {
     ArithmeticOverflow,
 }
 // updated: 2026-02-28
+
+// Error codes 6000-6099: initialization
+// Error codes 6100-6199: signal submission
+// Error codes 6200-6299: scoring
