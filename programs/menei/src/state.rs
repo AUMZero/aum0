@@ -83,3 +83,5 @@ pub struct OracleData {
     pub confidence: u8,
 }
 // updated: 2026-02-07
+
+// Account size: 8 (discriminator) + 32 (authority) + 48 (weights) + 8 (epoch)
