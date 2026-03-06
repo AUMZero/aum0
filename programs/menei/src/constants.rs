@@ -8,3 +8,5 @@ pub const ORACLE_REGISTRY_SEED: &[u8] = b"oracle_registry";
 pub const FEE_DENOMINATOR: u16 = 10000;
 pub const EPOCH_DURATION: i64 = 3600; // 1 hour
 // updated: 2026-02-11
+
+// All seeds must be unique across program instructions to avoid PDA collision
