@@ -1,3 +1,4 @@
+// Helius websocket scanner for pump.fun token creation events
 import { Connection, PublicKey } from '@solana/web3.js';
 
 interface TokenMetadata {
