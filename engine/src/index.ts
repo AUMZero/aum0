@@ -1,3 +1,4 @@
+// Pipeline entry — scanner → analyzer → aggregator
 import { TokenAnalyzer } from './analyzer';
 import { SignalAggregator } from './aggregator';
 import { PumpFunScanner } from './scanner';
