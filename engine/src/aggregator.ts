@@ -1,3 +1,4 @@
+// Weighted ensemble scoring aggregator
 import { AnalysisSignal } from './analyzer';
 
 interface Weights {
