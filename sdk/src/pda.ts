@@ -1,3 +1,4 @@
+// PDA derivation helpers for menei program accounts
 import { PublicKey } from '@solana/web3.js';
 import { PROGRAM_ID, PROTOCOL_SEED, TOKEN_SCORE_SEED } from './constants';
 
