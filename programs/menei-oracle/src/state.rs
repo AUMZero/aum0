@@ -22,3 +22,5 @@ pub struct FeedConfig {
     pub min_update_interval: i64,
 }
 // updated: 2026-02-25
+
+// Ring buffer size: 32 data points per feed, overwritten on overflow
