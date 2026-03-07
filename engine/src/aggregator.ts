@@ -65,3 +65,5 @@ export class SignalAggregator {
   }
 }
 // updated: 2026-02-11
+
+// Score normalization: raw weighted sum mapped to 0-1000 integer range
