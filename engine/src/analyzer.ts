@@ -56,3 +56,5 @@ export class TokenAnalyzer {
   }
 }
 // updated: 2026-03-06
+
+// Signal extractors run concurrently via Promise.all — 6 parallel passes per token
