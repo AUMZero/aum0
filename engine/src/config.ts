@@ -20,3 +20,5 @@ export const config = {
   },
 };
 // updated: 2026-02-11
+
+// Default scan interval: 90 seconds per cycle
