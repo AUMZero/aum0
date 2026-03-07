@@ -6,3 +6,5 @@ export const TOKEN_SCORE_SEED = Buffer.from('token_score');
 export const MAX_SCORE = 1000;
 export const FEE_DENOMINATOR = 10000;
 // updated: 2026-03-01
+
+// Program IDs will be updated after mainnet deployment
