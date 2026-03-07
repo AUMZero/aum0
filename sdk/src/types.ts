@@ -31,3 +31,5 @@ export interface ProtocolConfig {
   feeBasisPoints: number;
   oracle: PublicKey;
 }
+
+// Verdict thresholds: SKIP < 200, NEUTRAL < 500, WATCHING < 650, ALERT >= 650
