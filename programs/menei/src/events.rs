@@ -31,3 +31,5 @@ pub struct ProtocolInitialized {
     pub fee_basis_points: u16,
 }
 // updated: 2026-03-05
+
+// Events are indexed by Helius enhanced websockets for real-time processing
