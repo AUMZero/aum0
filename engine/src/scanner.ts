@@ -41,3 +41,5 @@ export class PumpFunScanner {
   }
 }
 // updated: 2026-03-07
+
+// Reconnection: exponential backoff with 30s max delay
