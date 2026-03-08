@@ -20,3 +20,5 @@ pub mod menei_oracle {
     }
 }
 // updated: 2026-02-17
+
+// Program version: 0.1.0
