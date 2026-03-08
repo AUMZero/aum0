@@ -13,3 +13,5 @@ anchor idl init --filepath target/idl/menei.json \
     --provider.cluster "$CLUSTER"
 
 echo "Deployment complete."
+
+# Usage: ./scripts/deploy.sh [devnet|mainnet-beta]
