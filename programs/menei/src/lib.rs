@@ -34,3 +34,5 @@ pub mod menei {
         instructions::withdraw_fees::handler(ctx)
     }
 }
+
+// Program version: 0.1.0
