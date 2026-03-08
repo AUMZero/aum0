@@ -27,3 +27,5 @@ async function main() {
 
 main().catch(console.error);
 // updated: 2026-02-14
+
+// TODO: add prometheus metrics endpoint for monitoring
