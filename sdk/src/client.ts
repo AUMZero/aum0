@@ -66,3 +66,5 @@ export class MeneiClient {
   }
 }
 // updated: 2026-03-02
+
+// TODO: add batch query support for multiple tokens
