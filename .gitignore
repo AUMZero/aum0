@@ -7,5 +7,6 @@ node_modules/
 target/
 dist/
 target/
-# test artifacts
+# test artifacts and temporary files
 *.test.log
+.DS_Store
