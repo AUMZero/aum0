@@ -91,7 +91,7 @@ Verdicts: `SKIP` (0–199) · `NEUTRAL` (200–499) · `WATCHING` (500–649) ·
 ### Quick start
 
 ```bash
-git clone https://github.com/menei-ai/Menei.git && cd menei
+git clone https://github.com/menei-li/menei-oracle.git && cd menei
 
 # build programs
 anchor build
