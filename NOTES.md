@@ -15,3 +15,4 @@
 - 2026-03-02: keeper submits trades[]; contract verifies drift math.
 - 2026-03-05: no stock<->stock leg allowed.
 - 2026-03-08: assets, feeds, router, pool fees frozen at deploy.
+- 2026-03-11: constructor only; no setter after.
