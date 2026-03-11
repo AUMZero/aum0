@@ -22,8 +22,10 @@ pub enum ProtocolError {
     AlreadyFinalized,
     #[msg("Arithmetic overflow in score calculation")]
     ArithmeticOverflow,
+    #[msg("Invalid mint: token_score mint does not match instruction parameter")]
+    InvalidMint,
 }
-// updated: 2026-02-28
+// updated: 2026-03-11
 
 // Error codes 6000-6099: initialization
 // Error codes 6100-6199: signal submission

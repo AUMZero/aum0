@@ -225,10 +225,14 @@ export class TokenAnalyzer {
       const tpm = (recent.length / dur) * 60;
 
       let riskScore = 0;
+      // >0.7 autocorrelation = highly regular interval pattern (bot signature)
       if (autocorr > 0.7) riskScore += 40;
+      // 0.4-0.7 = moderately regular, could be organic with some bot activity
       else if (autocorr > 0.4) riskScore += 20;
+      // >30 trades/min in first minutes = almost certainly automated sniping
       if (tpm > 30) riskScore += 35;
       else if (tpm > 10) riskScore += 15;
+      // <2s average interval = sub-human speed, indicates bot execution
       if (ewma < 2) riskScore += 25;
 
       return {
@@ -275,7 +279,9 @@ export class TokenAnalyzer {
       const newest = sigs[0].blockTime || 0;
       const ageDays = (newest - oldest) / 86400;
 
+      // <1 day old wallet deploying tokens = likely throwaway deployer
       if (ageDays < 1) riskScore += 30;
+      // <7 days = new wallet, moderate risk of hit-and-run deployment
       else if (ageDays < 7) riskScore += 15;
 
       // Jaccard similarity over sliding windows of tx patterns
@@ -293,6 +299,7 @@ export class TokenAnalyzer {
         }
         similarity = comps > 0 ? totalSim / comps : 0;
       }
+      // >0.85 jaccard = near-identical tx patterns across window, strong bot signal
       if (similarity > 0.85) riskScore += 20;
 
       return {

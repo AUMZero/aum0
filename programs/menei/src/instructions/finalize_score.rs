@@ -21,6 +21,7 @@ pub struct FinalizeScore<'info> {
         mut,
         seeds = [TOKEN_SCORE_SEED, token_mint.as_ref()],
         bump = token_score.bump,
+        constraint = token_score.mint == token_mint @ ProtocolError::InvalidMint,
     )]
     pub token_score: Account<'info, TokenScore>,
 }
@@ -47,4 +48,4 @@ pub fn handler(ctx: Context<FinalizeScore>, _token_mint: Pubkey) -> Result<()> {
 
     Ok(())
 }
-// updated: 2026-02-22
+// updated: 2026-03-11
