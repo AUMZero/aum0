@@ -11,6 +11,7 @@
 [![Docs](https://img.shields.io/badge/Docs-menei.fun%2Fdocs-000000?style=flat-square&logo=gitbook&logoColor=white)](https://menei.fun/docs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-000000?style=flat-square)](./LICENSE)
 
+ca: BEnEQtNs6UcxbN52yJmkoapYCof7M6kSGDpg9Vzpump
 </div>
 
 Two programs. Five-stage analysis pipeline. Sub-second verdict latency.
