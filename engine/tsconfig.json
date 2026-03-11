@@ -1,5 +1,5 @@
-{{
-  "compilerOptions": {{
+{
+  "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
     "outDir": "./dist",
@@ -7,6 +7,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
-  }},
-  "include": ["src/**/*"]
-}}
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts"]
+}
