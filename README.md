@@ -10,38 +10,55 @@ Two programs. Five-stage analysis pipeline. Sub-second verdict latency.
 
 ### Architecture
 
-```
-                          ┌──────────────────────────────────┐
-  Helius gRPC Stream ───▶ │   Event Ingestion Layer          │
-                          │   (WebSocket + txn parser)       │
-                          └────────────┬─────────────────────┘
-                                       │
-                          ┌────────────▼─────────────────────┐
-                          │   Feature Extraction Pipeline     │
-                          │   ┌─────────────────────────┐    │
-                          │   │ Pass 1: Bonding Curve   │    │
-                          │   │ Pass 2: Holder Entropy  │    │
-                          │   │ Pass 3: Volume EWMA     │    │
-                          │   │ Pass 4: Social Graph    │    │
-                          │   │ Pass 5: Creator Fingerprint│ │
-                          │   └─────────────────────────┘    │
-                          └────────────┬─────────────────────┘
-                                       │
-                          ┌────────────▼─────────────────────┐
-                          │   Ensemble Aggregator             │
-                          │   Adaptive weight matrix          │
-                          │   Bayesian confidence scoring     │
-                          └────────────┬─────────────────────┘
-                                       │
-                    ┌──────────────────▼───────────────────────┐
-                    │   On-Chain Settlement (Solana)            │
-                    │   ┌─────────────┐  ┌──────────────────┐  │
-                    │   │ menei       │  │ menei-oracle     │  │
-                    │   │ (scoring)   │◄─│ (data feed)      │  │
-                    │   └─────────────┘  └──────────────────┘  │
-                    │   Zero-copy deserialization               │
-                    │   PDA-based state compression             │
-                    └──────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph ingestion["Event Ingestion Layer"]
+        HS["Helius gRPC Stream"]
+        WS["WebSocket Listener"]
+        TP["Transaction Parser"]
+        BF["Bloom Filter Dedup"]
+        HS --> WS --> TP --> BF
+    end
+
+    subgraph extraction["Feature Extraction Pipeline"]
+        direction LR
+        P1["Pass 1<br/>Bonding Curve<br/>Analysis"]
+        P2["Pass 2<br/>Holder Entropy<br/>Scoring"]
+        P3["Pass 3<br/>Volume EWMA<br/>Detection"]
+        P4["Pass 4<br/>Social Graph<br/>Mapping"]
+        P5["Pass 5<br/>Creator<br/>Fingerprint"]
+    end
+
+    subgraph aggregator["Ensemble Aggregator"]
+        WM["Adaptive Weight Matrix"]
+        BC["Bayesian Confidence Scoring"]
+        EP["Epoch-based Recalibration"]
+        WM --> BC --> EP
+    end
+
+    subgraph onchain["On-Chain Settlement - Solana"]
+        direction LR
+        subgraph scoring["menei program"]
+            SS["ScoringState PDA"]
+            TV["TokenVerdict PDA"]
+        end
+        subgraph oracle["menei-oracle program"]
+            FA["FeedAccount"]
+            RB["Ring Buffer"]
+        end
+        oracle -- authenticated data feed --> scoring
+    end
+
+    ingestion --> extraction
+    extraction --> aggregator
+    aggregator -- zero-copy serialization --> onchain
+
+    style ingestion fill:#0d1117,stroke:#58a6ff,stroke-width:2px,color:#c9d1d9
+    style extraction fill:#0d1117,stroke:#3fb950,stroke-width:2px,color:#c9d1d9
+    style aggregator fill:#0d1117,stroke:#d29922,stroke-width:2px,color:#c9d1d9
+    style onchain fill:#0d1117,stroke:#f85149,stroke-width:2px,color:#c9d1d9
+    style scoring fill:#161b22,stroke:#f85149,stroke-width:1px,color:#c9d1d9
+    style oracle fill:#161b22,stroke:#f85149,stroke-width:1px,color:#c9d1d9
 ```
 
 ### How it works
