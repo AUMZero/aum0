@@ -16,5 +16,5 @@ default = []
 
 [dependencies]
 anchor-lang = { version = "0.29.0", features = ["init-if-needed"] }
-solana-program = "=1.17.0"
+solana-program = "=4.0.0"
 # updated: 2026-02-26
