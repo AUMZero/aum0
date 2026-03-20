@@ -21,3 +21,4 @@
 - 2026-03-17: packed policy struct + external balances mapping.
 - 2026-03-18: ERC20 transferFrom; credit balances.
 - 2026-03-19: no permission gate; transfer to caller.
+- 2026-03-20: immutable asset table + feed table.
