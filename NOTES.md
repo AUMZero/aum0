@@ -24,3 +24,4 @@
 - 2026-03-20: immutable asset table + feed table.
 - 2026-03-22: bps sum, length, nonzero minDrift.
 - 2026-03-26: sum==10000 or revert WeightsMustSum.
+- 2026-03-28: credit/debit balances; no reentrancy possible on pull path.
