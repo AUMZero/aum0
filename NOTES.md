@@ -26,3 +26,4 @@
 - 2026-03-26: sum==10000 or revert WeightsMustSum.
 - 2026-03-28: credit/debit balances; no reentrancy possible on pull path.
 - 2026-03-31: sum balances * feed price; quote at 1.
+- 2026-04-02: halved sum of |bps_actual - bps_target|.
