@@ -29,3 +29,4 @@
 - 2026-04-02: halved sum of |bps_actual - bps_target|.
 - 2026-04-06: care with rounding; use bps space throughout.
 - 2026-04-08: cash + sum(stock * price_from_feed).
+- 2026-04-10: matches monotone-improvement definition.
