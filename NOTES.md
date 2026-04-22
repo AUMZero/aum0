@@ -33,3 +33,4 @@
 - 2026-04-13: if weights.length==0 => UnknownAccount.
 - 2026-04-16: if driftBefore < minDrift => no-op.
 - 2026-04-19: rebalance(user, ISwapRouter.Trade[]).
+- 2026-04-22: for each trade, tokenIn or tokenOut == quote.
