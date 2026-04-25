@@ -34,3 +34,4 @@
 - 2026-04-16: if driftBefore < minDrift => no-op.
 - 2026-04-19: rebalance(user, ISwapRouter.Trade[]).
 - 2026-04-22: for each trade, tokenIn or tokenOut == quote.
+- 2026-04-25: expectedOut = amountIn * price(in)/price(out); actualOut vs expected * (1 - bandBps).
