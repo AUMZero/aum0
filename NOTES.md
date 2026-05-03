@@ -37,3 +37,4 @@
 - 2026-04-25: expectedOut = amountIn * price(in)/price(out); actualOut vs expected * (1 - bandBps).
 - 2026-04-28: post-swap, subtract in, add out from actual pool return.
 - 2026-04-30: compute drift after; require < before or revert.
+- 2026-05-04: split rebalance = pay same fee N times; economic disaster.
