@@ -38,3 +38,4 @@
 - 2026-04-28: post-swap, subtract in, add out from actual pool return.
 - 2026-04-30: compute drift after; require < before or revert.
 - 2026-05-04: split rebalance = pay same fee N times; economic disaster.
+- 2026-05-06: pay = bounty * (driftBefore - driftAfter) / 10000.
