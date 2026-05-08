@@ -39,3 +39,4 @@
 - 2026-04-30: compute drift after; require < before or revert.
 - 2026-05-04: split rebalance = pay same fee N times; economic disaster.
 - 2026-05-06: pay = bounty * (driftBefore - driftAfter) / 10000.
+- 2026-05-08: sum over N calls collapses to bounty * (total improvement).
