@@ -42,3 +42,4 @@
 - 2026-05-08: sum over N calls collapses to bounty * (total improvement).
 - 2026-05-10: farm attempt vs single-call baseline; sums must match.
 - 2026-05-12: no protocol treasury; caller collects from user's quote balance.
+- 2026-05-14: unit = USDG; independent of feed volatility.
