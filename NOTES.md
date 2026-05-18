@@ -44,3 +44,4 @@
 - 2026-05-12: no protocol treasury; caller collects from user's quote balance.
 - 2026-05-14: unit = USDG; independent of feed volatility.
 - 2026-05-16: small drifts round to 0 pay; keeper skips them naturally.
+- 2026-05-18: if trade overshoots target, drift can INCREASE => revert.
