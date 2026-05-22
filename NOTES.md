@@ -46,3 +46,4 @@
 - 2026-05-16: small drifts round to 0 pay; keeper skips them naturally.
 - 2026-05-18: if trade overshoots target, drift can INCREASE => revert.
 - 2026-05-20: pay = min(computed, cash); prevents underflow on tiny accounts.
+- 2026-05-22: transfer last, after all state writes and revert checks.
