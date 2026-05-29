@@ -48,3 +48,4 @@
 - 2026-05-20: pay = min(computed, cash); prevents underflow on tiny accounts.
 - 2026-05-22: transfer last, after all state writes and revert checks.
 - 2026-05-25: keeper margin = bounty - gas; small drifts unprofitable, exactly as designed.
+- 2026-05-29: keep it simple; no allowance edge cases needed.
