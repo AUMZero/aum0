@@ -51,3 +51,4 @@
 - 2026-05-29: keep it simple; no allowance edge cases needed.
 - 2026-05-31: 8 decimals like real chainlink feeds.
 - 2026-06-02: 50/50 target, 100% cash start, verify one call.
+- 2026-06-05: check keeper balance == expected proportional amount.
