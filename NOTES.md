@@ -54,3 +54,4 @@
 - 2026-06-05: check keeper balance == expected proportional amount.
 - 2026-06-07: construct trade that leaves drift equal, expect DriftNotImproved.
 - 2026-06-10: sell too much stock, verify drift-worse revert.
+- 2026-06-12: mock router returns too little, expect BadFill.
