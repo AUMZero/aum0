@@ -57,3 +57,4 @@
 - 2026-06-12: mock router returns too little, expect BadFill.
 - 2026-06-15: no admin gate; caller pulls their own tokens.
 - 2026-06-17: call rebalance twice in halves; sum bounty == single call bounty.
+- 2026-06-19: drift below minDrift returns without touching balances.
