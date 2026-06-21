@@ -58,3 +58,4 @@
 - 2026-06-15: no admin gate; caller pulls their own tokens.
 - 2026-06-17: call rebalance twice in halves; sum bounty == single call bounty.
 - 2026-06-19: drift below minDrift returns without touching balances.
+- 2026-06-21: feed jumps 2x; drift snaps up accordingly.
