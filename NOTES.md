@@ -60,3 +60,4 @@
 - 2026-06-19: drift below minDrift returns without touching balances.
 - 2026-06-21: feed jumps 2x; drift snaps up accordingly.
 - 2026-06-23: trade without quote leg => StockToStockForbidden.
+- 2026-06-25: rebalance user with no setTarget => UnknownAccount.
