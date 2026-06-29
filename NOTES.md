@@ -62,3 +62,4 @@
 - 2026-06-23: trade without quote leg => StockToStockForbidden.
 - 2026-06-25: rebalance user with no setTarget => UnknownAccount.
 - 2026-06-27: setTarget 4000+5000 => WeightsMustSum.
+- 2026-06-29: protocol has zero balance before and after.
