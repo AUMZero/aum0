@@ -64,3 +64,4 @@
 - 2026-06-27: setTarget 4000+5000 => WeightsMustSum.
 - 2026-06-29: protocol has zero balance before and after.
 - 2026-07-02: exactInputSingle; single-hop only.
+- 2026-07-04: 0.05% for major USD stablecoin pairs.
