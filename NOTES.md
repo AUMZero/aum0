@@ -65,3 +65,4 @@
 - 2026-06-29: protocol has zero balance before and after.
 - 2026-07-02: exactInputSingle; single-hop only.
 - 2026-07-04: 0.05% for major USD stablecoin pairs.
+- 2026-07-06: reject dust output on-chain, not client-side.
