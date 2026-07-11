@@ -67,3 +67,4 @@
 - 2026-07-04: 0.05% for major USD stablecoin pairs.
 - 2026-07-06: reject dust output on-chain, not client-side.
 - 2026-07-09: unlimited approval on first touch.
+- 2026-07-12: post-swap balance delta, not quoted amountOut.
