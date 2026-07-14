@@ -68,3 +68,4 @@
 - 2026-07-06: reject dust output on-chain, not client-side.
 - 2026-07-09: unlimited approval on first touch.
 - 2026-07-12: post-swap balance delta, not quoted amountOut.
+- 2026-07-14: asset -> fee tier, frozen at deploy.
