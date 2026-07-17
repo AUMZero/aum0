@@ -69,3 +69,4 @@
 - 2026-07-09: unlimited approval on first touch.
 - 2026-07-12: post-swap balance delta, not quoted amountOut.
 - 2026-07-14: asset -> fee tier, frozen at deploy.
+- 2026-07-17: manual devnet swap USDG<->NVDA succeeds.
