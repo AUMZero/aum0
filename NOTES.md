@@ -72,3 +72,4 @@
 - 2026-07-17: manual devnet swap USDG<->NVDA succeeds.
 - 2026-07-19: SwapRouter02 selector matches Hood mainnet.
 - 2026-07-23: 0.05% tier; whale wallet as USDG faucet.
+- 2026-07-25: same drift-improvement numbers every run.
