@@ -73,3 +73,4 @@
 - 2026-07-19: SwapRouter02 selector matches Hood mainnet.
 - 2026-07-23: 0.05% tier; whale wallet as USDG faucet.
 - 2026-07-25: same drift-improvement numbers every run.
+- 2026-07-27: read feed once at pin, then bind.
