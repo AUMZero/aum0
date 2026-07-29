@@ -74,3 +74,4 @@
 - 2026-07-23: 0.05% tier; whale wallet as USDG faucet.
 - 2026-07-25: same drift-improvement numbers every run.
 - 2026-07-27: read feed once at pin, then bind.
+- 2026-07-29: deposit 200 USDG, setTarget 50/50, keeper rebalance.
