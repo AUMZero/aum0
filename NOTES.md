@@ -78,3 +78,4 @@
 - 2026-07-31: one swap, band comfortable, keeper paid.
 - 2026-08-02: checksum matters in fork url routing.
 - 2026-08-04: post-swap balanceOf actually rises.
+- 2026-08-07: USDG + NVDA, single-pair, band comfortable, bounty 0.1.
