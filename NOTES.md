@@ -79,3 +79,4 @@
 - 2026-08-02: checksum matters in fork url routing.
 - 2026-08-04: post-swap balanceOf actually rises.
 - 2026-08-07: USDG + NVDA, single-pair, band comfortable, bounty 0.1.
+- 2026-08-09: 0xCaf681a66D020601342297493863E78C959E5cb2.
