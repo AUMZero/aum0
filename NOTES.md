@@ -82,3 +82,4 @@
 - 2026-08-09: 0xCaf681a66D020601342297493863E78C959E5cb2.
 - 2026-08-11: generate fresh keypair, funded with just enough gas.
 - 2026-08-13: verify constructor args match live tables.
+- 2026-08-15: no admin; router calls flow through user policy.
