@@ -83,3 +83,4 @@
 - 2026-08-11: generate fresh keypair, funded with just enough gas.
 - 2026-08-13: verify constructor args match live tables.
 - 2026-08-15: no admin; router calls flow through user policy.
+- 2026-08-17: assets, feeds, router baked into immutables.
