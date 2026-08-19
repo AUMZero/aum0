@@ -84,3 +84,4 @@
 - 2026-08-13: verify constructor args match live tables.
 - 2026-08-15: no admin; router calls flow through user policy.
 - 2026-08-17: assets, feeds, router baked into immutables.
+- 2026-08-19: etherscan-compatible verify via foundry, single file.
