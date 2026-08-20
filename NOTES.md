@@ -85,3 +85,4 @@
 - 2026-08-15: no admin; router calls flow through user policy.
 - 2026-08-17: assets, feeds, router baked into immutables.
 - 2026-08-19: etherscan-compatible verify via foundry, single file.
+- 2026-08-21: deploy on secondary rpc, tear down, retry.
