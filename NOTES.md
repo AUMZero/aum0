@@ -87,3 +87,4 @@
 - 2026-08-19: etherscan-compatible verify via foundry, single file.
 - 2026-08-21: deploy on secondary rpc, tear down, retry.
 - 2026-08-23: gas << 0.01 native at Hood prices; no surprise.
+- 2026-08-25: final foundry.toml + script committed.
