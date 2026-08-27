@@ -1,0 +1,15 @@
+name: test
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  forge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: recursive }
+      - uses: foundry-rs/foundry-toolchain@v1
+        with: { version: nightly }
+      - run: forge build --sizes
+      - run: forge test -vv
