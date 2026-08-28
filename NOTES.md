@@ -89,3 +89,4 @@
 - 2026-08-23: gas << 0.01 native at Hood prices; no surprise.
 - 2026-08-25: final foundry.toml + script committed.
 - 2026-08-28: 0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde.
+- 2026-08-29: 50/50 USDG/NVDA; drift 10000 -> 25 bps; bounty paid 0.9975.
