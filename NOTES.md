@@ -88,3 +88,4 @@
 - 2026-08-21: deploy on secondary rpc, tear down, retry.
 - 2026-08-23: gas << 0.01 native at Hood prices; no surprise.
 - 2026-08-25: final foundry.toml + script committed.
+- 2026-08-28: 0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde.
