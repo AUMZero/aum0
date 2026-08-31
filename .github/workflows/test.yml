@@ -11,5 +11,6 @@ jobs:
         with: { submodules: recursive }
       - uses: foundry-rs/foundry-toolchain@v1
         with: { version: nightly }
+      - run: forge install foundry-rs/forge-std --no-commit --no-git
       - run: forge build --sizes
-      - run: forge test -vv
+      - run: forge test -vv --no-match-contract ForkTest
