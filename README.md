@@ -6,6 +6,8 @@
 
 AUM Zero. An asset manager with no employees, no fees, and no ability to steal.
 
+CA: 0xe7cfbf084589b73a3ff74e9819dd3d28ee1e05a9
+
 [aumzero.com](https://aumzero.com) · [x.com/aum0com](https://x.com/aum0com)
 
 You carve a target allocation into your account: so much stock, so much cash.
