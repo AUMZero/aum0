@@ -4,80 +4,87 @@
 
 # AUM0
 
-AUM Zero. An asset manager with no employees, no fees, and no ability to steal.
+AUM Zero. An asset manager with no employees, no fees, no custody, and no
+ability to steal.
 
 CA: 0xe7cfbf084589b73a3ff74e9819dd3d28ee1e05a9
 
 [aumzero.com](https://aumzero.com) · [x.com/aum0com](https://x.com/aum0com)
 
-You carve a target allocation into your account: so much stock, so much cash.
-From then on, strangers manage your portfolio. When prices drift your
-holdings away from the target, anyone may call rebalance() on your account,
+You carve a target allocation into your own wallet: so much stock, so much
+cash. From then on, strangers manage your portfolio. When prices drift your
+holdings away from the target, anyone may call rebalance() on your wallet,
 push it back toward the target, and take a small bounty for the work. That is
 the entire company.
 
 BlackRock runs $10 trillion of AUM and charges for it. This is AUM, zero.
 
+## Your stocks never leave your wallet
+
+There is no deposit. Your stocks and your cash sit in your own wallet, where
+your wallet app can see them, and they stay there. You grant an allowance and
+set a target; each rebalance pulls from your wallet, swaps on the venue, and
+hands the result straight back to your wallet inside the same transaction.
+The manager's balance is zero before the trade and zero after it.
+
+You quit by setting the allowance to zero. There is nothing to withdraw: you
+never gave anything up.
+
 ## Why a stranger cannot hurt you
 
-**Wall 1. Strangers can only help.** Every rebalance must move the portfolio
+**Wall 1. Strangers can only help.** Every rebalance must move your wallet
 strictly closer to your own target. The contract measures drift before and
-after; if drift did not fall, the whole transaction reverts. There is no
-trade a keeper can construct that leaves you worse off against your policy.
+after on your real balances; if drift did not fall, the whole transaction
+reverts. There is no trade a keeper can construct that leaves you worse off
+against your policy.
 
 **Wall 2. Fills are checked against reality.** Every realized fill is priced
-against the chain's official feeds. A trade whose actual execution sits
-further from the feed than your tolerance is refused, so a keeper cannot
-route your order through a manipulated pool and pocket the difference. The
-check is on what happened, not on what was promised.
+against the chain's official feeds, on the amount your wallet actually
+received, not the amount promised. A fill that sits further from the feed
+than your tolerance is refused, so a keeper cannot route your order through
+a manipulated pool and pocket the difference.
 
-**Wall 3. Money only leaves to you.** withdraw() pays the caller their own
-balance, any time, no lockup, no permission. The single exception is the
-bounty, sized by you, paid only for a rebalance that provably helped, and
-paid in proportion to how much it helped. Splitting one rebalance into many
-collects exactly the same total: the payouts telescope, so your bounty is
-the most you will ever pay to travel from fully drifted back to target.
+**Wall 3. Nothing else can move.** No function in the contract names a
+destination. Swap output goes to you. The bounty, sized by you, goes to
+whoever did the work, paid in proportion to how much the rebalance helped.
+Splitting one rebalance into many collects exactly the same total: the
+payouts telescope, so your bounty is the most you will ever pay to travel
+from fully drifted back to target.
 
 No owner. No admin. No upgrade path. No fee to anyone but the stranger who
 did the work.
 
 ## Live on Hood Chain
 
-    AUM0 contract   0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde
-    Chain           Hood Chain (id 4663)
-    Web             https://aumzero.com
+    Wallet edition   0xaFd484733f4B23e235bf1825c9AdA39368160B03
+    Chain            Hood Chain (id 4663)
+    Web              https://aumzero.com
+    Venue            USDG + fifteen stocks: NVDA, SPCX, TSLA, AAPL, MSFT,
+                     AMZN, MU, SPY, PLTR, SNDK, INTC, AMD, GOOGL, META, USAR
 
-First real account, minutes after deploy: a wallet set a 50/50 USDG/NVDA
-law, deposited USDG, and a keeper rebalanced it on the live pool. Reported
-by the contract itself: drift 10000 bps to 25 bps, keeper paid 0.9975 USDG,
-real NVDA now sitting in the vault.
+Every asset is pinned to its official on-chain feed and its real USDG pool,
+measured on-chain and frozen at construction forever.
 
-## Proven on the real pool
+First rebalances on the live pools, reported by the contract itself:
 
-Fork run against live Hood Chain, 2026-08-31: a fresh account deposited
-200 USDG, set a 50/50 USDG/NVDA target, and a keeper rebalanced it through
-the live router on the real NVDA/USDG 0.05% pool.
+    drift 1479 bps -> 43 bps      bounty 0.0144 USDG
+    drift 9999 bps -> 305 bps     bounty 0.0969 USDG, all cash carried into
+                                  a fifteen-stock target in one transaction
 
-    drift before      10000 bps   (all cash, fully off target)
-    drift after          21 bps   (on target)
-    keeper earned       0.4998 USDG (bounty scales with bps improved)
-    NVDA acquired       0.459 shares
-    total cost          $0.57 on $200 (pool fee + slippage + bounty)
-
-All twelve unit tests pass, covering the three walls, overshoot rejection,
-bounty-farming rejection, bad-fill rejection, and always-on withdrawals.
+The custody editions that came first remain live: deposit-based vaults at
+0xcc27Dd6FD74210303660643bcf6c9d115443bFcA (fifteen stocks) and
+0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde (NVDA), where the first real
+account was rebalanced from 10000 bps drift to 25 bps minutes after deploy.
 
 ## Interface
 
-    deposit(asset, amount)                    // move tokens in
-    withdraw(asset, amount)                   // move tokens out, always
     setTarget(bps[], minDrift, band, bounty)  // carve your policy
     rebalance(user, trades[])                 // anyone; must help; earns bounty
-    drift(user) / valueOf(user)               // views
+    drift(user) / valueOf(user) / heldBy(user, asset)
 
-Assets are indexed with the quote (USDG) at 0. Every trade leg touches the
-quote, and the venue (router, tokens, feeds, pool fees) is fixed at
-construction forever.
+No deposit and no withdraw: your wallet already holds everything. Assets are
+indexed with the quote (USDG) at 0, every trade leg touches the quote, and
+the venue (router, tokens, feeds, pool fees) is fixed at construction.
 
 ## Honest edges
 
@@ -93,9 +100,13 @@ construction forever.
 
 ## Layout
 
-    src/AUM0.sol           the company
-    script/Deploy.s.sol    v1 venue (USDG + NVDA, fork-proven pool)
-    test/AUM0.t.sol        the three walls, drift math, guards
-    test/AUM0.fork.t.sol   live rebalance on the real pool
+    src/AUM0Wallet.sol           the company: allowance-based, holds nothing
+    src/AUM0.sol                 custody edition (v1 and v2 venues)
+    script/DeployWallet.s.sol    wallet venue (USDG + fifteen stocks)
+    script/DeployV2.s.sol        custody venue, fifteen stocks
+    script/Deploy.s.sol          custody venue, NVDA only
+    test/                        the three walls, drift math, guards, and
+                                 fork replays against the live pools
+    web/                         aumzero.com: static site, RPC proxy, keeper
 
 MIT licensed.
