@@ -1,0 +1,11 @@
+{
+  "name": "aum0-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0"
+  }
+}
