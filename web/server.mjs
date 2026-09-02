@@ -27,10 +27,15 @@ async function proxyRpc(body, method) {
   if (hit && hit.then) return hit;                                   // same scan already in flight
   if (hit && Date.now() - hit.at < LOG_CACHE_MS) return hit;         // fresh enough for everyone
   const p = (async () => {
-    const r = await fetch(UPSTREAM, { method: 'POST', headers, body });
-    const out = { at: Date.now(), status: r.status, text: await r.text() };
-    if (r.status === 200 && !out.text.includes('"error"')) logCache.set(body, out); else logCache.delete(body);
-    return out;
+    // the public node says 429 easily; try twice, and if it still refuses,
+    // hand out the last good answer rather than an error the page must hide
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const r = await fetch(UPSTREAM, { method: 'POST', headers, body });
+      const out = { at: Date.now(), status: r.status, text: await r.text() };
+      if (r.status === 200 && !out.text.includes('"error"')) { logCache.set(body, out); return out; }
+      if (attempt === 0) await new Promise(res => setTimeout(res, 1500));
+      else { if (hit && !hit.then) { logCache.set(body, hit); return hit; } logCache.delete(body); return out; }
+    }
   })();
   logCache.set(body, p);
   return p;

@@ -181,9 +181,18 @@ async function serveOne(v, user, px) {
   backoff.delete(v.addr + ':' + user);
 }
 
+// Who has a law. The first pass scans from the venue's birth; every pass after
+// reads only the blocks since, so the public node sees a sliver, not history.
 async function users(v) {
-  const logs = await provider.getLogs({ address: v.addr, topics: [v.c.interface.getEvent('TargetSet').topicHash], fromBlock: v.fromBlock });
-  return [...new Set(logs.map(l => '0x' + l.topics[1].slice(26)))];
+  const head = await provider.getBlockNumber();
+  const from = v.scannedTo === undefined ? v.fromBlock : v.scannedTo + 1;
+  v.users ??= new Set();
+  if (from <= head) {
+    const logs = await provider.getLogs({ address: v.addr, topics: [v.c.interface.getEvent('TargetSet').topicHash], fromBlock: from, toBlock: head });
+    for (const l of logs) v.users.add('0x' + l.topics[1].slice(26));
+    v.scannedTo = head;
+  }
+  return [...v.users];
 }
 
 async function tick() {
