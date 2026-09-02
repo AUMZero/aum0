@@ -187,6 +187,17 @@
   <tr><td class="k"><a href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">» [the code] «</a></td><td class="v">every wall, every test, every number. read it before you trust it.</td></tr>
 </tbody></table>
 
+<div class="panel" id="pw">
+  <h2><span class="tag">»</span> the paperwork <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">hiring me is three signatures. this sheet keeps itself up to date.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k"><button id="pw1_btn">» [1 connect] «</button></td><td class="v" id="pw1">plug in a wallet. everything below stays dead until you do.</td></tr>
+    <tr><td class="k"><a href="#law">» [2 the law] «</a></td><td class="v" id="pw2">pick a portfolio off the shelf, or carve your own below.</td></tr>
+    <tr><td class="k"><a href="#vault">» [3 permission] «</a></td><td class="v" id="pw3">one signature per asset. i can move them, never take them.</td></tr>
+    <tr><td class="k"><span style="font-weight:900">» [status] «</span></td><td class="v" id="pw0">waiting on the paperwork.</td></tr>
+  </tbody></table>
+</div>
+
 <div class="live"><span class="tag">[LIVE]</span> <span id="live_line">reading the chain…</span></div>
 
 <div class="panel" id="shelf">
@@ -217,6 +228,19 @@
   </div>
   <div class="row" id="legacy_row" hidden><span id="legacy_note"></span><button class="act" id="wd_old">Take it back</button></div>
   <div class="msg" id="vault_msg"></div>
+</div>
+
+<div class="panel" id="stmt" hidden>
+  <h2><span class="tag">»</span> your statement</h2>
+  <div class="row"><label>account value</label><span id="st_val">—</span></div>
+  <div class="row"><label>drift</label><span id="st_drift">—</span></div>
+  <div class="row"><label>paid to strangers</label><span id="st_paid">reading the ledger…</span></div>
+  <div class="row"><label>management fee</label><span><b>$0.00.</b> now and forever. it is in the code, not in a promise.</span></div>
+  <table class="jobs"><thead>
+    <tr><th>drift fixed</th><th>you paid</th><th>worker</th></tr>
+  </thead><tbody id="my_rows">
+    <tr><td colspan="3" class="dim">no work done on your account yet.</td></tr>
+  </tbody></table>
 </div>
 
 <table class="doors" id="walls"><tbody>
@@ -273,7 +297,7 @@ const STOCKS = [
   ['META','0x7C38C00C30BEe9378381E7B6135d7283356D71b1','0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35'],
   ['USAR','0x451B1295aA84FD6d6b58af1a5002eA1b1A1913A0','0xd917B029C761D264c6A312BBbcDA868658eF86a6'],
 ];
-const RPC = location.hostname === 'localhost' ? 'https://rpc.mainnet.chain.robinhood.com' : location.origin + '/api/rpc';
+const RPC = location.origin + '/api/rpc';   // the site's own proxy, local or live
 const EXPLORER = 'https://explorer.mainnet.chain.robinhood.com';
 const USDG = '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
 const SEL = { deposit:'0xe2bbb158', withdraw:'0x441a3e70', setTarget:'0xf3397382', drift:'0x389cc952', valueOf:'0xa48028aa', accountOf:'0x8086b8ba', bal:'0x915aeb7c', approve:'0x095ea7b3', allowance:'0xdd62ed3e' };
@@ -281,6 +305,11 @@ const $ = id => document.getElementById(id);
 const pad = (v, n=64) => BigInt(v).toString(16).padStart(n, '0');
 let me = null;
 let lawLoaded = false;   // the law already on chain is loaded once, then it is yours to edit
+let hasLaw = false;      // a law is carved on chain for this wallet
+let lastRaws = null;     // stock balances from the last refresh, raw units
+let pwMissing = null;    // tokens still lacking permission, or null before first check
+let pwTick = 0;
+let oldChecked = '';     // wallet whose old-vault balances were already scanned
 
 const deployed = CONTRACT.startsWith('0x');
 
@@ -340,6 +369,7 @@ async function connect() {
 }
 $('connect').onclick = connect;
 $('topconnect').onclick = connect;
+$('pw1_btn').onclick = connect;
 $('mascot_ca').onclick = async () => {
   try { await navigator.clipboard.writeText('0xe7CFbf084589b73A3FF74E9819Dd3D28ee1E05A9'); } catch {}
   const el = $('mascot_ca');
@@ -369,7 +399,17 @@ $('carve').onclick = async () => {
     + pad(weights.length) + weights.map(w => pad(w)).join('');
   try {
     const h = await send(CONTRACT, data);
+    hasLaw = true;
     say('law_msg', 'carved. the strangers are bound. tx ' + h.slice(0,14) + '…');
+    setTimeout(async () => {
+      try {
+        const miss = await missingTokens();
+        if (miss.length) {
+          say('law_msg', 'carved. one step left: grant permission for ' + miss.map(tickerOf).join(', ') + ' in the mandate below.');
+          $('vault').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else say('law_msg', 'carved, and your permission already covers it. from here the work finds you.');
+      } catch {}
+    }, 1200);
   } catch (e) { say('law_msg', 'refused: ' + (e.message || e).slice(0,90), true); }
 };
 
@@ -380,13 +420,14 @@ async function loadMyLaw() {
     const w = i => Number(BigInt('0x' + raw.slice(2 + i * 64, 2 + (i + 1) * 64)));
     const n = w(4);
     if (!n) { lawLoaded = true; return; }
+    hasLaw = true;
     stockInputs.forEach((inp, i) => { inp.value = w(6 + i) / 100; });
     $('band').value = (w(2) / 100).toFixed(1);
     $('bounty').value = w(3) / 1e6;
     syncGrid();
     lawLoaded = true;
     say('law_msg', 'this is the law already carved for this wallet. change it whenever you like.');
-  } catch { lawLoaded = true; }
+  } catch {} // a rate-limited read is not "no law": leave lawLoaded false and retry next tick
 }
 
 // Shows the wallet against its own law, so the boxes stop looking like a
@@ -417,15 +458,14 @@ async function allowanceOf(token) {
 $('grant').onclick = async () => {
   if (!me) return say('vault_msg', 'connect first.', true);
   try {
-    const wanted = neededTokens();
-    const missing = [];
-    for (const t of wanted) if ((await allowanceOf(t)) === 0n) missing.push(t);
-    if (!missing.length) { say('vault_msg', 'already granted for everything in your law.'); return refresh(); }
+    const missing = await missingTokens();
+    if (!missing.length) { say('vault_msg', 'already granted for everything under your law.'); return refresh(); }
     for (let i = 0; i < missing.length; i++) {
-      say('vault_msg', 'permission ' + (i + 1) + ' of ' + missing.length + '. one per asset you chose.');
+      say('vault_msg', 'permission ' + (i + 1) + ' of ' + missing.length + ': ' + tickerOf(missing[i]) + '.');
       await send(missing[i], SEL.approve + pad(CONTRACT) + MAX);
     }
-    say('vault_msg', 'granted. i can move these only to rebalance you, and only back to you.');
+    pwMissing = [];
+    say('vault_msg', 'granted. i can move these only to rebalance you, and only back to you. the paperwork is done: from here, the work finds you.');
     refresh();
   } catch (e) { say('vault_msg', 'refused: ' + (e.message || e).slice(0,90), true); }
 };
@@ -443,15 +483,39 @@ $('revoke').onclick = async () => {
 
 function assetToken(i) { return STOCKS[i - 1][2]; }
 
-// cash, plus only the stocks this wallet actually asked for or already owns
+// cash, the stocks the law asks for, AND the stocks the wallet already holds:
+// walking you onto your law can mean selling what you own, and selling needs
+// the same permission buying does.
 function neededTokens() {
-  const want = [USDG];
-  stockInputs.forEach((inp, i) => { if ((+inp.value || 0) > 0) want.push(STOCKS[i][2]); });
-  return want;
+  const want = new Set([USDG]);
+  stockInputs.forEach((inp, i) => { if ((+inp.value || 0) > 0) want.add(STOCKS[i][2]); });
+  if (lastRaws) lastRaws.forEach((r, i) => { if (BigInt(r) > 0n) want.add(STOCKS[i][2]); });
+  return [...want];
+}
+const tickerOf = t => t === USDG ? 'USDG' : (STOCKS.find(s => s[2] === t) || ['?'])[0];
+
+async function missingTokens() {
+  const toks = neededTokens();
+  const allows = await Promise.all(toks.map(allowanceOf));
+  pwMissing = toks.filter((t, i) => allows[i] === 0n);
+  return pwMissing;
 }
 
 // -- live line ---------------------------------------------------------------
+// One refresh at a time: connect() also calls this, and two overlapping loops
+// trample each other's paints and burn the rpc budget.
+let refreshTimer = null, refreshBusy = false;
 async function refresh() {
+  if (refreshBusy) return;
+  refreshBusy = true;
+  clearTimeout(refreshTimer);
+  try { await refreshOnce(); }
+  finally {
+    refreshBusy = false;
+    refreshTimer = setTimeout(refresh, 4000);
+  }
+}
+async function refreshOnce() {
   if (!deployed) {
     $('live_line').innerHTML = 'engine proven on the real NVDA/USDG pool: drift 10000 → 21 bps, keeper paid 0.4998 USDG, cost $0.57 on $200. the vault lands next.';
     return;
@@ -470,23 +534,38 @@ async function refresh() {
       $('mascot_sign').textContent = bps === null ? 'the employee. unpaid. unbribable.'
         : bps < 100 ? 'drift ' + bps + ' bps. all tidy. — the employee'
         : 'drift ' + bps + ' bps. i am not angry. i am waiting. — the employee';
-      const cash = Number(BigInt(await call(CONTRACT, SEL.bal + pad(me) + pad(0)))) / 1e6;
-      const raws = await Promise.all(STOCKS.map((_, i) => call(CONTRACT, SEL.bal + pad(me) + pad(i + 1))));
+      // the hiring sheet paints first: it is the page's answer to "what now?"
+      if (!lawLoaded) await loadMyLaw();
+      $('stmt').hidden = false;
+      $('st_val').textContent = '$' + usd.toLocaleString() + ', all of it in your own wallet';
+      $('st_drift').textContent = bps === null ? 'no law carved yet'
+        : bps + ' bps' + (bps >= 300 ? ' · a job is posted, a worker will come' : ' · inside the line');
+      await paintPaperwork(usd, bps);
+      const [cashRaw, ...raws] = await Promise.all([
+        call(CONTRACT, SEL.bal + pad(me) + pad(0)),
+        ...STOCKS.map((_, i) => call(CONTRACT, SEL.bal + pad(me) + pad(i + 1))),
+      ]);
+      const cash = Number(BigInt(cashRaw)) / 1e6;
+      lastRaws = raws;
       const held = raws.map((r, i) => [Number(BigInt(r)) / 1e18, STOCKS[i][0]])
         .filter(([q]) => q > 0).map(([q, tk]) => q.toFixed(4) + ' ' + tk);
       if (!lawLoaded) await loadMyLaw();
       paintGrid(cash, raws);
       $('hold_line').textContent = cash.toFixed(2) + ' USDG' + (held.length ? ' · ' + held.join(' · ') : '') + ' (in your wallet)';
-      // anything still sitting in the old custody vaults belongs to you
-      let stranded = 0, strandedAt = null;
-      for (const [vault, n] of OLD_VAULTS) {
-        const bals = await Promise.all(Array.from({length: n}, (_, i) => call(vault, SEL_OLDBAL + pad(me) + pad(i)).catch(() => '0x0')));
-        if (bals.some(b => BigInt(b) > 0n)) { stranded++; strandedAt = [vault, bals]; }
-      }
-      $('legacy_row').hidden = !strandedAt;
-      if (strandedAt) {
-        $('legacy_note').textContent = 'the old vault still holds assets in your name. nothing is stuck: pull them out and they land in this wallet, already under management.';
-        $('wd_old').dataset.vault = JSON.stringify(strandedAt);
+      // anything still sitting in the old custody vaults belongs to you.
+      // checked once per wallet, not every tick: the answer rarely changes.
+      if (oldChecked !== me) {
+        let strandedAt = null;
+        for (const [vault, n] of OLD_VAULTS) {
+          const bals = await Promise.all(Array.from({length: n}, (_, i) => call(vault, SEL_OLDBAL + pad(me) + pad(i)).catch(() => '0x0')));
+          if (bals.some(b => BigInt(b) > 0n)) strandedAt = [vault, bals];
+        }
+        oldChecked = me;
+        $('legacy_row').hidden = !strandedAt;
+        if (strandedAt) {
+          $('legacy_note').textContent = 'the old vault still holds assets in your name. nothing is stuck: pull them out and they land in this wallet, already under management.';
+          $('wd_old').dataset.vault = JSON.stringify(strandedAt);
+        }
       }
       const a = BigInt(await call(USDG, SEL.allowance + pad(me) + pad(CONTRACT)));
       $('allow_line').textContent = a === 0n ? 'not granted. i cannot move anything.'
@@ -495,9 +574,27 @@ async function refresh() {
     }
     $('live_line').textContent = 'block ' + block.toLocaleString() + mine;
   } catch (e) { $('live_line').textContent = 'the chain is quiet. retrying…'; }
-  setTimeout(refresh, 4000);
 }
 refresh();
+
+// -- the paperwork: a hiring sheet that keeps itself up to date ---------------
+async function paintPaperwork(usd, bps) {
+  const OK = '<b style="color:var(--tie)">[done]</b> ';
+  const DO = '<b style="color:var(--red)">[next]</b> ';
+  $('pw1').innerHTML = OK + 'hired by ' + me.slice(0,6) + '…' + me.slice(-4) + '. i know you by this and nothing else.';
+  $('pw2').innerHTML = hasLaw ? OK + 'a law is carved for this wallet. edit it below whenever you like.'
+    : DO + 'no law yet. adopt one off the shelf, or carve your own below.';
+  if (pwMissing === null || pwTick++ % 5 === 0) { try { await missingTokens(); } catch {} }
+  const miss = pwMissing || [];
+  $('pw3').innerHTML = !hasLaw ? 'waits on the law: i only ask permission for what your law touches.'
+    : miss.length ? DO + 'missing ' + miss.map(tickerOf).join(', ') + '. press grant below, one signature each.'
+    : OK + 'granted for everything your law touches. revoke any time, one click.';
+  $('pw0').innerHTML = (!hasLaw || miss.length) ? 'waiting on the paperwork above.'
+    : usd < 0.5 ? 'papers signed, wallet empty. send USDG or any of the fifteen stocks to your address on hood chain: it is under management the moment it lands.'
+    : bps === null ? '<b>employed.</b> reading your drift…'
+    : bps >= 300 ? '<b>employed.</b> drift ' + bps + ' bps: a job is posted and a worker is coming. you do nothing.'
+    : '<b>employed.</b> drift ' + bps + ' bps, inside the line. jobs post at 300. you do nothing.';
+}
 
 $('wd_old').onclick = async () => {
   if (!me) return say('vault_msg', 'connect first.', true);
@@ -507,6 +604,7 @@ $('wd_old').onclick = async () => {
       if (BigInt(bals[i]) > 0n) await send(vault, SEL_WITHDRAW + pad(i) + pad(BigInt(bals[i])));
     }
     say('vault_msg', 'returned in full, into your own wallet. that was the last time anything of yours sat in a vault.');
+    oldChecked = '';
     refresh();
   } catch (e) { say('vault_msg', 'refused: ' + (e.message || e).slice(0,90), true); }
 };
@@ -597,12 +695,13 @@ async function loadBoard() {
       tr.querySelector('button').onclick = () => takeJob(a, tr);
       rows.appendChild(tr);
     }
-    if (!open.length) rows.innerHTML = '<tr><td colspan="5" class="dim">no open jobs. ' + tidy.length + ' account' + (tidy.length === 1 ? '' : 's') + ' on their law, watched every block. deposit and drift to post one.</td></tr>';
+    if (!open.length) rows.innerHTML = '<tr><td colspan="5" class="dim">no open jobs. ' + tidy.length + ' account' + (tidy.length === 1 ? '' : 's') + ' on their law, watched every block. fund a wallet, let it drift, and a job appears.</td></tr>';
     else $('board_msg').textContent = '';
   } catch (e) {
     rows.innerHTML = '<tr><td colspan="5" class="dim">the board is unreachable: ' + (e.message || e).toString().slice(0, 60) + '</td></tr>';
   }
   try { await loadWorkLog(); } catch {}
+  try { await loadMyLog(); } catch {}
   setTimeout(loadBoard, 30000);
 }
 
@@ -627,6 +726,35 @@ async function loadWorkLog() {
       + '<td>' + before + ' → ' + after + ' bps</td>'
       + '<td class="pay">$' + paid.toFixed(2) + '</td>'
       + '<td>' + (keeper === KEEPER_BOT ? 'the employee' : keeper.slice(0,6) + '…' + keeper.slice(-4)) + '</td>';
+    rows.appendChild(tr);
+  }
+}
+
+// -- your statement: the work done on YOUR account, and what it cost you -----
+async function loadMyLog() {
+  if (!me) return;
+  const sources = [[CONTRACT, DEPLOY_BLOCK], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])];
+  const topicMe = '0x' + pad(me);
+  // a failed read keeps the old text and retries next cycle; it never
+  // becomes a false "nothing yet"
+  const batches = await Promise.all(sources.map(([addr, from]) =>
+    rpc('eth_getLogs', [{ address: addr, topics: [REBALANCED_TOPIC, topicMe], fromBlock: from, toBlock: 'latest' }])));
+  const logs = batches.flat().sort((a, b) => parseInt(a.blockNumber, 16) - parseInt(b.blockNumber, 16));
+  let paid = 0;
+  for (const l of logs) paid += Number(BigInt('0x' + l.data.slice(2 + 2*64, 2 + 3*64))) / 1e6;
+  $('st_paid').textContent = logs.length
+    ? '$' + paid.toFixed(4) + ' all time, across ' + logs.length + ' rebalance' + (logs.length === 1 ? '' : 's') + '. sized by you, paid only for help.'
+    : 'nothing yet. the first stranger to help you earns the first cent.';
+  if (!logs.length) return;
+  const rows = $('my_rows');
+  rows.innerHTML = '';
+  for (const l of logs.slice(-8).reverse()) {
+    const word = i => BigInt('0x' + l.data.slice(2 + i*64, 2 + (i+1)*64));
+    const keeper = '0x' + l.topics[2].slice(26);
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + Number(word(0)) + ' → ' + Number(word(1)) + ' bps</td>'
+      + '<td class="pay">$' + (Number(word(2)) / 1e6).toFixed(4) + '</td>'
+      + '<td>' + (keeper.toLowerCase() === KEEPER_BOT ? 'the employee' : keeper.slice(0,6) + '…' + keeper.slice(-4)) + '</td>';
     rows.appendChild(tr);
   }
 }
