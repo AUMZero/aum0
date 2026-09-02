@@ -18,9 +18,10 @@ const DRY = process.env.DRY_RUN === '1';
 
 // Self-employment. The employee only takes jobs that pay, and when its gas
 // runs low it converts its own wages into fuel. Nobody tops this wallet up.
-const WETH = '0x0bd7D308f8E1639fAb988DF18A8011F41eACaD73';
-const ROUTER = '0xCaf681a66D020601342297493863E78C959E5cb2';
-const USDG = '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
+// lowercase on purpose: ethers rejects a mixed-case address whose checksum is off
+const WETH = '0x0bd7d308f8e1639fab988df18a8011f41eacad73';
+const ROUTER = '0xcaf681a66d020601342297493863e78c959e5cb2';
+const USDG = '0x5fc5360d0400a0fd4f2af552add042d716f1d168';
 const WETH_POOL = '0x69bfaf19c9f377bb306a89aed9f6b07e2c1a8d9a'; // WETH/USDG 0.05%
 const PROFIT_MARGIN = 1.5;    // a stranger's job must pay 1.5x its gas
 const REFUEL_BELOW = 0.015;   // ETH; below this the employee buys its own gas
