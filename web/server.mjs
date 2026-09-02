@@ -8,7 +8,33 @@ import { gzipSync } from 'node:zlib';
 
 const PORT = process.env.PORT || 3000;
 const ROOT = new URL('.', import.meta.url).pathname;
-const UPSTREAM = 'https://rpc.mainnet.chain.robinhood.com';
+// Two upstreams. The public node allows wide eth_getLogs ranges but rate
+// limits hard; a dedicated provider (FAST_RPC_URL, e.g. Alchemy) answers
+// calls and balances instantly but caps eth_getLogs at a few blocks. So
+// logs go to the public node, behind a short shared cache, and everything
+// else goes to the fast one.
+const UPSTREAM = process.env.RPC_URL || 'https://rpc.mainnet.chain.robinhood.com';
+const FAST = process.env.FAST_RPC_URL || UPSTREAM;
+const LOG_CACHE_MS = 15_000;
+const logCache = new Map();   // request body -> { at, status, text } or an in-flight promise
+async function proxyRpc(body, method) {
+  const headers = { 'content-type': 'application/json', 'user-agent': UA };
+  if (method !== 'eth_getLogs') {
+    const r = await fetch(FAST, { method: 'POST', headers, body });
+    return { status: r.status, text: await r.text() };
+  }
+  const hit = logCache.get(body);
+  if (hit && hit.then) return hit;                                   // same scan already in flight
+  if (hit && Date.now() - hit.at < LOG_CACHE_MS) return hit;         // fresh enough for everyone
+  const p = (async () => {
+    const r = await fetch(UPSTREAM, { method: 'POST', headers, body });
+    const out = { at: Date.now(), status: r.status, text: await r.text() };
+    if (r.status === 200 && !out.text.includes('"error"')) logCache.set(body, out); else logCache.delete(body);
+    return out;
+  })();
+  logCache.set(body, p);
+  return p;
+}
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
 // Only what the page needs; anything else is refused.
 const ALLOW = new Set(['eth_call', 'eth_blockNumber', 'eth_getBalance', 'eth_chainId', 'eth_getLogs']);
@@ -36,7 +62,7 @@ let priceCache = { at: 0, px: null };
 async function readFeed(addr) {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const r = await fetch(UPSTREAM, { method: 'POST', headers: { 'content-type': 'application/json', 'user-agent': UA },
+      const r = await fetch(FAST, { method: 'POST', headers: { 'content-type': 'application/json', 'user-agent': UA },
         body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_call', params: [{ to: addr, data: '0xfeaf968c' }, 'latest'] }) });
       const j = await r.json();
       if (j.result) return Number(BigInt('0x' + j.result.slice(2 + 64, 2 + 128))) / 1e8;
@@ -101,8 +127,8 @@ http.createServer(async (req, res) => {
         if (parsed.method === 'eth_getLogs' && !AUM0S.has(String(parsed.params?.[0]?.address).toLowerCase())) {
           return sendText(req, res, 400, { 'content-type': 'application/json', 'cache-control': 'no-store' }, '{"error":"logs served for the AUM0 contract only"}');
         }
-        const r = await fetch(UPSTREAM, { method: 'POST', headers: { 'content-type': 'application/json', 'user-agent': UA }, body });
-        sendText(req, res, r.status, { 'content-type': 'application/json', 'cache-control': 'no-store' }, await r.text());
+        const out = await proxyRpc(body, parsed.method);
+        sendText(req, res, out.status, { 'content-type': 'application/json', 'cache-control': 'no-store' }, out.text);
       } catch (e) { sendText(req, res, 502, { 'content-type': 'application/json', 'cache-control': 'no-store' }, JSON.stringify({ error: String(e.message) })); }
     });
     return;
