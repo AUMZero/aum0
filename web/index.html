@@ -274,7 +274,7 @@
     <tr><td class="k">wages on hand</td><td class="v" id="ps_wages">reading…</td></tr>
     <tr><td class="k">earned so far</td><td class="v" id="ps_earned">reading the ledger…</td></tr>
     <tr><td class="k">takes a job when</td><td class="v">the pay covers 1.5x the gas. its own desk it tidies for free.</td></tr>
-    <tr><td class="k">refuels when</td><td class="v">gas drops under 0.003 ETH. it keeps the last two dollars of cash, always.</td></tr>
+    <tr><td class="k">refuels when</td><td class="v">gas drops under 0.015 ETH, back up to 0.02. it keeps the last two dollars of cash, always.</td></tr>
   </tbody></table>
 </div>
 
@@ -763,7 +763,7 @@ async function loadPaystub() {
     call(USDG, SEL_ERC20_BAL + pad(KEEPER_BOT)),
   ]);
   const gas = Number(BigInt(gasHex)) / 1e18, wages = Number(BigInt(wagesHex)) / 1e6;
-  $('ps_gas').textContent = gas.toFixed(5) + ' ETH' + (gas < 0.003 ? ' · below the line. it buys more the moment its wages allow.' : ' · enough for now.');
+  $('ps_gas').textContent = gas.toFixed(5) + ' ETH' + (gas < 0.015 ? ' · below the line. it buys more the moment its wages allow.' : ' · tank is full.');
   $('ps_wages').textContent = wages.toFixed(2) + ' USDG' + (wages < 3 ? ' · too thin to refuel yet.' : ' · enough to refuel.');
 }
 function paintPaystubEarned() {

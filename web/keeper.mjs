@@ -23,8 +23,8 @@ const ROUTER = '0xCaf681a66D020601342297493863E78C959E5cb2';
 const USDG = '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
 const WETH_POOL = '0x69bfaf19c9f377bb306a89aed9f6b07e2c1a8d9a'; // WETH/USDG 0.05%
 const PROFIT_MARGIN = 1.5;    // a stranger's job must pay 1.5x its gas
-const REFUEL_BELOW = 0.003;   // ETH; below this the employee buys its own gas
-const REFUEL_TARGET = 0.01;
+const REFUEL_BELOW = 0.015;   // ETH; below this the employee buys its own gas
+const REFUEL_TARGET = 0.02;   // and fills the tank back to this
 const USDG_FLOAT = 2;         // it never spends the last of its cash
 
 const ABI = [
