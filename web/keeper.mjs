@@ -16,6 +16,17 @@ const MIN_LEG_USD = 0.05;     // skip legs the pool fee would eat
 const MAX_TX_PER_DAY = 200;   // hard spend cap
 const DRY = process.env.DRY_RUN === '1';
 
+// Self-employment. The employee only takes jobs that pay, and when its gas
+// runs low it converts its own wages into fuel. Nobody tops this wallet up.
+const WETH = '0x0bd7D308f8E1639fAb988DF18A8011F41eACaD73';
+const ROUTER = '0xCaf681a66D020601342297493863E78C959E5cb2';
+const USDG = '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
+const WETH_POOL = '0x69bfaf19c9f377bb306a89aed9f6b07e2c1a8d9a'; // WETH/USDG 0.05%
+const PROFIT_MARGIN = 1.5;    // a stranger's job must pay 1.5x its gas
+const REFUEL_BELOW = 0.003;   // ETH; below this the employee buys its own gas
+const REFUEL_TARGET = 0.01;
+const USDG_FLOAT = 2;         // it never spends the last of its cash
+
 const ABI = [
   'function accountOf(address) view returns (uint16[] targetBps, uint16 minDriftBps, uint16 bandBps, uint128 bountyQuote)',
   'function valueOf(address) view returns (uint256)',
@@ -28,6 +39,11 @@ const ABI = [
   'event TargetSet(address indexed user, uint16[] targetBps, uint16 minDriftBps, uint16 bandBps, uint128 bountyQuote)',
 ];
 const FEED_ABI = ['function latestRoundData() view returns (uint80, int256, uint256, uint256, uint80)'];
+const ERC20_ABI = [
+  'function balanceOf(address) view returns (uint256)',
+  'function allowance(address, address) view returns (uint256)',
+  'function approve(address, uint256) returns (bool)',
+];
 
 const req = new FetchRequest(RPC);
 req.setHeader('user-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36');
@@ -48,6 +64,47 @@ async function loadVenue(v) {
     v.assets.push({ feed: a.feed, decimals: Number(a.decimals), feedC: i === 0 ? null : new Contract(a.feed, FEED_ABI, provider) });
   }
   log(`venue ${v.addr.slice(0, 8)}… loaded, ${n} assets`);
+}
+
+// -- self-employment ---------------------------------------------------------
+
+let ethCache = { at: 0, px: 0 };
+async function ethUsd() {
+  if (ethCache.px && Date.now() - ethCache.at < 300_000) return ethCache.px;
+  const slot0 = await provider.call({ to: WETH_POOL, data: '0x3850c7bd' });
+  const s = Number(BigInt('0x' + slot0.slice(2, 66))) / 2 ** 96;
+  ethCache = { at: Date.now(), px: s * s * 1e12 };
+  return ethCache.px;
+}
+
+let thinLoggedAt = 0;
+async function refuel() {
+  const bal = Number(await provider.getBalance(wallet.address)) / 1e18;
+  if (bal >= REFUEL_BELOW) return;
+  const px = await ethUsd();
+  const usdg = new Contract(USDG, ERC20_ABI, wallet);
+  const cash = Number(await usdg.balanceOf(wallet.address)) / 1e6;
+  const spend = Math.min(cash - USDG_FLOAT, (REFUEL_TARGET - bal) * px);
+  if (spend < 1) {
+    if (Date.now() - thinLoggedAt > 3600_000) {
+      thinLoggedAt = Date.now();
+      log(`gas low (${bal.toFixed(5)} ETH), wages too thin to refuel (${cash.toFixed(2)} USDG on hand)`);
+    }
+    return;
+  }
+  if ((await usdg.allowance(wallet.address, ROUTER)) < BigInt(Math.floor(spend * 1e6))) {
+    await (await usdg.approve(ROUTER, 2n ** 255n)).wait();
+  }
+  const router = new Contract(ROUTER,
+    ['function exactInputSingle((address,address,uint24,address,uint256,uint256,uint160)) payable returns (uint256)'], wallet);
+  const amountIn = BigInt(Math.floor(spend * 1e6));
+  const minOut = BigInt(Math.floor(spend / px * 0.97 * 1e18));
+  await (await router.exactInputSingle([USDG, WETH, 500, wallet.address, amountIn, minOut, 0n])).wait();
+  const weth = new Contract(WETH, ['function withdraw(uint256)', ...ERC20_ABI], wallet);
+  const got = await weth.balanceOf(wallet.address);
+  if (got > 0n) await (await weth.withdraw(got)).wait();
+  sentToday += 2;
+  log(`bought its own gas: ${spend.toFixed(2)} USDG -> ${(Number(got) / 1e18).toFixed(5)} ETH. nobody tops this wallet up.`);
 }
 
 async function prices(v) {
@@ -102,6 +159,19 @@ async function serveOne(v, user, px) {
   const expectedPay = Number(acct.bountyQuote) / 1e6 * drift / 10000;
   if (expectedPay > plan.cashAfter) { log(user, 'skipped: bounty exceeds cash (broken policy)'); return; }
 
+  // Tidying its own desk is free. A stranger's job has to pay for itself:
+  // estimate the real gas, and refuse work that earns less than 1.5x of it.
+  if (user.toLowerCase() !== wallet.address.toLowerCase()) {
+    const est = await v.c.rebalance.estimateGas(user, plan.trades).catch(() => null);
+    if (est === null) { log(user, 'skipped: the trade would revert as planned'); return; }
+    const [fee, px] = await Promise.all([provider.getFeeData(), ethUsd()]);
+    const costUsd = Number(est) * Number(fee.gasPrice) / 1e18 * px;
+    if (expectedPay < costUsd * PROFIT_MARGIN) {
+      log(user, `skipped: pays $${expectedPay.toFixed(3)}, gas $${costUsd.toFixed(3)}. charity is not in the contract`);
+      return;
+    }
+  }
+
   if (DRY) { log(user, `DRY: drift ${drift}, ${plan.trades.length} legs, pay ~$${expectedPay.toFixed(2)}`); return; }
 
   const tx = await v.c.rebalance(user, plan.trades, { gasLimit: 600_000 + 400_000 * plan.trades.length });
@@ -120,6 +190,7 @@ async function tick() {
   const day = new Date().toISOString().slice(0, 10);
   if (day !== dayStamp) { dayStamp = day; sentToday = 0; }
   if (sentToday >= MAX_TX_PER_DAY) return log('daily tx cap reached, resting');
+  if (!DRY) await refuel().catch(e => log('refuel failed:', String(e.shortMessage || e.message).slice(0, 100)));
   for (const v of CONTRACTS) {
     const px = await prices(v);
     for (const u of await users(v)) {
