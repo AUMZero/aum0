@@ -266,6 +266,18 @@
   </tbody></table>
 </div>
 
+<div class="panel" id="paystub">
+  <h2><span class="tag">»</span> the employee's paystub <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">self employed. no salary, no funding, no boss. it lives on the bounties it earns and buys its own gas.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k">gas on hand</td><td class="v" id="ps_gas">reading…</td></tr>
+    <tr><td class="k">wages on hand</td><td class="v" id="ps_wages">reading…</td></tr>
+    <tr><td class="k">earned so far</td><td class="v" id="ps_earned">reading the ledger…</td></tr>
+    <tr><td class="k">takes a job when</td><td class="v">the pay covers 1.5x the gas. its own desk it tidies for free.</td></tr>
+    <tr><td class="k">refuels when</td><td class="v">gas drops under 0.003 ETH. it keeps the last two dollars of cash, always.</td></tr>
+  </tbody></table>
+</div>
+
 <div class="mq-box red" style="margin-top:12px"><span class="mq2">&lt;&lt; every asset manager holds your money &lt;&lt; this one never receives it &lt;&lt; no deposit, no custody, no admin, no upgrade path &lt;&lt; the employee never sleeps &lt;&lt;&nbsp;&nbsp;&nbsp;</span></div>
 
 <div class="foot">✟ under eternal management ✟ the employee works weekends unpaid ✟</div>
@@ -701,6 +713,7 @@ async function loadBoard() {
     rows.innerHTML = '<tr><td colspan="5" class="dim">the board is unreachable: ' + (e.message || e).toString().slice(0, 60) + '</td></tr>';
   }
   try { await loadWorkLog(); } catch {}
+  try { await loadPaystub(); } catch {}
   try { await loadMyLog(); } catch {}
   setTimeout(loadBoard, 30000);
 }
@@ -708,12 +721,24 @@ async function loadBoard() {
 const REBALANCED_TOPIC = '0xbecdda7c726841dea88e1495b6f401a1d64029ba261415622f400509cf097b35';
 const KEEPER_BOT = '0x3c71044dca7aa1eb401913a2f96277abe8c019a4';
 
+// Every venue this firm has ever run, oldest work included. One venue at a
+// time: three big log scans at once is how the rpc answers 429, and a failed
+// read must never paint "no jobs" over real history, so a throw here leaves
+// the last good table standing.
+let workLogs = null, workScannedTo = null;
 async function loadWorkLog() {
-  // every venue this firm has ever run, oldest work included
-  const sources = [[CONTRACT, DEPLOY_BLOCK], ...OLD_VAULTS.map(([a]) => [a, '0x3041840'])];
-  const batches = await Promise.all(sources.map(([addr, from]) =>
-    rpc('eth_getLogs', [{ address: addr, topics: [REBALANCED_TOPIC], fromBlock: from, toBlock: 'latest' }]).catch(() => [])));
-  const logs = batches.flat().sort((a, b) => parseInt(a.blockNumber, 16) - parseInt(b.blockNumber, 16));
+  // after the first full scan only the blocks since last time are read
+  const head = parseInt(await rpc('eth_blockNumber', []), 16);
+  const fresh = [];
+  for (const [addr, from] of [[CONTRACT, DEPLOY_BLOCK], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])]) {
+    const start = workScannedTo === null ? from : '0x' + (workScannedTo + 1).toString(16);
+    if (workScannedTo !== null && workScannedTo >= head) break;
+    fresh.push(...await rpc('eth_getLogs', [{ address: addr, topics: [REBALANCED_TOPIC], fromBlock: start, toBlock: '0x' + head.toString(16) }]));
+  }
+  workScannedTo = head;
+  workLogs = [...(workLogs || []), ...fresh].sort((a, b) => parseInt(a.blockNumber, 16) - parseInt(b.blockNumber, 16));
+  paintPaystubEarned();
+  const logs = workLogs;
   const rows = $('done_rows');
   if (!logs.length) { rows.innerHTML = '<tr><td colspan="4" class="dim">no jobs completed yet.</td></tr>'; return; }
   rows.innerHTML = '';
@@ -728,6 +753,24 @@ async function loadWorkLog() {
       + '<td>' + (keeper === KEEPER_BOT ? 'the employee' : keeper.slice(0,6) + '…' + keeper.slice(-4)) + '</td>';
     rows.appendChild(tr);
   }
+}
+
+// -- the paystub: what the employee holds and what it has earned -------------
+const SEL_ERC20_BAL = '0x70a08231';
+async function loadPaystub() {
+  const [gasHex, wagesHex] = await Promise.all([
+    rpc('eth_getBalance', [KEEPER_BOT, 'latest']),
+    call(USDG, SEL_ERC20_BAL + pad(KEEPER_BOT)),
+  ]);
+  const gas = Number(BigInt(gasHex)) / 1e18, wages = Number(BigInt(wagesHex)) / 1e6;
+  $('ps_gas').textContent = gas.toFixed(5) + ' ETH' + (gas < 0.003 ? ' · below the line. it buys more the moment its wages allow.' : ' · enough for now.');
+  $('ps_wages').textContent = wages.toFixed(2) + ' USDG' + (wages < 3 ? ' · too thin to refuel yet.' : ' · enough to refuel.');
+}
+function paintPaystubEarned() {
+  if (!workLogs) return;
+  const mine = workLogs.filter(l => ('0x' + l.topics[2].slice(26)).toLowerCase() === KEEPER_BOT);
+  const paid = mine.reduce((s, l) => s + Number(BigInt('0x' + l.data.slice(2 + 2*64, 2 + 3*64))) / 1e6, 0);
+  $('ps_earned').textContent = '$' + paid.toFixed(2) + ' across ' + mine.length + ' job' + (mine.length === 1 ? '' : 's') + ', paid by the wallets it walked home.';
 }
 
 // -- your statement: the work done on YOUR account, and what it cost you -----
