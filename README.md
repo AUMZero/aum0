@@ -54,6 +54,15 @@ from fully drifted back to target.
 No owner. No admin. No upgrade path. No fee to anyone but the stranger who
 did the work.
 
+## The employee is self employed
+
+The keeper that serves aumzero.com takes no funding from anyone. Before a
+job it estimates the real gas and only works when the bounty covers at least
+1.5x of it: a job that does not pay for itself is refused. When its gas runs
+low it turns its own wages into fuel, swapping the USDG it earned for WETH on
+the chain's deepest pool and unwrapping it, never spending the last of its
+cash. Tidying its own demo wallet stays free. No human tops the wallet up.
+
 ## Live on Hood Chain
 
     Wallet edition   0xaFd484733f4B23e235bf1825c9AdA39368160B03
