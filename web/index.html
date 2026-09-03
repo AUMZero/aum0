@@ -294,7 +294,8 @@
 <div class="foot">✟ under eternal management ✟ the employee works weekends unpaid ✟</div>
 
 <script>
-const CONTRACT = '0xaFd484733f4B23e235bf1825c9AdA39368160B03'; // v3: your stocks stay in your wallet
+const CONTRACT = '0x3484F1cC081A98103CE0E9E42AE96a2A770eCd79'; // v4: 26 assets, stocks through treasuries
+const V3 = '0xaFd484733f4B23e235bf1825c9AdA39368160B03';       // the fifteen stock venue, still live
 const OLD_VAULTS = [
   ['0xcc27Dd6FD74210303660643bcf6c9d115443bFcA', 16], // custody edition, 15 stocks
   ['0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde', 2],  // custody edition, NVDA only
@@ -319,6 +320,18 @@ const STOCKS = [
   ['GOOGL','0xF6f373a037c30F0e5010d854385cA89185AE638b','0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3'],
   ['META','0x7C38C00C30BEe9378381E7B6135d7283356D71b1','0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35'],
   ['USAR','0x451B1295aA84FD6d6b58af1a5002eA1b1A1913A0','0xd917B029C761D264c6A312BBbcDA868658eF86a6'],
+  // and the eleven the venue widened to: an index, a treasury bill, metal, oil
+  ['QQQ','0x80901d846d5D7B030F26B480776EE3b29374C2ae','0xD5f3879160bc7c32ebb4dC785F8a4F505888de68'],
+  ['SGOV','0xa0DF4ee0fFf975306345875E3548Fcc519577A11','0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5'],
+  ['SLV','0x209b73908e92Ae021826eD79609845451Ecba2ce','0x411eFb0E7f985935DAec3D4C3ebaEa0d0AD7D89f'],
+  ['USO','0x75a9c76Ef439e2C7c2E5a34Ab105EcFe3766431c','0xa30FA36Db767ad9eD3f7a60fC79526fB4d56D344'],
+  ['GME','0x27C71df6A64fB476468EdF256CF72c038baB5B67','0x1b0E319c6A659F002271B69dB8A7df2F911c153E'],
+  ['CRCL','0x6652eDf64bA3731C4F2D3ce821A0Fb1f1f6b482a','0xdF0992E440dD0be65BD8439b609d6D4366bf1CB5'],
+  ['DELL','0x1C6c8cADBe02E19129c39dDB92281cE4c0bf206b','0x941AE714EC6D8130c7B75d67160Ca08f1e7d11Dd'],
+  ['MSTR','0x396118bdFB181e6240E74D243F266B061c0edc3D','0xec262a75e413fAfD0dF80480274532C79D42da09'],
+  ['TSM','0x874cF94aa8eC88Fd9560094dD065f2fB3E41Fc2F','0x58FfE4a942d3885bAa22D7520691F611EF09e7AA'],
+  ['BABA','0x62Cc8F9b5f56a33c9C8A60c8B92779f523c4E984','0xad25Ac6C84D497db898fa1E8387bf6Af3532a1c4'],
+  ['ASML','0xB4106147E8cce40b7d46124090d373A71b70f87D','0x47F93d52cBeC7C6D2CfC080e154002370a60dAEA'],
 ];
 const RPC = location.origin + '/api/rpc';   // the site's own proxy, local or live
 const EXPLORER = 'https://explorer.mainnet.chain.robinhood.com';
@@ -636,7 +649,8 @@ $('wd_old').onclick = async () => {
 const TARGETSET_TOPIC = '0xb8766537c154c2943c70a08668e5bbee5aa95bb3a80803f9c11d0b49b846fb87';
 const SEL_REBALANCE = '0x4db4b4c9';
 const SEL_ROUND = '0xfeaf968c';
-const DEPLOY_BLOCK = '0x3096d00';
+const DEPLOY_BLOCK = '0x334a3f8';        // v4
+const DEPLOY_BLOCK_V3 = '0x3096d00';
 const DEPLOY_BLOCK_V1 = '0x3041840';
 
 function fmtUsd(x) { return '$' + x.toLocaleString(undefined, {maximumFractionDigits:2}); }
@@ -741,7 +755,7 @@ async function loadWorkLog() {
   // after the first full scan only the blocks since last time are read
   const head = parseInt(await rpc('eth_blockNumber', []), 16);
   const fresh = [];
-  for (const [addr, from] of [[CONTRACT, DEPLOY_BLOCK], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])]) {
+  for (const [addr, from] of [[CONTRACT, DEPLOY_BLOCK], [V3, DEPLOY_BLOCK_V3], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])]) {
     const start = workScannedTo === null ? from : '0x' + (workScannedTo + 1).toString(16);
     if (workScannedTo !== null && workScannedTo >= head) break;
     fresh.push(...await rpc('eth_getLogs', [{ address: addr, topics: [REBALANCED_TOPIC], fromBlock: start, toBlock: '0x' + head.toString(16) }]));
@@ -787,7 +801,7 @@ function paintPaystubEarned() {
 // -- your statement: the work done on YOUR account, and what it cost you -----
 async function loadMyLog() {
   if (!me) return;
-  const sources = [[CONTRACT, DEPLOY_BLOCK], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])];
+  const sources = [[CONTRACT, DEPLOY_BLOCK], [V3, DEPLOY_BLOCK_V3], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])];
   const topicMe = '0x' + pad(me);
   // a failed read keeps the old text and retries next cycle; it never
   // becomes a false "nothing yet"
@@ -842,9 +856,16 @@ loadBoard();
 const SHELF_ANCHOR = 'Sep 1, 2026';
 const ANCHOR_PX = { NVDA:219.755, SPCX:143.5539, TSLA:364.92, AAPL:314.14272932, MSFT:511.73,
   AMZN:260.695, MU:939.75015987, SPY:766.14, PLTR:187.3524, SNDK:1494.2519, INTC:89.49195,
-  AMD:466.11, GOOGL:339.03499999, META:572.69499999, USAR:17.9712 };
+  AMD:466.11, GOOGL:339.03499999, META:572.69499999, USAR:17.9712,
+  // the widened venue, anchored the day it opened
+  QQQ:715.96, SGOV:100.917243, SLV:60.535, USO:141.995, GME:19.235, CRCL:102.1749,
+  DELL:515.126066, MSTR:142.81565, TSM:415.245, BABA:111.6318, ASML:1645.883599 };
 
 const SHELF = [
+  { name: 'the sixty forty', blurb: 'the oldest portfolio in finance, now that the chain has a bond',
+    mix: { SPY: 57, SGOV: 38 } },
+  { name: 'stocks, metal and oil', blurb: 'the market, plus the things it is priced in',
+    mix: { SPY: 45, SGOV: 20, SLV: 15, USO: 10 } },
   { name: 'the employee\'s own book', blurb: 'what the robot holds for itself',
     mix: { NVDA: 30, SPCX: 20, AAPL: 15, MSFT: 15 } },
   { name: 'all in on the machines', blurb: 'chips and the people who buy them',
@@ -917,7 +938,8 @@ loadShelf();
 // -- the night desk: which names are still tradeable, right now --------------
 const FACTORY = '0x1f7d7550b1b028f7571e69a784071f0205fd2efa';
 const SEL_GETPOOL = '0x1698ee82', SEL_SLOT0 = '0x3850c7bd';
-const POOL_FEE = [500,500,3000,3000,3000,3000,3000,500,3000,10000,3000,3000,500,3000,3000];
+const POOL_FEE = [500,500,3000,3000,3000,3000,3000,500,3000,10000,3000,3000,500,3000,3000,
+                  500,3000,3000,3000,500,3000,10000,10000,10000,3000,10000];
 const AWAKE_GAP_PCT = 1.0;
 let poolCache = null;
 

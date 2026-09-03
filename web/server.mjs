@@ -43,7 +43,7 @@ async function proxyRpc(body, method) {
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
 // Only what the page needs; anything else is refused.
 const ALLOW = new Set(['eth_call', 'eth_blockNumber', 'eth_getBalance', 'eth_chainId', 'eth_getLogs']);
-const AUM0S = new Set(['0xe46b6e60c7b2cbc1f9761b3f12a69813093b6dde', '0xcc27dd6fd74210303660643bcf6c9d115443bfca', '0xafd484733f4b23e235bf1825c9ada39368160b03']);
+const AUM0S = new Set(['0xe46b6e60c7b2cbc1f9761b3f12a69813093b6dde', '0xcc27dd6fd74210303660643bcf6c9d115443bfca', '0xafd484733f4b23e235bf1825c9ada39368160b03', '0x3484f1cc081a98103ce0e9e42ae96a2a770ecd79']);
 // The proxy serves this site only. No CORS headers are ever emitted, so
 // other origins cannot borrow it from a browser; same-origin needs none.
 const SITE_ORIGINS = new Set(['https://aumzero.com', 'https://www.aumzero.com', 'https://aum0-web-production.up.railway.app']);
@@ -62,6 +62,13 @@ const FEEDS = [
   '0x3f390C5C24628Ac7C489515402235FeAD71D1913','0x943A29E7ae51A4798823ca9eEd2ed533B2A22C72',
   '0xF6f373a037c30F0e5010d854385cA89185AE638b','0x7C38C00C30BEe9378381E7B6135d7283356D71b1',
   '0x451B1295aA84FD6d6b58af1a5002eA1b1A1913A0',
+  // the widened venue: an index, a treasury bill, silver, oil, and seven more
+  '0x80901d846d5D7B030F26B480776EE3b29374C2ae','0xa0DF4ee0fFf975306345875E3548Fcc519577A11',
+  '0x209b73908e92Ae021826eD79609845451Ecba2ce','0x75a9c76Ef439e2C7c2E5a34Ab105EcFe3766431c',
+  '0x27C71df6A64fB476468EdF256CF72c038baB5B67','0x6652eDf64bA3731C4F2D3ce821A0Fb1f1f6b482a',
+  '0x1C6c8cADBe02E19129c39dDB92281cE4c0bf206b','0x396118bdFB181e6240E74D243F266B061c0edc3D',
+  '0x874cF94aa8eC88Fd9560094dD065f2fB3E41Fc2F','0x62Cc8F9b5f56a33c9C8A60c8B92779f523c4E984',
+  '0xB4106147E8cce40b7d46124090d373A71b70f87D',
 ];
 let priceCache = { at: 0, px: null };
 // One slow feed, or one rate-limited minute, should not empty the shelf: a
