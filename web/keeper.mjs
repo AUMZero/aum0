@@ -23,6 +23,11 @@ const WETH = '0x0bd7d308f8e1639fab988df18a8011f41eacad73';
 const ROUTER = '0xcaf681a66d020601342297493863e78c959e5cb2';
 const USDG = '0x5fc5360d0400a0fd4f2af552add042d716f1d168';
 const WETH_POOL = '0x69bfaf19c9f377bb306a89aed9f6b07e2c1a8d9a'; // WETH/USDG 0.05%
+const FACTORY = '0x1f7d7550b1b028f7571e69a784071f0205fd2efa';
+// The exchange closes; the chain does not. An asset is worth trading at any
+// hour as long as its feed still agrees with its live pool. When the two part
+// company the feed can no longer price the fill, so that asset waits.
+const AWAKE_GAP_PCT = 1.0;
 const PROFIT_MARGIN = 1.5;    // a stranger's job must pay 1.5x its gas
 const REFUEL_BELOW = 0.015;   // ETH; below this the employee buys its own gas
 const REFUEL_TARGET = 0.02;   // and fills the tank back to this
@@ -60,10 +65,14 @@ async function loadVenue(v) {
   v.c = new Contract(v.addr, ABI, wallet);
   const n = Number(await v.c.assetCount());
   v.assets = [];
+  const quote = (await v.c.assetAt(0)).token;
   for (let i = 0; i < n; i++) {
     const a = await v.c.assetAt(i);
-    v.assets.push({ feed: a.feed, decimals: Number(a.decimals), feedC: i === 0 ? null : new Contract(a.feed, FEED_ABI, provider) });
+    const asset = { token: a.token, feed: a.feed, decimals: Number(a.decimals), feedC: i === 0 ? null : new Contract(a.feed, FEED_ABI, provider) };
+    if (i > 0) asset.pool = await poolFor(a.token, quote, Number(a.poolFee));
+    v.assets.push(asset);
   }
+  v.quote = quote;
   log(`venue ${v.addr.slice(0, 8)}… loaded, ${n} assets`);
 }
 
@@ -117,13 +126,50 @@ async function prices(v) {
   return out;
 }
 
+// -- the night shift ---------------------------------------------------------
+
+async function poolFor(token, quote, fee) {
+  const pad = a => a.replace('0x', '').toLowerCase().padStart(64, '0');
+  const data = '0x1698ee82' + pad(token) + pad(quote) + fee.toString(16).padStart(64, '0');
+  const res = await provider.call({ to: FACTORY, data });
+  const addr = '0x' + res.slice(-40);
+  return BigInt(addr) === 0n ? null : addr;
+}
+
+// What the pool says a share costs right now, read from its own price slot.
+async function poolPrice(asset, quote) {
+  if (!asset.pool) return null;
+  const slot0 = await provider.call({ to: asset.pool, data: '0x3850c7bd' });
+  const sqrtP = Number(BigInt('0x' + slot0.slice(2, 66))) / 2 ** 96;
+  const p = sqrtP * sqrtP;
+  if (!p) return null;
+  const scale = 10 ** (asset.decimals - 6);
+  return asset.token.toLowerCase() < quote.toLowerCase() ? p * scale : scale / p;
+}
+
+// An asset is awake when its feed and its pool still tell the same story.
+// Feeds go quiet outside market hours; that is fine. What is not fine is a
+// feed that has drifted away from where the asset actually trades, because
+// the contract prices every fill against that feed.
+async function awakeMask(v, px) {
+  const mask = [true];
+  for (let i = 1; i < v.assets.length; i++) {
+    try {
+      const pp = await poolPrice(v.assets[i], v.quote);
+      mask.push(pp !== null && px[i] > 0 && Math.abs(pp / px[i] - 1) * 100 < AWAKE_GAP_PCT);
+    } catch { mask.push(false); }
+  }
+  return mask;
+}
+
 // Sells first (they raise cash), then buys, each leg 3% inside the line.
-function planTrades(weights, balances, px, cash) {
+function planTrades(weights, balances, px, cash, awake) {
   const value = balances.reduce((s, b, i) => s + b * px[i], 0);
   if (value < MIN_VALUE_USD) return null;
   const sells = [], buys = [];
   let cashFreed = 0, cashNeeded = 0;
   for (let i = 1; i < balances.length; i++) {
+    if (awake && !awake[i]) continue;   // sleeping asset: leave it where it is
     const delta = (value * Number(weights[i]) / 10000 - balances[i] * px[i]) * 0.97;
     if (delta < -MIN_LEG_USD) {
       sells.push({ sellAsset: BigInt(i), buyAsset: 0n, amountIn: BigInt(Math.floor(-delta / px[i] * 1e18)) });
@@ -143,7 +189,7 @@ function planTrades(weights, balances, px, cash) {
   return trades.length ? { trades, cashAfter: budget - Math.min(cashNeeded, budget) } : null;
 }
 
-async function serveOne(v, user, px) {
+async function serveOne(v, user, px, awake) {
   const [acct, driftRaw] = await Promise.all([v.c.accountOf(user), v.c.drift(user).catch(() => null)]);
   if (driftRaw === null) return;
   const drift = Number(driftRaw);
@@ -154,7 +200,7 @@ async function serveOne(v, user, px) {
     const raw = v.wallet ? await v.c.heldBy(user, i) : await v.c.balanceOf(user, i);
     balances.push(Number(raw) / 10 ** (i === 0 ? 6 : 18));
   }
-  const plan = planTrades(acct.targetBps, balances, px, balances[0]);
+  const plan = planTrades(acct.targetBps, balances, px, balances[0], awake);
   if (!plan) return;
 
   const expectedPay = Number(acct.bountyQuote) / 1e6 * drift / 10000;
@@ -203,10 +249,17 @@ async function tick() {
   if (!DRY) await refuel().catch(e => log('refuel failed:', String(e.shortMessage || e.message).slice(0, 100)));
   for (const v of CONTRACTS) {
     const px = await prices(v);
+    const awake = await awakeMask(v, px);
+    const asleep = awake.map((ok, i) => ok ? null : i).filter(i => i);
+    if (asleep.length !== (v.lastAsleep ?? -1)) {
+      v.lastAsleep = asleep.length;
+      log(`${v.addr.slice(0, 8)}… ${awake.length - 1 - asleep.length}/${awake.length - 1} assets awake` +
+          (asleep.length ? `, sleeping: ${asleep.join(',')}` : ', trading around the clock'));
+    }
     for (const u of await users(v)) {
       const key = v.addr + ':' + u;
       if ((backoff.get(key) || 0) >= 3) continue;
-      try { await serveOne(v, u, px); }
+      try { await serveOne(v, u, px, awake); }
       catch (e) {
         backoff.set(key, (backoff.get(key) || 0) + 1);
         log(u, 'failed:', String(e.shortMessage || e.message).slice(0, 120));

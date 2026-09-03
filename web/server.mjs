@@ -46,7 +46,9 @@ const ALLOW = new Set(['eth_call', 'eth_blockNumber', 'eth_getBalance', 'eth_cha
 const AUM0S = new Set(['0xe46b6e60c7b2cbc1f9761b3f12a69813093b6dde', '0xcc27dd6fd74210303660643bcf6c9d115443bfca', '0xafd484733f4b23e235bf1825c9ada39368160b03']);
 // The proxy serves this site only. No CORS headers are ever emitted, so
 // other origins cannot borrow it from a browser; same-origin needs none.
-const SITE_ORIGINS = new Set(['https://aumzero.com', 'https://www.aumzero.com', 'https://aum0-web-production.up.railway.app', 'http://localhost:3000', 'http://127.0.0.1:3000']);
+const SITE_ORIGINS = new Set(['https://aumzero.com', 'https://www.aumzero.com', 'https://aum0-web-production.up.railway.app']);
+// a page served from this machine is this site too, whatever port it landed on
+const isLocal = o => /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o);
 
 // Feed prices are the same for every visitor, so the server reads them once
 // and hands out the cached copy. Fifteen calls per refresh instead of fifteen
@@ -119,7 +121,7 @@ http.createServer(async (req, res) => {
   // -- RPC proxy ----------------------------------------------------------
   if (req.url === '/api/rpc') {
     const origin = req.headers.origin;
-    if (origin && !SITE_ORIGINS.has(origin)) {
+    if (origin && !SITE_ORIGINS.has(origin) && !isLocal(origin)) {
       return sendText(req, res, 403, { 'content-type': 'application/json', 'cache-control': 'no-store' }, '{"error":"this proxy serves aumzero.com only"}');
     }
     if (req.method !== 'POST') return sendText(req, res, 405, { 'content-type': 'application/json' }, '{"error":"POST only"}');

@@ -187,6 +187,17 @@
   <tr><td class="k"><a href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">» [the code] «</a></td><td class="v">every wall, every test, every number. read it before you trust it.</td></tr>
 </tbody></table>
 
+<div class="panel" id="nightdesk">
+  <h2><span class="tag">»</span> the night desk <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">the exchange keeps office hours. the chain does not. an asset is tradeable whenever its official feed still agrees with its live pool, so the employee works whichever names are awake, at any hour.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k">the exchange</td><td class="v" id="nd_mkt">reading the clock…</td></tr>
+    <tr><td class="k">the employee</td><td class="v" id="nd_emp">on shift. it does not keep hours.</td></tr>
+    <tr><td class="k">tradeable now</td><td class="v" id="nd_awake">checking every feed against its pool…</td></tr>
+  </tbody></table>
+  <div class="stockgrid" id="nd_grid" style="margin-top:8px"></div>
+</div>
+
 <div class="panel" id="pw">
   <h2><span class="tag">»</span> the paperwork <span class="tag">«</span></h2>
   <p style="margin-bottom:10px">hiring me is three signatures. this sheet keeps itself up to date.</p>
@@ -902,4 +913,69 @@ async function loadShelf() {
   setTimeout(loadShelf, 60000);
 }
 loadShelf();
+
+// -- the night desk: which names are still tradeable, right now --------------
+const FACTORY = '0x1f7d7550b1b028f7571e69a784071f0205fd2efa';
+const SEL_GETPOOL = '0x1698ee82', SEL_SLOT0 = '0x3850c7bd';
+const POOL_FEE = [500,500,3000,3000,3000,3000,3000,500,3000,10000,3000,3000,500,3000,3000];
+const AWAKE_GAP_PCT = 1.0;
+let poolCache = null;
+
+// US equities trade 13:30 to 20:00 UTC, weekdays.
+function exchangeOpen(d) {
+  const day = d.getUTCDay(), h = d.getUTCHours() + d.getUTCMinutes() / 60;
+  return day >= 1 && day <= 5 && h >= 13.5 && h < 20;
+}
+
+async function poolAddresses() {
+  if (poolCache) return poolCache;
+  poolCache = [];
+  for (let i = 0; i < STOCKS.length; i++) {
+    try {
+      const r = await call(FACTORY, SEL_GETPOOL + pad(STOCKS[i][2]) + pad(USDG) + pad(POOL_FEE[i]));
+      const a = '0x' + r.slice(-40);
+      poolCache.push(BigInt(a) ? a : null);
+    } catch { poolCache.push(null); }
+  }
+  return poolCache;
+}
+
+async function loadNightDesk() {
+  try {
+    const open = exchangeOpen(new Date());
+    $('nd_mkt').innerHTML = open
+      ? '<b>open.</b> regular hours, 13:30 to 20:00 UTC.'
+      : '<b style="color:var(--red)">closed.</b> it will not reopen until 13:30 UTC.';
+    $('nd_emp').innerHTML = open
+      ? 'on shift. it does not keep hours.'
+      : '<b>still on shift.</b> it never learned what a closing bell is.';
+
+    const [px, pools] = await Promise.all([allPrices(), poolAddresses()]);
+    const rows = [];
+    for (let i = 0; i < STOCKS.length; i++) {
+      let gap = null;
+      if (pools[i]) {
+        try {
+          const s0 = await call(pools[i], SEL_SLOT0);
+          const sqrtP = Number(BigInt('0x' + s0.slice(2, 66))) / 2 ** 96;
+          const p = sqrtP * sqrtP;
+          const poolPx = STOCKS[i][2].toLowerCase() < USDG.toLowerCase() ? p * 1e12 : (p ? 1e12 / p : 0);
+          if (px[i + 1] > 0 && poolPx > 0) gap = (poolPx / px[i + 1] - 1) * 100;
+        } catch {}
+      }
+      rows.push({ tk: STOCKS[i][0], gap, awake: gap !== null && Math.abs(gap) < AWAKE_GAP_PCT });
+    }
+    const n = rows.filter(r => r.awake).length;
+    $('nd_awake').innerHTML = '<b>' + n + ' of ' + rows.length + '</b> stocks. a name is tradeable while its pool and its feed still agree.';
+    $('nd_grid').innerHTML = rows.map(r =>
+      '<div class="cell' + (r.awake ? ' on' : '') + '"><div class="line">'
+      + '<img src="stocks/' + r.tk + '.png" alt="" width="24" height="24"><b>' + r.tk + '</b>'
+      + '<span style="margin-left:auto;font-weight:900;color:' + (r.awake ? 'var(--tie)' : 'var(--red)') + '">'
+      + (r.awake ? 'awake' : 'waiting') + '</span></div></div>').join('');
+  } catch (e) {
+    $('nd_awake').textContent = 'the feeds are quiet. retrying…';
+  }
+  setTimeout(loadNightDesk, 60000);
+}
+loadNightDesk();
 </script>
