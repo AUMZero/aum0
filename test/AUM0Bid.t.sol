@@ -172,6 +172,23 @@ contract AUM0BidTest is Test {
         assertEq(usdg.balanceOf(alice), 20000e6, "her money never moved");
     }
 
+    /// The pay schedule itself. Slippage on the x axis, what the worker keeps
+    /// on the y. Every other keeper's line is flat.
+    function test_thePayScheduleIsAStraightLineToZero() public {
+        uint256[13] memory bps = [uint256(0), 10, 20, 30, 40, 50, 60, 80, 100, 120, 150, 180, 199];
+        for (uint256 i; i < bps.length; ++i) {
+            uint256 snap = vm.snapshotState();
+            router.setSlippage(bps[i]);
+            address worker = address(uint160(0xF0F0 + i));
+            vm.prank(worker);
+            aum.rebalance(alice, _pool(10000e6));
+            emit log_named_decimal_uint(
+                string.concat("slippage ", vm.toString(bps[i]), " bps -> pay"),
+                usdg.balanceOf(worker), 6);
+            vm.revertToState(snap);
+        }
+    }
+
     /// The three walls are untouched.
     function test_wall1_overshootStillReverts() public {
         vm.prank(honest);
