@@ -78,6 +78,7 @@ contract AUM0Bid {
     }
 
     mapping(address => Account) private _accounts;
+    mapping(address => bool) private _routerApproved;   // set on an asset's first routed leg
 
     event TargetSet(address indexed user, uint16[] targetBps, uint16 minDriftBps, uint16 bandBps, uint128 bountyQuote);
     event Rebalanced(address indexed user, address indexed keeper, uint256 driftBefore, uint256 driftAfter, uint256 bounty);
@@ -113,9 +114,11 @@ contract AUM0Bid {
         _assets.push(Asset({token: _quote, feed: address(0), poolFee: 0, decimals: _quoteDecimals}));
         for (uint256 i; i < tokens.length; ++i) {
             _assets.push(Asset({token: tokens[i], feed: feeds[i], poolFee: poolFees[i], decimals: tokenDecimals[i]}));
-            IERC20(tokens[i]).approve(_router, type(uint256).max);
         }
-        IERC20(_quote).approve(_router, type(uint256).max);
+        // The router is approved the first time an asset is actually routed,
+        // not twenty six times at birth. It costs one storage read per pool
+        // leg and saves a small fortune in deployment gas, and an inventory
+        // fill never needs the router at all.
     }
 
     /// Carve your policy. targetBps runs over all assets (quote first) and must
@@ -207,6 +210,10 @@ contract AUM0Bid {
             out = IERC20(buyA.token).balanceOf(user) - heldBefore;
         } else {
             if (!IERC20(sellA.token).transferFrom(user, address(this), t.amountIn)) revert TransferFailed();
+            if (!_routerApproved[sellA.token]) {
+                _routerApproved[sellA.token] = true;
+                IERC20(sellA.token).approve(address(router), type(uint256).max);
+            }
             router.exactInputSingle(
                 ISwapRouter.ExactInputSingleParams({
                     tokenIn: sellA.token,
