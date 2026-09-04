@@ -178,38 +178,14 @@
   </td>
 </tr></tbody></table>
 
-<table class="doors"><tbody>
-  <tr><td class="k"><button id="connect">» [connect] «</button></td><td class="v" id="connect_note">plug in a wallet. i will know you by your address and nothing else.</td></tr>
-  <tr><td class="k"><a href="#law">» [the law] «</a></td><td class="v">carve your target allocation. it binds the strangers, not you.</td></tr>
-  <tr><td class="k"><a href="#vault">» [the mandate] «</a></td><td class="v">hand over permission, not money. take it back in one click, any time.</td></tr>
-  <tr><td class="k"><a href="#walls">» [the walls] «</a></td><td class="v">three reasons a stranger cannot hurt you. read them once.</td></tr>
-  <tr><td class="k"><a href="https://x.com/aum0com" target="_blank" rel="noopener">» [the feed] «</a></td><td class="v">the employee posts. follow the work at x.com/aum0com.</td></tr>
-  <tr><td class="k"><a href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">» [the code] «</a></td><td class="v">every wall, every test, every number. read it before you trust it.</td></tr>
-</tbody></table>
-
-<div class="panel" id="nightdesk">
-  <h2><span class="tag">»</span> the night desk <span class="tag">«</span></h2>
-  <p style="margin-bottom:10px">the exchange keeps office hours. the chain does not. an asset is tradeable whenever its official feed still agrees with its live pool, so the employee works whichever names are awake, at any hour.</p>
-  <table class="doors"><tbody>
-    <tr><td class="k">the exchange</td><td class="v" id="nd_mkt">reading the clock…</td></tr>
-    <tr><td class="k">the employee</td><td class="v" id="nd_emp">on shift. it does not keep hours.</td></tr>
-    <tr><td class="k">tradeable now</td><td class="v" id="nd_awake">checking every feed against its pool…</td></tr>
-  </tbody></table>
-  <div class="stockgrid" id="nd_grid" style="margin-top:8px"></div>
+<div class="panel" id="start">
+  <h2><span class="tag">»</span> pick a portfolio <span class="tag">«</span></h2>
+  <p style="margin-bottom:12px">choose one below, or write your own further down. your stocks stay in your own wallet the whole time, nobody takes a fee, and you can change your mind a minute later.</p>
+  <div class="row">
+    <button class="act" id="start_btn">Connect a wallet</button>
+    <span id="start_note">three signatures and you are hired. no deposit, no minimum.</span>
+  </div>
 </div>
-
-<div class="panel" id="pw">
-  <h2><span class="tag">»</span> the paperwork <span class="tag">«</span></h2>
-  <p style="margin-bottom:10px">hiring me is three signatures. this sheet keeps itself up to date.</p>
-  <table class="doors"><tbody>
-    <tr><td class="k"><button id="pw1_btn">» [1 connect] «</button></td><td class="v" id="pw1">plug in a wallet. everything below stays dead until you do.</td></tr>
-    <tr><td class="k"><a href="#law">» [2 the law] «</a></td><td class="v" id="pw2">pick a portfolio off the shelf, or carve your own below.</td></tr>
-    <tr><td class="k"><a href="#vault">» [3 permission] «</a></td><td class="v" id="pw3">one signature per asset. i can move them, never take them.</td></tr>
-    <tr><td class="k"><span style="font-weight:900">» [status] «</span></td><td class="v" id="pw0">waiting on the paperwork.</td></tr>
-  </tbody></table>
-</div>
-
-<div class="live"><span class="tag">[LIVE]</span> <span id="live_line">reading the chain…</span></div>
 
 <div class="panel" id="shelf">
   <h2><span class="tag">»</span> the shelf <span class="tag">«</span></h2>
@@ -239,6 +215,39 @@
   </div>
   <div class="row" id="legacy_row" hidden><span id="legacy_note"></span><button class="act" id="wd_old">Take it back</button></div>
   <div class="msg" id="vault_msg"></div>
+</div>
+
+<div class="live"><span class="tag">[LIVE]</span> <span id="live_line">reading the chain…</span></div>
+
+<div class="panel" id="pw">
+  <h2><span class="tag">»</span> the paperwork <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">hiring me is three signatures. this sheet keeps itself up to date.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k"><button id="pw1_btn">» [1 connect] «</button></td><td class="v" id="pw1">plug in a wallet. everything below stays dead until you do.</td></tr>
+    <tr><td class="k"><a href="#law">» [2 the law] «</a></td><td class="v" id="pw2">pick a portfolio off the shelf, or carve your own below.</td></tr>
+    <tr><td class="k"><a href="#vault">» [3 permission] «</a></td><td class="v" id="pw3">one signature per asset. i can move them, never take them.</td></tr>
+    <tr><td class="k"><span style="font-weight:900">» [status] «</span></td><td class="v" id="pw0">waiting on the paperwork.</td></tr>
+  </tbody></table>
+</div>
+
+<table class="doors"><tbody>
+  <tr><td class="k"><button id="connect">» [connect] «</button></td><td class="v" id="connect_note">plug in a wallet. i will know you by your address and nothing else.</td></tr>
+  <tr><td class="k"><a href="#law">» [the law] «</a></td><td class="v">carve your target allocation. it binds the strangers, not you.</td></tr>
+  <tr><td class="k"><a href="#vault">» [the mandate] «</a></td><td class="v">hand over permission, not money. take it back in one click, any time.</td></tr>
+  <tr><td class="k"><a href="#walls">» [the walls] «</a></td><td class="v">three reasons a stranger cannot hurt you. read them once.</td></tr>
+  <tr><td class="k"><a href="https://x.com/aum0com" target="_blank" rel="noopener">» [the feed] «</a></td><td class="v">the employee posts. follow the work at x.com/aum0com.</td></tr>
+  <tr><td class="k"><a href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">» [the code] «</a></td><td class="v">every wall, every test, every number. read it before you trust it.</td></tr>
+</tbody></table>
+
+<div class="panel" id="nightdesk">
+  <h2><span class="tag">»</span> the night desk <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">the exchange keeps office hours. the chain does not. an asset is tradeable whenever its official feed still agrees with its live pool, so the employee works whichever names are awake, at any hour.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k">the exchange</td><td class="v" id="nd_mkt">reading the clock…</td></tr>
+    <tr><td class="k">the employee</td><td class="v" id="nd_emp">on shift. it does not keep hours.</td></tr>
+    <tr><td class="k">tradeable now</td><td class="v" id="nd_awake">checking every feed against its pool…</td></tr>
+  </tbody></table>
+  <div class="stockgrid" id="nd_grid" style="margin-top:8px"></div>
 </div>
 
 <div class="panel" id="stmt" hidden>
@@ -411,11 +420,15 @@ async function connect() {
   $('topconnect').textContent = short;
   $('topconnect').classList.add('on');
   $('connect_note').textContent = 'noted. i will speak plainly with you now.';
+  $('start_btn').textContent = 'Connected: ' + short;
+  $('start_btn').disabled = true;
+  $('start_note').textContent = 'now pick a portfolio below, or write your own.';
   refresh();
 }
 $('connect').onclick = connect;
 $('topconnect').onclick = connect;
 $('pw1_btn').onclick = connect;
+$('start_btn').onclick = connect;
 $('mascot_ca').onclick = async () => {
   try { await navigator.clipboard.writeText('0xe7CFbf084589b73A3FF74E9819Dd3D28ee1E05A9'); } catch {}
   const el = $('mascot_ca');
@@ -583,6 +596,9 @@ async function refreshOnce() {
       // the hiring sheet paints first: it is the page's answer to "what now?"
       if (!lawLoaded) await loadMyLaw();
       $('stmt').hidden = false;
+      $('start_note').innerHTML = usd < 0.5
+        ? 'this wallet is empty. bring USDG to it <b>on Robinhood Chain</b> (relay.link bridges there in one transaction) and it is managed the moment it lands.'
+        : '$' + usd.toLocaleString() + ' under management, in your own wallet.';
       $('st_val').textContent = '$' + usd.toLocaleString() + ', all of it in your own wallet';
       $('st_drift').textContent = bps === null ? 'no law carved yet'
         : bps + ' bps' + (bps >= 300 ? ' · a job is posted, a worker will come' : ' · inside the line');
@@ -636,7 +652,7 @@ async function paintPaperwork(usd, bps) {
     : miss.length ? DO + 'missing ' + miss.map(tickerOf).join(', ') + '. press grant below, one signature each.'
     : OK + 'granted for everything your law touches. revoke any time, one click.';
   $('pw0').innerHTML = (!hasLaw || miss.length) ? 'waiting on the paperwork above.'
-    : usd < 0.5 ? 'papers signed, wallet empty. send USDG or any of the fifteen stocks to your address on hood chain: it is under management the moment it lands.'
+    : usd < 0.5 ? 'papers signed, wallet empty. bring USDG to this wallet <b>on Robinhood Chain</b> and it is under management the moment it lands. from another chain, relay.link bridges there in one transaction: set the recipient to your own address.'
     : bps === null ? '<b>employed.</b> reading your drift…'
     : bps >= 300 ? '<b>employed.</b> drift ' + bps + ' bps: a job is posted and a worker is coming. you do nothing.'
     : '<b>employed.</b> drift ' + bps + ' bps, inside the line. jobs post at 300. you do nothing.';
@@ -909,7 +925,11 @@ function adopt(mix) {
   stockInputs.forEach((inp, i) => { inp.value = mix[STOCKS[i][0]] || 0; });
   syncGrid();
   $('law').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  say('law_msg', 'taken. it is yours to edit before you carve it.');
+  if (!me) {
+    say('law_msg', 'taken. connect a wallet and press carve, and this becomes your law.');
+    return;
+  }
+  say('law_msg', 'taken. press carve below and this becomes your law. you can edit any weight first.');
 }
 
 async function loadShelf() {
