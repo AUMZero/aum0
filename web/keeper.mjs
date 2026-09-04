@@ -69,7 +69,7 @@ async function loadVenue(v) {
   const quote = (await v.c.assetAt(0)).token;
   for (let i = 0; i < n; i++) {
     const a = await v.c.assetAt(i);
-    const asset = { token: a.token, feed: a.feed, decimals: Number(a.decimals), feedC: i === 0 ? null : new Contract(a.feed, FEED_ABI, provider) };
+    const asset = { token: a.token, feed: a.feed, poolFee: Number(a.poolFee), decimals: Number(a.decimals), feedC: i === 0 ? null : new Contract(a.feed, FEED_ABI, provider) };
     if (i > 0) asset.pool = await poolFor(a.token, quote, Number(a.poolFee));
     v.assets.push(asset);
   }
@@ -125,6 +125,101 @@ async function prices(v) {
     out.push(Number(p) / 1e8);
   }
   return out;
+}
+
+// -- the demonstration -------------------------------------------------------
+
+// Anyone can watch a fund drift and be walked home, but reading about it is
+// not the same as doing it. The site lets a visitor knock the employee's own
+// demo wallet off its law with a real swap on the real pool. After that the
+// employee waits: for a full minute the job sits open on the board and any
+// wallet on earth may take it and keep the bounty. If nobody does, it tidies
+// its own desk, as always.
+const SHAKE_VENUE = '0xaFd484733f4B23e235bf1825c9AdA39368160B03';
+const SHAKE_USD = 0.35;           // enough to move the needle, small enough to be nothing
+const SHAKE_COOLDOWN_MS = 300_000;
+const HANDS_OFF_MS = 60_000;      // the window in which a stranger can beat the robot to it
+const SHAKE_MAX_PER_DAY = 30;     // the demo is cheap, but not free
+let lastShakeAt = 0, handsOffUntil = 0, shakesToday = 0, shakeDay = '';
+
+export function shakeState() {
+  const now = Date.now();
+  const day = new Date().toISOString().slice(0, 10);
+  if (day !== shakeDay) { shakeDay = day; shakesToday = 0; }
+  return {
+    ready: !!wallet && now - lastShakeAt >= SHAKE_COOLDOWN_MS && shakesToday < SHAKE_MAX_PER_DAY,
+    spentToday: shakesToday, maxPerDay: SHAKE_MAX_PER_DAY,
+    cooldownLeft: Math.max(0, SHAKE_COOLDOWN_MS - (now - lastShakeAt)),
+    handsOffLeft: Math.max(0, handsOffUntil - now),
+    venue: SHAKE_VENUE,
+    wallet: wallet ? wallet.address : null,
+  };
+}
+
+// Sell a slice of whichever holding is furthest above its target. That is the
+// one honest way to push a wallet off course: it is exactly what the market
+// does to it every day, only faster.
+export async function shake() {
+  if (!wallet) throw new Error('the employee is not on shift');
+  const now = Date.now();
+  if (now - lastShakeAt < SHAKE_COOLDOWN_MS) throw new Error('too soon; the last one is still settling');
+  const day = new Date().toISOString().slice(0, 10);
+  if (day !== shakeDay) { shakeDay = day; shakesToday = 0; }
+  if (shakesToday >= SHAKE_MAX_PER_DAY) throw new Error('the desk has been knocked about enough for one day');
+  shakesToday++;
+  const v = CONTRACTS.find(c => c.addr === SHAKE_VENUE);
+  if (!v) throw new Error('venue not loaded');
+
+  const px = await prices(v);
+  const acct = await v.c.accountOf(wallet.address);
+  const bal = [];
+  for (let i = 0; i < v.assets.length; i++) {
+    bal.push(Number(await v.c.heldBy(wallet.address, i)) / 10 ** (i === 0 ? 6 : 18));
+  }
+  const value = bal.reduce((s, b, i) => s + b * px[i], 0);
+  let pick = 0, worst = 0;
+  for (let i = 1; i < bal.length; i++) {
+    const usd = bal[i] * px[i];
+    if (usd < SHAKE_USD * 1.2) continue;                       // must have enough to sell
+    const over = usd - value * Number(acct.targetBps[i]) / 10000;
+    if (over > worst) { worst = over; pick = i; }
+  }
+  if (!pick) {                                                  // nothing above target: buy instead
+    for (let i = 1; i < bal.length; i++) if (Number(acct.targetBps[i]) > 0) { pick = i; break; }
+    if (!pick || bal[0] < SHAKE_USD) throw new Error('the wallet is too small to disturb');
+  }
+
+  const sell = worst > 0;
+  const asset = v.assets[pick];
+  const token = sell ? asset.token : v.quote;
+  const other = sell ? v.quote : asset.token;
+  const amountIn = sell
+    ? BigInt(Math.floor((SHAKE_USD / px[pick]) * 1e18))
+    : BigInt(Math.floor(SHAKE_USD * 1e6));
+
+  const erc = new Contract(token, ERC20_ABI, wallet);
+  if ((await erc.allowance(wallet.address, ROUTER)) < amountIn) {
+    await (await erc.approve(ROUTER, 2n ** 255n)).wait();
+  }
+  const router = new Contract(ROUTER,
+    ['function exactInputSingle((address,address,uint24,address,uint256,uint256,uint160)) payable returns (uint256)'], wallet);
+  const driftBefore = Number(await v.c.drift(wallet.address));
+
+  // Stand back before the swap, not after it. The moment the swap lands the
+  // wallet is off its law, and a poll already in flight would otherwise tidy
+  // it up before the window even opens.
+  lastShakeAt = Date.now();
+  handsOffUntil = lastShakeAt + HANDS_OFF_MS;
+
+  const tx = await router.exactInputSingle([token, other, asset.poolFee ?? 3000, wallet.address, amountIn, 0n, 0n]);
+  await tx.wait();
+  const driftAfter = Number(await v.c.drift(wallet.address));
+
+  handsOffUntil = Date.now() + HANDS_OFF_MS;   // the full minute starts once it is really off course
+  lastShakeAt = Date.now();
+  sentToday++;
+  log(`a visitor knocked the desk: drift ${driftBefore} -> ${driftAfter} bps. hands off for ${HANDS_OFF_MS / 1000}s, the job is anyone's.`);
+  return { tx: tx.hash, driftBefore, driftAfter, handsOffMs: HANDS_OFF_MS };
 }
 
 // -- the night shift ---------------------------------------------------------
@@ -191,6 +286,8 @@ function planTrades(weights, balances, px, cash, awake) {
 }
 
 async function serveOne(v, user, px, awake) {
+  // a freshly disturbed desk is left alone, so a stranger has a fair shot at the bounty
+  if (user.toLowerCase() === wallet.address.toLowerCase() && Date.now() < handsOffUntil) return;
   const [acct, driftRaw] = await Promise.all([v.c.accountOf(user), v.c.drift(user).catch(() => null)]);
   if (driftRaw === null) return;
   const drift = Number(driftRaw);

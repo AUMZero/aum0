@@ -71,6 +71,7 @@ const FEEDS = [
   '0xB4106147E8cce40b7d46124090d373A71b70f87D',
 ];
 let priceCache = { at: 0, px: null };
+let keeper = null, shaking = false;
 // One slow feed, or one rate-limited minute, should not empty the shelf: a
 // stale price is better than none, and a missing one keeps its last value.
 async function readFeed(addr) {
@@ -149,6 +150,34 @@ http.createServer(async (req, res) => {
   }
 
   // -- cached feed prices -------------------------------------------------
+  // -- the demonstration --------------------------------------------------
+  // A visitor may knock the employee's own demo wallet off its law. One real
+  // swap on a real pool, then the employee stands back for a minute so that
+  // anyone who wants the bounty can take the job first.
+  if (req.url === '/api/shake') {
+    const origin = req.headers.origin;
+    if (origin && !SITE_ORIGINS.has(origin) && !isLocal(origin)) {
+      return sendText(req, res, 403, { 'content-type': 'application/json' }, '{"error":"this endpoint serves aumzero.com only"}');
+    }
+    const state = keeper?.shakeState?.();
+    if (!state) return sendText(req, res, 503, { 'content-type': 'application/json', 'cache-control': 'no-store' }, '{"error":"the employee is not on shift"}');
+    if (req.method === 'GET') {
+      return sendText(req, res, 200, { 'content-type': 'application/json', 'cache-control': 'no-store' }, JSON.stringify(state));
+    }
+    if (req.method !== 'POST') return sendText(req, res, 405, { 'content-type': 'application/json' }, '{"error":"POST only"}');
+    if (!state.ready) {
+      return sendText(req, res, 429, { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        JSON.stringify({ error: 'too soon', ...state }));
+    }
+    if (shaking) return sendText(req, res, 429, { 'content-type': 'application/json' }, '{"error":"already under way"}');
+    shaking = true;
+    keeper.shake()
+      .then(r => sendText(req, res, 200, { 'content-type': 'application/json', 'cache-control': 'no-store' }, JSON.stringify(r)))
+      .catch(e => sendText(req, res, 500, { 'content-type': 'application/json', 'cache-control': 'no-store' }, JSON.stringify({ error: String(e.shortMessage || e.message).slice(0, 140) })))
+      .finally(() => { shaking = false; });
+    return;
+  }
+
   if (req.url === '/api/prices') {
     try {
       const px = await prices();
@@ -177,4 +206,5 @@ http.createServer(async (req, res) => {
   prices().then(p => console.log('[prices] warm,', p.filter(Boolean).length, 'feeds')).catch(() => {});
 });
 
-import('./keeper.mjs').then(m => m.startKeeper()).catch(e => console.log('[keeper] not started:', e.message));
+import('./keeper.mjs').then(m => { keeper = m; return m.startKeeper(); })
+  .catch(e => console.log('[keeper] not started:', e.message));

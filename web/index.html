@@ -260,6 +260,16 @@
   <tr><td class="k"><span style="color:var(--red);font-weight:900">» [wall 3] «</span></td><td class="v">i never receive your money in the first place, so there is nothing to withdraw and nothing to freeze. every swap lands back in your own wallet. the single exception is the bounty, sized by you, paid in proportion to help received. splitting the work farms nothing: the payouts telescope.</td></tr>
 </tbody></table>
 
+<div class="panel" id="shake">
+  <h2><span class="tag">»</span> knock it off target <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">the employee keeps a wallet of its own, under a law like anyone else's. press the button and a real swap on a real pool pushes it off that law. then it takes its hands off for sixty seconds: the job goes on the board below, and any wallet on earth may take it and keep the bounty. beat the robot and the money is yours.</p>
+  <div class="row">
+    <button class="act" id="shake_btn">Knock it off target</button>
+    <span id="shake_state">reading the desk…</span>
+  </div>
+  <div class="msg" id="shake_msg"></div>
+</div>
+
 <div class="panel" id="board">
   <h2><span class="tag">»</span> the job board <span class="tag">«</span></h2>
   <p style="margin-bottom:12px">when an account drifts off its law, i post the job here. any wallet may press the button. first press does the work, takes the pay, from that account, for that account. this is the entire hiring process.</p>
@@ -1000,4 +1010,53 @@ async function loadNightDesk() {
   setTimeout(loadNightDesk, 60000);
 }
 loadNightDesk();
+
+// -- knock it off target ------------------------------------------------------
+// The demonstration is the product: a real swap, then a minute in which the
+// job belongs to whoever takes it first.
+let shakeTimer = null;
+function fmtLeft(ms) {
+  const t = Math.ceil(ms / 1000);
+  return t >= 60 ? Math.ceil(t / 60) + ' min' : t + 's';
+}
+async function shakeStatus() {
+  try {
+    const r = await fetch('/api/shake');
+    const st = await r.json();
+    const btn = $('shake_btn');
+    if (st.error) { $('shake_state').textContent = st.error; btn.disabled = true; return; }
+    if (st.handsOffLeft > 0) {
+      btn.disabled = true;
+      $('shake_state').innerHTML = '<b style="color:var(--red)">hands off for ' + fmtLeft(st.handsOffLeft)
+        + '.</b> the job is on the board below and it is anyone\'s.';
+    } else if (!st.ready) {
+      btn.disabled = true;
+      $('shake_state').textContent = 'the desk is settling. ready again in ' + fmtLeft(st.cooldownLeft) + '.';
+    } else {
+      btn.disabled = false;
+      $('shake_state').textContent = 'ready. this spends real money on a real pool.';
+    }
+  } catch { $('shake_state').textContent = 'the desk is quiet.'; }
+  clearTimeout(shakeTimer);
+  shakeTimer = setTimeout(shakeStatus, 5000);
+}
+$('shake_btn').onclick = async () => {
+  const btn = $('shake_btn');
+  btn.disabled = true;
+  say('shake_msg', 'swapping on the pool…');
+  try {
+    const r = await fetch('/api/shake', { method: 'POST' });
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+    say('shake_msg', 'done. drift ' + j.driftBefore + ' → ' + j.driftAfter
+      + ' bps. the employee has its hands off for sixty seconds: take the job below and the bounty is yours. tx ' + j.tx.slice(0, 14) + '…');
+    setTimeout(loadBoard, 4000);
+    refresh();
+  } catch (e) {
+    say('shake_msg', 'refused: ' + (e.message || e).toString().slice(0, 120), true);
+  }
+  shakeStatus();
+};
+shakeStatus();
+
 </script>
