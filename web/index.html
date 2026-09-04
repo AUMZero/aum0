@@ -355,7 +355,7 @@ const STOCKS = [
 const RPC = location.origin + '/api/rpc';   // the site's own proxy, local or live
 const EXPLORER = 'https://explorer.mainnet.chain.robinhood.com';
 const USDG = '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
-const SEL = { deposit:'0xe2bbb158', withdraw:'0x441a3e70', setTarget:'0xf3397382', drift:'0x389cc952', valueOf:'0xa48028aa', accountOf:'0x8086b8ba', bal:'0x915aeb7c', approve:'0x095ea7b3', allowance:'0xdd62ed3e' };
+const SEL = { assetCount:'0xeafe7a74', deposit:'0xe2bbb158', withdraw:'0x441a3e70', setTarget:'0xf3397382', drift:'0x389cc952', valueOf:'0xa48028aa', accountOf:'0x8086b8ba', bal:'0x915aeb7c', approve:'0x095ea7b3', allowance:'0xdd62ed3e' };
 const $ = id => document.getElementById(id);
 const pad = (v, n=64) => BigInt(v).toString(16).padStart(n, '0');
 let me = null;
@@ -697,11 +697,11 @@ async function allPrices() {
   return px;
 }
 
-async function readAccount(user) {
+async function readAccount(user, venue = CONTRACT) {
   const [acctRaw, valRaw, driftRaw] = await Promise.all([
-    call(CONTRACT, SEL.accountOf + pad(user)),
-    call(CONTRACT, SEL.valueOf + pad(user)),
-    call(CONTRACT, SEL.drift + pad(user)).catch(() => null),
+    call(venue, SEL.accountOf + pad(user)),
+    call(venue, SEL.valueOf + pad(user)),
+    call(venue, SEL.drift + pad(user)).catch(() => null),
   ]);
   const w = i => BigInt('0x' + acctRaw.slice(2 + i*64, 2 + (i+1)*64));
   // accountOf returns (uint16[] offset, minDrift, band, bounty, [len, w...])
@@ -709,7 +709,7 @@ async function readAccount(user) {
   const nWeights = Number(w(4));
   const weights = []; for (let i = 0; i < nWeights; i++) weights.push(Number(w(5 + i)));
   return {
-    user, minDrift, band, bounty, weights,
+    user, venue, minDrift, band, bounty, weights,
     value: Number(BigInt(valRaw)) / 1e18,
     drift: driftRaw ? parseInt(driftRaw, 16) : null,
   };
@@ -718,12 +718,16 @@ async function readAccount(user) {
 // sells first (they raise the cash), then buys, each leg 3% inside the line
 async function planTrades(a) {
   const px = await allPrices();
-  const balRaws = await Promise.all(px.map((_, i) => call(CONTRACT, SEL.bal + pad(a.user) + pad(i))));
+  const venue = a.venue || CONTRACT;
+  const n = Number(BigInt(await call(venue, SEL.assetCount)));
+  const balRaws = await Promise.all(Array.from({length: n}, (_, i) => call(venue, SEL.bal + pad(a.user) + pad(i))));
   const bal = balRaws.map((r, i) => Number(BigInt(r)) / 10 ** (i === 0 ? 6 : 18));
   const value = bal.reduce((s, b, i) => s + b * px[i], 0);
   const sells = [], buys = [];
   let freed = 0, needed = 0;
-  for (let i = 1; i < px.length; i++) {
+  // the older venue holds sixteen of the same assets in the same order, so the
+  // price table is shared; only walk as far as this venue actually goes
+  for (let i = 1; i < n; i++) {
     const delta = (value * (a.weights[i] || 0) / 10000 - bal[i] * px[i]) * 0.97;
     if (delta < -0.05) { sells.push({ sell: BigInt(i), buy: 0n, amountIn: BigInt(Math.floor(-delta / px[i] * 1e18)) }); freed += -delta; }
     else if (delta > 0.05) { buys.push({ sell: 0n, buy: BigInt(i), amountIn: BigInt(Math.floor(delta * 1e6)), usd: delta }); needed += delta; }
@@ -738,9 +742,15 @@ async function loadBoard() {
   if (!deployed) return;
   const rows = $('job_rows');
   try {
-    const logs = await rpc('eth_getLogs', [{ address: CONTRACT, topics: [TARGETSET_TOPIC], fromBlock: DEPLOY_BLOCK, toBlock: 'latest' }]);
-    const users = [...new Set(logs.map(l => '0x' + l.topics[1].slice(26)))];
-    const accounts = await Promise.all(users.map(readAccount));
+    // both wallet venues are live and the employee serves both, so the board
+    // has to post jobs from both or the work goes unseen
+    const venues = [[CONTRACT, DEPLOY_BLOCK], [V3, DEPLOY_BLOCK_V3]];
+    const accounts = [];
+    for (const [venue, from] of venues) {
+      const logs = await rpc('eth_getLogs', [{ address: venue, topics: [TARGETSET_TOPIC], fromBlock: from, toBlock: 'latest' }]);
+      const users = [...new Set(logs.map(l => '0x' + l.topics[1].slice(26)))];
+      for (const u of users) accounts.push(await readAccount(u, venue));
+    }
     const open = [], tidy = [];
     for (const a of accounts) {
       if (a.value < 0.5 || a.drift === null) continue;
@@ -866,7 +876,7 @@ async function takeJob(a, tr) {
     const data = SEL_REBALANCE + pad(a.user) + pad(0x40) + pad(plan.trades.length)
       + plan.trades.map(t => pad(t.sell) + pad(t.buy) + pad(t.amountIn)).join('');
     btn.textContent = 'working…';
-    const h = await send(CONTRACT, data);
+    const h = await send(a.venue || CONTRACT, data);
     say('board_msg', 'job taken, ' + plan.trades.length + ' leg' + (plan.trades.length > 1 ? 's' : '') + '. the pay lands when the block does. tx ' + h.slice(0,14) + '…');
     setTimeout(loadBoard, 6000);
   } catch (e) {
