@@ -65,11 +65,33 @@ cash. Tidying its own demo wallet stays free. No human tops the wallet up.
 
 ## Live on Hood Chain
 
-    Wallet edition   0xaFd484733f4B23e235bf1825c9AdA39368160B03
+    Bid edition      0xb0C34AC5e846e0159f711Db84802D512E916A51F
+    Wallet edition   0x3484F1cC081A98103CE0E9E42AE96a2A770eCd79
+    First wallet     0xaFd484733f4B23e235bf1825c9AdA39368160B03
     Chain            Hood Chain (id 4663)
     Web              https://aumzero.com
-    Venue            USDG + fifteen stocks: NVDA, SPCX, TSLA, AAPL, MSFT,
-                     AMZN, MU, SPY, PLTR, SNDK, INTC, AMD, GOOGL, META, USAR
+    Venue            USDG + twenty six assets, stocks through treasuries:
+                     NVDA, SPCX, TSLA, AAPL, MSFT, AMZN, MU, SPY, PLTR, SNDK,
+                     INTC, AMD, GOOGL, META, USAR, SGOV, QQQ, ASML, AVGO, ORCL,
+                     COIN, HOOD, ARM, CRWV, TSM, BRKB
+
+## The bid edition
+
+A rebalance is a purchase, so the bounty is a price, not a tip. The bid
+edition prices it. Whatever the wallet loses on the fill is subtracted from
+the worker's pay, dollar for dollar, and a worker may skip the pool entirely
+and hand the stock over out of its own inventory. Both routes are checked by
+the same wall; whichever delivered the better price keeps the money.
+
+Ten thousand dollars into ASML, which sits in a thin pool on a one percent
+tier, on the live chain:
+
+    through the pool      wallet receives 5.6689 ASML   worker keeps  $0.00
+    from a maker          wallet receives 5.8479 ASML   worker keeps $99.99
+
+The wallet gets 3.16 percent more stock and the worker who delivered it is
+paid in full. Nothing is special cased: on a rebalance where the pool priced
+better than the feed, the routing worker kept the whole bounty.
 
 Every asset is pinned to its official on-chain feed and its real USDG pool,
 measured on-chain and frozen at construction forever.
