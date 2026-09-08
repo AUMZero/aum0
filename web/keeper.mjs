@@ -5,6 +5,7 @@ import { JsonRpcProvider, FetchRequest, Wallet, Contract } from 'ethers';
 
 const RPC = process.env.RPC_URL || 'https://rpc.mainnet.chain.robinhood.com';
 const CONTRACTS = [
+  { addr: '0x8AD0afa388EBd55Fb02e2F8d375dD63DB17785e3', fromBlock: 58001462, wallet: true, cross: true, fills: true },  // merit: earned only above the follower's own mark
   { addr: '0x2116ad6cF8eC51f71fD158aE976178fc6Bf5E5B9', fromBlock: 57621572, wallet: true, cross: true, fills: true },  // world two: bitcoin aboard
   { addr: '0x356B8b6ed5CBAaa5879945dACb7Dce6408a679b2', fromBlock: 56891260, wallet: true, cross: true, fills: true },  // world: published policies, followers, royalties
   { addr: '0x4f08bdC9353060351f95207CD47D67D1cF6e5989', fromBlock: 55832000, wallet: true, cross: true, fills: true },  // pension: the desk, plus laws that age

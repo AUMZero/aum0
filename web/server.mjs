@@ -80,7 +80,7 @@ async function proxyRpc(body, method) {
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
 // Only what the page needs; anything else is refused.
 const ALLOW = new Set(['eth_call', 'eth_blockNumber', 'eth_getBalance', 'eth_chainId', 'eth_getLogs']);
-const AUM0S = new Set(['0xe46b6e60c7b2cbc1f9761b3f12a69813093b6dde', '0xcc27dd6fd74210303660643bcf6c9d115443bfca', '0xafd484733f4b23e235bf1825c9ada39368160b03', '0x3484f1cc081a98103ce0e9e42ae96a2a770ecd79', '0xf7dbb9142a194f5f409c2c587cfc559d77c40358', '0x4f08bdc9353060351f95207cd47d67d1cf6e5989', '0x356b8b6ed5cbaaa5879945dacb7dce6408a679b2', '0x2116ad6cf8ec51f71fd158ae976178fc6bf5e5b9']);
+const AUM0S = new Set(['0xe46b6e60c7b2cbc1f9761b3f12a69813093b6dde', '0xcc27dd6fd74210303660643bcf6c9d115443bfca', '0xafd484733f4b23e235bf1825c9ada39368160b03', '0x3484f1cc081a98103ce0e9e42ae96a2a770ecd79', '0xf7dbb9142a194f5f409c2c587cfc559d77c40358', '0x4f08bdc9353060351f95207cd47d67d1cf6e5989', '0x356b8b6ed5cbaaa5879945dacb7dce6408a679b2', '0x2116ad6cf8ec51f71fd158ae976178fc6bf5e5b9', '0x8ad0afa388ebd55fb02e2f8d375dd63db17785e3']);
 // The proxy serves this site only. No CORS headers are ever emitted, so
 // other origins cannot borrow it from a browser; same-origin needs none.
 const SITE_ORIGINS = new Set(['https://aumzero.com', 'https://www.aumzero.com', 'https://aum0-web-production.up.railway.app']);
@@ -173,6 +173,7 @@ function sendText(req, res, status, headers, body) {
 const REB_TOPIC = '0xbecdda7c726841dea88e1495b6f401a1d64029ba261415622f400509cf097b35';
 const TS_TOPIC = '0xb8766537c154c2943c70a08668e5bbee5aa95bb3a80803f9c11d0b49b846fb87';
 const STAT_VENUES = [
+  ['0x8AD0afa388EBd55Fb02e2F8d375dD63DB17785e3', '0x3750836', true],
   ['0x2116ad6cF8eC51f71fD158aE976178fc6Bf5E5B9', '0x36f3c44', true],
   ['0x356B8b6ed5CBAaa5879945dACb7Dce6408a679b2', '0x364177c', true],
   ['0x4f08bdC9353060351f95207CD47D67D1cF6e5989', '0x353ef82', true],
