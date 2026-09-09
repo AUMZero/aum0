@@ -35,6 +35,7 @@ const FACTORY = '0x1f7d7550b1b028f7571e69a784071f0205fd2efa';
 // company the feed can no longer price the fill, so that asset waits.
 const AWAKE_GAP_PCT = 1.0;
 const PROFIT_MARGIN = 1.5;    // a stranger's job must pay 1.5x its gas
+const SELF_WORTH_MULTIPLE = 25;   // it will not tidy its own account for more than a 25th of it
 const REFUEL_BELOW = 0.015;   // ETH; below this the employee buys its own gas
 const REFUEL_TARGET = 0.02;   // and fills the tank back to this
 const USDG_FLOAT = 2;         // it never spends the last of its cash
@@ -417,9 +418,20 @@ async function serveOne(v, user, px, awake) {
       return;
     }
   }
-  if (user.toLowerCase() !== wallet.address.toLowerCase()) {
-    const [fee, px] = await Promise.all([provider.getFeeData(), ethUsd()]);
-    const costUsd = Number(est) * Number(fee.gasPrice) / 1e18 * px;
+  // Its own account gets the same rule it applies to everyone else. The fee
+  // it pays itself is a wash, but the gas is not, so it will not burn a
+  // dollar of fuel to tidy an account too small to be worth tidying.
+  if (user.toLowerCase() === wallet.address.toLowerCase()) {
+    const [fee, ethPx] = await Promise.all([provider.getFeeData(), ethUsd()]);
+    const costUsd = Number(est) * Number(fee.gasPrice) / 1e18 * ethPx;
+    const value = balances.reduce((s, b, i) => s + b * px[i], 0);
+    if (value < costUsd * SELF_WORTH_MULTIPLE) {
+      if (!v.selfLogged) { v.selfLogged = true; log(user, `own account is $${value.toFixed(2)}, the gas would be $${costUsd.toFixed(2)}. it does not spend what it has not earned`); }
+      return;
+    }
+  } else {
+    const [fee, ethPx] = await Promise.all([provider.getFeeData(), ethUsd()]);
+    const costUsd = Number(est) * Number(fee.gasPrice) / 1e18 * ethPx;
     if (expectedPay < costUsd * PROFIT_MARGIN) {
       log(user, `skipped: pays $${expectedPay.toFixed(3)}, gas $${costUsd.toFixed(3)}. charity is not in the contract`);
       return;
