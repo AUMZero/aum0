@@ -468,7 +468,7 @@ async function paintEmployeeAccount(){
     const st=await fetch('/api/stats').then(r=>r.json()).catch(()=>null);
     if(st&&st.keeperJobs!==undefined){
       $('ea_jobs').textContent=st.keeperJobs+' since the first block';
-      $('ea_wages').textContent='$'+Number(st.keeperPaid||0).toFixed(6)+' earned, never deposited';
+      $('ea_wages').textContent='$'+Number(st.keeperPaid||0).toFixed(6)+' in bounties, paid by the wallets it served';
     }
   }catch(e){}
   try{
