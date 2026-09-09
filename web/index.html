@@ -234,7 +234,7 @@ a{color:inherit;text-decoration:none}
   </div>
 </div>
 
-<div class="window sub" id="win_pay" hidden style="left:10%;top:200px;width:520px">
+<div class="window sub" id="win_pay" hidden style="left:10%;top:150px;width:600px">
   <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_pay"></span><span class="title px">PAYSTUB.TXT</span></div>
   <div class="pane mono">
     <div class="prow"><span>employee</span><b>the employee (sole staff)</b></div>
@@ -243,6 +243,19 @@ a{color:inherit;text-decoration:none}
     <div class="prow"><span>wages on hand</span><b id="ps_wages">…</b></div>
     <div class="prow"><span>earned, lifetime</span><b id="ps_earned">…</b></div>
     <div class="prow"><span>fuel policy</span><b>buys its own gas from wages</b></div>
+
+    <div style="border-top:1.5px solid var(--ink);margin-top:14px;padding-top:12px">
+      <b>the employee's own account</b>
+      <div class="dim2" style="margin:6px 0 10px">it has worked here since the first block and never been paid a salary. what it has, it earned. it opened an account at the firm it works for and put its wages in, and it will never deposit anything else, because there is nothing else. every figure below is read off the chain.</div>
+      <div class="prow"><span>jobs completed</span><b id="ea_jobs">…</b></div>
+      <div class="prow"><span>lifetime wages</span><b id="ea_wages">…</b></div>
+      <div class="prow"><span>account value</span><b id="ea_value">…</b></div>
+      <div class="prow"><span>its policy</span><b id="ea_policy">…</b></div>
+      <div class="prow"><span>bound by</span><b id="ea_covenant">…</b></div>
+      <div class="prow"><span>record since it opened</span><b id="ea_record">…</b></div>
+      <div class="prow"><span>drift</span><b id="ea_drift">…</b></div>
+      <div class="dim2" id="ea_note" style="margin-top:10px"></div>
+    </div>
   </div>
 </div>
 
@@ -443,6 +456,52 @@ async function paintPaystub(){
     $('ps_gas').textContent=gas.toFixed(4)+' ETH';
     $('ps_wages').textContent=wages.toFixed(2)+' USDG';
   }catch(e){}
+  paintEmployeeAccount();
+}
+
+/* -------- the employee's own account --------
+   The firm's only worker keeps an account at the firm. It never received a
+   deposit: every dollar in it is a dollar it was paid for work, and the record
+   is computed from the feeds, so nobody can write it up or write it down. */
+async function paintEmployeeAccount(){
+  try{
+    const st=await fetch('/api/stats').then(r=>r.json()).catch(()=>null);
+    if(st&&st.keeperJobs!==undefined){
+      $('ea_jobs').textContent=st.keeperJobs+' since the first block';
+      $('ea_wages').textContent='$'+Number(st.keeperPaid||0).toFixed(6)+' earned, never deposited';
+    }
+  }catch(e){}
+  try{
+    const [valHex,drHex,pid]=await Promise.all([
+      call(CONTRACT,SEL.valueOf+pad(KEEPER)),
+      call(CONTRACT,SEL.drift+pad(KEEPER)).catch(()=>null),
+      call(CONTRACT,SEL_POLICYOF+pad(KEEPER)).catch(()=>null)]);
+    $('ea_value').textContent='$'+(Number(BigInt(valHex))/1e18).toFixed(2)+' in its own wallet';
+    const id=pid?Number(BigInt(pid)):0;
+    if(!id){
+      $('ea_policy').textContent='not open yet';
+      $('ea_covenant').textContent='—';
+      $('ea_record').textContent='—';
+      $('ea_drift').textContent=drHex===null?'—':parseInt(drHex,16)+' bps';
+      $('ea_note').textContent='the account opens when the wages cover the gas to open it. it will not spend a dollar it has not earned, which is the same rule it applies to every job it turns down.';
+      return;
+    }
+    const pa=await call(CONTRACT,SEL_POLICYAT+pad(id));
+    const off=Number(BigInt('0x'+pa.slice(66,130)))/32;
+    const n=Number(BigInt('0x'+pa.slice(2+off*64,66+off*64)));
+    const w=[]; for(let i=0;i<n;i++) w.push(Number(BigInt('0x'+pa.slice(2+(off+1+i)*64,66+(off+1+i)*64))));
+    $('ea_policy').textContent='#'+id+' — '+w.map((v,i)=>[v,i]).filter(([v])=>v>0).sort((a,b)=>b[0]-a[0])
+      .map(([v,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(v/100).toFixed(0)+'%').join(' · ');
+    const cv=await call(CONTRACT,SEL_COVENANTOF+pad(id));
+    const maxA=Number(BigInt('0x'+cv.slice(2,66))), minC=Number(BigInt('0x'+cv.slice(66,130)));
+    const idx=Number(BigInt('0x'+cv.slice(130,194)))/1e18;
+    const parts=[]; if(maxA>0)parts.push('max '+(maxA/100).toFixed(0)+'% in one name');
+    if(minC>0)parts.push('cash never under '+(minC/100).toFixed(0)+'%');
+    $('ea_covenant').textContent=parts.length?parts.join(' · '):'nothing';
+    $('ea_record').textContent=((idx-1)*100>=0?'+':'')+((idx-1)*100).toFixed(3)+'%  (from the feeds, unwritable)';
+    $('ea_drift').textContent=drHex===null?'—':parseInt(drHex,16)+' bps';
+    $('ea_note').textContent='it published this policy for itself and bound itself to it on the same day, so the chain will refuse it the way it refuses any other manager.';
+  }catch(e){ $('ea_note').textContent='the chain is busy, the books follow.'; }
 }
 
 /* -------- careers -------- */
@@ -589,7 +648,7 @@ $('dk_jobs').onclick=()=>{openWin('win_jobs');loadJobs();renderDone();};
 $('dk_pay').onclick=()=>{openWin('win_pay');paintPaystub();};
 $('dk_mandate').onclick=async()=>{openWin('win_mandate');if(me)paintMandate();};
 $('dk_policy').onclick=()=>{openWin('win_policy');loadPolicies();};
-const SEL_POLICYCOUNT='0xde54d429', SEL_POLICYAT='0xb9a7f076', SEL_COVENANTOF='0xe73c9f64';
+const SEL_POLICYCOUNT='0xde54d429', SEL_POLICYAT='0xb9a7f076', SEL_COVENANTOF='0xe73c9f64', SEL_POLICYOF='0xf514d6e5';
 async function loadPolicies(){
   const rows=$('policy_rows');
   try{
