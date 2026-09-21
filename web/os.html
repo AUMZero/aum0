@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AUM0 OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
+<style>
+:root{
+  --desk:#c6d8c9; --deskline:#bccfc0; --win:#f4f1e6; --ink:#151510; --dim:#6d6f66;
+  --green:#2f6b46; --mint:#bfe3cf; --pink:#f3d9cf; --red:#e5484d; --live:#d7f0e0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{color:var(--ink);font:400 18px/1.5 ui-monospace,"Courier New",Menlo,monospace;
+  background:
+   repeating-linear-gradient(0deg,var(--deskline) 0 1px,transparent 1px 5px),
+   repeating-linear-gradient(90deg,var(--deskline) 0 1px,transparent 1px 5px),
+   var(--desk);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center}
+a{color:inherit;text-decoration:none}
+.px{font-family:Silkscreen,ui-monospace,monospace;letter-spacing:0}
+
+/* corner chrome */
+.bar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;z-index:5}
+.chip{background:var(--win);border:1.5px solid var(--ink);border-top:none;padding:10px 18px;font-size:18px;display:flex;gap:12px;align-items:center}
+.chip.left{border-left:none}
+.chip.left .sq{background:var(--ink);color:var(--win);padding:6px 8px;margin:-10px 0 -10px -18px;display:flex;align-items:center}
+.chip.left .sq img{width:22px;image-rendering:pixelated}
+.chip.right{border-right:none}
+.chip a:hover{text-decoration:underline}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--red)}
+
+/* the window */
+.window{margin:92px 0 170px;width:860px;max-width:94vw;background:var(--win);
+  border:1.5px solid var(--ink);border-radius:8px;box-shadow:6px 8px 0 rgba(21,21,16,.18);padding:10px 12px 12px}
+.titlebar{display:flex;align-items:center;gap:10px;padding:2px 2px 8px}
+.tb-btn{width:15px;height:15px;border:1.5px solid var(--ink);border-radius:3px;display:inline-block}
+.tb-x{position:relative}
+.tb-x::after{content:"✕";position:absolute;inset:-3px 0 0 1px;font-size:12px}
+.title{margin-left:auto;font-weight:700;font-size:19px}
+.screen{position:relative;background:#050705;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;height:376px;
+  display:flex;align-items:center;justify-content:center}
+.screen img{width:300px;image-rendering:pixelated}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
+.sc-top{position:absolute;top:12px;left:14px;color:#9fd8b4;font-size:18px}
+.sc-bot{position:absolute;bottom:0;left:0;right:0;background:#111511;color:#cfe6d5;display:flex;justify-content:space-between;
+  padding:7px 12px;font-size:17px;border-top:1px solid #223226}
+
+/* status panel */
+.status{margin-top:10px;border:1.5px solid var(--ink);border-radius:4px;background:#fdfcf6;padding:12px 14px}
+.st-1{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px}
+.st-1 .on{width:11px;height:11px;border-radius:50%;background:var(--red)}
+.st-2{margin-top:4px;font-size:18px;color:var(--dim);border-bottom:1.5px solid var(--ink);padding-bottom:10px}
+.st-row{display:flex;align-items:stretch;gap:10px;margin-top:10px}
+.stopped{flex:1;display:flex;align-items:center;font-weight:700;font-size:20px}
+.k-btn{border:1.5px solid var(--ink);border-radius:6px;background:var(--win);padding:8px 16px;text-align:center}
+.k-btn b{display:block;font-size:20px}
+.k-btn i{font-style:normal;font-size:16px;color:var(--dim)}
+.k-btn.mint{background:var(--mint)}
+.k-btn.pink{background:var(--pink)}
+
+/* channel bar */
+.ch-row{display:flex;gap:10px;margin-top:10px}
+.ch{flex:1;border:1.5px solid var(--ink);border-radius:6px;background:#fdfcf6;display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:18px}
+.live{background:var(--live);border:1.5px solid var(--ink);border-radius:4px;padding:2px 8px;font-size:15px;font-weight:700}
+.vol{width:280px;border:1.5px solid var(--ink);border-radius:6px;background:#fdfcf6;display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:18px}
+.vu{flex:1;height:14px;background:repeating-linear-gradient(90deg,var(--ink) 0 3px,transparent 3px 7px);opacity:.25}
+
+/* dock */
+.dock{position:fixed;bottom:0;left:50%;transform:translateX(-50%);display:flex;z-index:5}
+.dockin{display:flex;background:var(--win);border:1.5px solid var(--ink);border-bottom:none;border-radius:10px 10px 0 0;overflow:hidden}
+.di{width:112px;padding:14px 8px 12px;text-align:center;border-left:1.5px solid var(--ink);font-size:17px}
+.di:first-child{border-left:none}
+.di:hover{background:#e9e5d3}
+.di .ic{font-size:30px;line-height:1.2;display:block;margin-bottom:6px}
+@media (max-width:700px){
+  /* the chrome stacks into strips */
+  .bar{position:static;flex-direction:column}
+  .chip{border-left:none;border-right:none;width:100%;justify-content:center}
+  .chip.left .sq{margin:-10px 0 -10px 0}
+  /* the window breathes inside the phone */
+  .window{margin:18px 0 150px;width:96vw;padding:8px}
+  .screen{height:300px}
+  .screen img{width:210px}
+  .sc-bot{gap:8px}
+  .sc-bot span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sc-bot span:last-child{white-space:nowrap}
+  .st-row{flex-wrap:wrap}
+  .stopped{flex:1 1 100%}
+  .k-btn{flex:1 1 40%}
+  .ch-row{flex-direction:column}
+  .vol{width:100%}
+  /* the dock becomes one scrollable shelf */
+  .dock{left:0;right:0;transform:none;width:100%}
+  .dockin{width:100%;border-radius:0;flex-wrap:nowrap;overflow-x:auto;border-top:1.5px solid var(--ink)}
+  .di{flex:0 0 auto;width:auto;min-width:96px;font-size:18px;padding:12px 14px 10px}
+  .di .ic{font-size:24px;margin-bottom:4px}
+  /* sub windows become sheets */
+  .window.sub{position:fixed!important;left:2vw!important;right:2vw!important;top:12px!important;bottom:auto!important;transform:none!important;width:96vw!important;max-height:80vh;overflow:auto;margin:0!important;z-index:30!important}
+  /* fingers need bigger targets than a mouse */
+  .tb-btn{width:26px;height:26px;border-radius:5px}
+  .tb-x::after{inset:1px 0 0 5px;font-size:17px}
+  .titlebar{padding-bottom:10px}
+  /* wide tables scroll inside their pane, never the page */
+  #win_jobs .pane{overflow-x:auto}
+  #win_jobs .jt{min-width:540px}
+  .frow{flex-wrap:wrap}
+  .osbtn{padding:12px 20px}
+  .takebtn{padding:10px 16px}
+  /* the shelf hints that it slides */
+  .dock::after{content:'';position:absolute;right:0;top:0;bottom:0;width:42px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(244,241,230,0),rgba(244,241,230,.95))}
+  .dockin{padding-bottom:env(safe-area-inset-bottom)}
+}
+
+.window.sub{position:absolute;margin:0;padding:8px 10px 10px;width:auto;z-index:9;max-height:calc(100vh - 260px);overflow:auto}
+.window.alert{border-width:2px}
+.pane{border:1.5px solid var(--ink);border-radius:4px;background:#fdfcf6;padding:14px;margin-top:0;font-size:18px}
+.pane.mono{font-size:18px}
+.frow{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:10px 2px;border-bottom:1.5px solid #dcd8c8}
+.frow:last-of-type{border-bottom:none}
+.frow a{font-size:16px;color:var(--green);white-space:nowrap}
+.frow a:hover{text-decoration:underline}
+.fnote{margin-top:10px;font-size:16px;color:var(--dim)}
+.new{color:var(--green);font-size:13px}
+.dim2{color:var(--dim);font-size:17px;line-height:1.5}
+.jt{width:100%;border-collapse:collapse;font-size:17px}
+.jt th{text-align:left;border-bottom:1.5px solid var(--ink);padding:6px 8px;font-weight:700}
+.jt td{padding:9px 8px;border-bottom:1px solid #e2decd}
+.jt tr.dead td{opacity:.45}
+.prow{display:flex;justify-content:space-between;gap:12px;padding:7px 2px;border-bottom:1px solid #e2decd;font-size:17px}
+.prow span{color:var(--dim)} .prow b{text-align:right}
+.osbtn{border:1.5px solid var(--ink);border-radius:6px;background:var(--win);font:700 17px ui-monospace,monospace;padding:9px 18px;cursor:pointer}
+.osbtn:hover{background:#e9e5d3}
+.osbtn.ok{background:var(--mint)} .osbtn.no{background:var(--pink)}
+.takebtn{border:1.5px solid var(--ink);border-radius:6px;background:var(--mint);font:700 15px ui-monospace,monospace;padding:6px 12px;cursor:pointer}
+.takebtn:disabled{opacity:.5;cursor:default}
+
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="chip left px"><span class="sq"><img src="/employee.png" alt=""></span><a href="#" id="lnk_manage">GET MANAGED</a> / <a href="#" id="lnk_login">LOG IN</a></div>
+  <div class="chip right px"><span id="osdate">…</span><span class="dot"></span><span id="osblock">block …</span><a href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">GITHUB</a><a href="https://x.com/aum0com" target="_blank" rel="noopener">X</a></div>
+</div>
+
+<div class="window">
+  <div class="titlebar">
+    <span class="tb-btn tb-x"></span><span class="tb-btn"></span>
+    <span class="title px">AUM0</span>
+  </div>
+  <div class="screen">
+    <span class="sc-top px">EMPLOYEE CAM</span>
+    <img src="/employee.png" alt="the employee">
+    <div class="sc-bot"><span>the_employee_on_shift.rob</span><span>est. 2026 · 24/7</span></div>
+  </div>
+
+  <div class="status">
+    <div class="st-1">AUM0: ON SHIFT <span class="on"></span></div>
+    <div class="st-2" id="lastjob">the employee — reading the chain…</div>
+    <div class="st-row">
+      <div class="stopped">Working</div>
+      <div class="k-btn mint"><b id="s_jobs">—</b><i>rebalances</i></div>
+      <div class="k-btn"><b id="s_fees">—</b><i>paid out</i></div>
+      <div class="k-btn"><b>0.00%</b><i>fees</i></div>
+      <div class="k-btn pink"><b>0</b><i>staff</i></div>
+    </div>
+  </div>
+
+  <div class="ch-row">
+    <div class="ch">Fund: Merit edition <span style="color:var(--dim)">0x8AD0…85e3</span> <span class="live">LIVE</span></div>
+    <div class="vol">drift <div class="vu"></div><b id="s_drift">…</b></div>
+  </div>
+</div>
+
+<div class="dock"><div class="dockin px">
+  <a class="di" id="dk_me"><span class="ic">🪪</span>My desk</a>
+  <a class="di" id="dk_funds"><span class="ic">🗂</span>Funds</a>
+  <a class="di" id="dk_jobs"><span class="ic">🛎</span>Careers</a>
+  <a class="di" href="/"><span class="ic">🖥</span>The floor</a>
+  <a class="di" id="dk_pay"><span class="ic">🧾</span>Paystub</a>
+  <a class="di" id="dk_policy"><span class="ic">📜</span>Policy</a>
+  <a class="di" id="dk_mandate"><span class="ic">🔐</span>Mandate</a>
+  <a class="di" href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener"><span class="ic">🐙</span>GitHub</a>
+  <a class="di" href="https://x.com/aum0com" target="_blank" rel="noopener"><span class="ic">🐦</span>X</a>
+</div></div>
+
+
+<!-- ================= windows ================= -->
+<div class="window sub" id="win_funds" hidden style="left:6%;top:120px;width:520px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_funds"></span><span class="title px">FUNDS</span></div>
+  <div class="pane">
+    <div class="frow"><div><b>Merit</b> <span class="new px">NEW</span><br><span class="dim2">a manager earns only above the mark you joined at, and cannot cross the limits they carved.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x8AD0afa388EBd55Fb02e2F8d375dD63DB17785e3">0x8AD0…85e3</a></div>
+    <div class="frow"><div><b>Bitcoin</b><br><span class="dim2">stocks and bitcoin under one law, priced by the official feed.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x2116ad6cF8eC51f71fD158aE976178fc6Bf5E5B9">0x2116…E5b9</a></div>
+    <div class="frow"><div><b>World</b><br><span class="dim2">anyone publishes a policy, anyone follows it. authors earn a royalty.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x356B8b6ed5CBAaa5879945dACb7Dce6408a679b2">0x356B…79b2</a></div>
+    <div class="frow"><div><b>Pension</b><br><span class="dim2">a policy that ages. sign once, forty years.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x4f08bdC9353060351f95207CD47D67D1cF6e5989">0x4f08…5989</a></div>
+    <div class="frow"><div><b>Desk</b><br><span class="dim2">two wallets trade with each other at the feed.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0xf7DBb9142A194F5f409c2c587cFC559D77C40358">0xf7DB…0358</a></div>
+    <div class="frow"><div><b>Bid</b><br><span class="dim2">workers are paid for the price they deliver.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0xb0C34AC5e846e0159f711Db84802D512E916A51F">0xb0C3…A51F</a></div>
+    <div class="frow"><div><b>Wallet</b><br><span class="dim2">the original. twenty six assets, three walls.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x3484F1cC081A98103CE0E9E42AE96a2A770eCd79">0x3484…Cd79</a></div>
+    <div class="fnote">every fund: 0.00% fees, no owner, no admin, no upgrade path. the address is the prospectus.</div>
+    <div style="border-top:1.5px solid var(--ink);margin-top:12px;padding-top:10px"><b>the shelf</b>
+      <div class="dim2" style="margin:4px 0 8px">portfolios anyone can take. adopt one and the weights become your policy, in your own wallet. nothing moves, nothing is pooled.</div>
+      <div id="shelf_rows"></div>
+    </div>
+  </div>
+</div>
+
+<div class="window sub" id="win_policy" hidden style="left:8%;top:110px;width:660px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_policy"></span><span class="title px">POLICY BOARD — ANYONE IS A MANAGER</span></div>
+  <div class="pane">
+    <div class="dim2" style="margin-bottom:10px">a Wall Street manager takes a percentage of your money whether it grew or shrank, and the promises in a prospectus are checked by a person reading a filing afterwards. here a manager is paid only while their published allocation stands above where you joined it, and the limits they carved on the day they published are refused by the chain if they ever try to cross them.</div>
+    <table class="jt"><thead><tr><th>#</th><th>manager</th><th>allocation</th><th>promise</th><th>record</th><th>royalty</th><th>following</th></tr></thead>
+    <tbody id="policy_rows"><tr><td colspan="5" class="dim2">reading the chain…</td></tr></tbody></table>
+    <div class="dim2" id="policy_msg" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<div class="window sub" id="win_jobs" hidden style="right:4%;top:130px;width:640px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_jobs"></span><span class="title px">CAREERS — OPEN POSITIONS</span></div>
+  <div class="pane">
+    <div class="dim2" style="margin-bottom:10px">when an account drifts off its policy, the job posts here with its pay. any wallet may press. no interview. the contract cannot say no to you.</div>
+    <table class="jt"><thead><tr><th>account</th><th>worth</th><th>drift</th><th>pay</th><th></th></tr></thead>
+    <tbody id="jobs_rows"><tr><td colspan="5" class="dim2">reading the chain…</td></tr></tbody></table>
+    <div class="dim2" id="jobs_msg" style="margin-top:10px"></div>
+    <div style="border-top:1.5px solid var(--ink);margin-top:12px;padding-top:10px"><b>work completed</b>
+      <table class="jt" style="margin-top:8px"><tbody id="done_rows"><tr><td class="dim2">reading the ledger…</td></tr></tbody></table>
+    </div>
+  </div>
+</div>
+
+<div class="window sub" id="win_pay" hidden style="left:10%;top:150px;width:600px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_pay"></span><span class="title px">PAYSTUB.TXT</span></div>
+  <div class="pane mono">
+    <div class="prow"><span>employee</span><b>the employee (sole staff)</b></div>
+    <div class="prow"><span>salary</span><b>none. bounties only.</b></div>
+    <div class="prow"><span>gas on hand</span><b id="ps_gas">…</b></div>
+    <div class="prow"><span>wages on hand</span><b id="ps_wages">…</b></div>
+    <div class="prow"><span>earned, lifetime</span><b id="ps_earned">…</b></div>
+    <div class="prow"><span>fuel policy</span><b>buys its own gas from wages</b></div>
+
+    <div style="border-top:1.5px solid var(--ink);margin-top:14px;padding-top:12px">
+      <b>the employee's own account</b>
+      <div class="dim2" style="margin:6px 0 10px">it has worked here since the first block and never been paid a salary. every asset in this account is a bounty it was paid for a job somebody else could have taken. gas is the one thing it does not always buy itself. every figure below is read off the chain.</div>
+      <div class="prow"><span>jobs completed</span><b id="ea_jobs">…</b></div>
+      <div class="prow"><span>lifetime wages</span><b id="ea_wages">…</b></div>
+      <div class="prow"><span>account value</span><b id="ea_value">…</b></div>
+      <div class="prow"><span>its policy</span><b id="ea_policy">…</b></div>
+      <div class="prow"><span>bound by</span><b id="ea_covenant">…</b></div>
+      <div class="prow"><span>record since it opened</span><b id="ea_record">…</b></div>
+      <div class="prow"><span>drift</span><b id="ea_drift">…</b></div>
+      <div class="dim2" id="ea_note" style="margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="window sub" id="win_mandate" hidden style="right:8%;top:220px;width:480px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_mandate"></span><span class="title px">SYSTEM PERMISSION</span></div>
+  <div class="pane">
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      <img src="/employee.png" style="width:54px;image-rendering:pixelated" alt="">
+      <div><b>"AUM0" would like permission to rebalance this wallet.</b>
+      <div class="dim2" style="margin-top:6px">it can move assets only to rebalance you, and only back to you. there is no deposit. revoking is one click and total.</div></div>
+    </div>
+    <div class="prow" style="margin-top:14px"><span>wallet</span><b id="md_wallet">not connected</b></div>
+    <div class="prow"><span>permission</span><b id="md_state">—</b></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="osbtn ok" id="md_grant">Allow</button>
+      <button class="osbtn no" id="md_revoke">Revoke all</button>
+    </div>
+    <div class="dim2" id="md_msg" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<div class="window sub" id="win_manage" hidden style="left:50%;top:150px;transform:translateX(-50%);width:520px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_manage"></span><span class="title px">SETUP ASSISTANT</span></div>
+  <div class="pane">
+    <b>Manage what this wallet already holds.</b>
+    <div class="dim2" style="margin-top:6px">the mix in your wallet becomes your policy, and the firm keeps you on it from then on. a sliver of cash is kept so your account can pay its own workers. no deposit, no decisions.</div>
+    <div class="prow" style="margin-top:12px"><span>wallet</span><b id="mg_wallet">not connected</b></div>
+    <div class="prow"><span>holdings</span><b id="mg_mix">—</b></div>
+    <button class="osbtn ok" id="mg_go" style="margin-top:14px;width:100%">Begin</button>
+    <div class="dim2" id="mg_msg" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<div class="window sub" id="win_me" hidden style="left:16%;top:110px;width:540px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_me"></span><span class="title px">MY DESK</span></div>
+  <div class="pane">
+    <div class="prow"><span>wallet</span><b id="me_addr">not connected</b></div>
+    <div class="prow"><span>under management</span><b id="me_worth">—</b></div>
+    <div class="prow"><span>drift</span><b id="me_drift">—</b></div>
+    <div class="prow"><span>policy</span><b id="me_policy">—</b></div>
+    <div class="prow"><span>paid for help, lifetime</span><b id="me_paid">—</b></div>
+    <div class="dim2" id="me_note" style="margin-top:10px">everything stays in your own wallet. jobs post themselves at 300 bps; you do nothing.</div>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="osbtn ok" id="me_manage">Setup assistant</button>
+      <a class="osbtn" href="/#law">Edit on the floor</a>
+    </div>
+  </div>
+</div>
+
+<div class="window sub alert" id="win_alert" hidden style="left:50%;top:260px;transform:translateX(-50%);width:430px">
+  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_alert"></span><span class="title px">AUM0 OS</span></div>
+  <div class="pane" style="display:flex;gap:14px;align-items:flex-start">
+    <div class="px" style="font-size:30px">⚠</div>
+    <div id="alert_msg" style="flex:1">…</div>
+  </div>
+  <div class="pane" style="padding-top:0;text-align:right"><button class="osbtn" data-close="win_alert">OK</button></div>
+</div>
+
+<script>
+const SEL = { assetCount:'0xeafe7a74', deposit:'0xe2bbb158', withdraw:'0x441a3e70', setTarget:'0xf3397382', drift:'0x389cc952', valueOf:'0xa48028aa', accountOf:'0x8086b8ba', bal:'0x915aeb7c', approve:'0x095ea7b3', allowance:'0xdd62ed3e' };
+const STOCKS = [
+  ['NVDA','0x379EC4f7C378F34a1B47E4F3cbeBCbAC3E8E9F15','0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC'],
+  ['SPCX','0xB265810950ba6c5C0Ff821c9963014a56fD8Bffb','0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa'],
+  ['TSLA','0x4A1166a659A55625345e9515b32adECea5547C38','0x322F0929c4625eD5bAd873c95208D54E1c003b2d'],
+  ['AAPL','0x6B22A786bAa607d76728168703a39Ea9C99f2cD0','0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9'],
+  ['MSFT','0x45C3C877C15E6BA2EBB19eA114Ea508d14C1Af2E','0xe93237C50D904957Cf27E7B1133b510C669c2e74'],
+  ['AMZN','0xD5a1508ceD74c084eBf3cBe853e2C968fB2a651C','0x12f190a9F9d7D37a250758b26824B97CE941bF54'],
+  ['MU','0x425EEFdCf05ed6526C3cE61Af99429A228a6d596','0xfF080c8ce2E5feadaCa0Da81314Ae59D232d4afD'],
+  ['SPY','0x319724394D3A0e3669269846abE664Cd621f9f6A','0x117cc2133c37B721F49dE2A7a74833232B3B4C0C'],
+  ['PLTR','0x820ABedFF239034956B7A9d2F0a331f9F075eB4c','0x894E1EC2D74FFE5AEF8Dc8A9e84686acCB964F2A'],
+  ['SNDK','0xfb133Fa4B7b385802B693a293606682Df47109A3','0xB90A19fF0Af67f7779afF50A882A9CfF42446400'],
+  ['INTC','0x3f390C5C24628Ac7C489515402235FeAD71D1913','0xc72b96e0E48ecd4DC75E1e45396e26300BC39681'],
+  ['AMD','0x943A29E7ae51A4798823ca9eEd2ed533B2A22C72','0x86923f96303D656E4aa86D9d42D1e57ad2023fdC'],
+  ['GOOGL','0xF6f373a037c30F0e5010d854385cA89185AE638b','0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3'],
+  ['META','0x7C38C00C30BEe9378381E7B6135d7283356D71b1','0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35'],
+  ['USAR','0x451B1295aA84FD6d6b58af1a5002eA1b1A1913A0','0xd917B029C761D264c6A312BBbcDA868658eF86a6'],
+  // and the eleven the venue widened to: an index, a treasury bill, metal, oil
+  ['QQQ','0x80901d846d5D7B030F26B480776EE3b29374C2ae','0xD5f3879160bc7c32ebb4dC785F8a4F505888de68'],
+  ['SGOV','0xa0DF4ee0fFf975306345875E3548Fcc519577A11','0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5'],
+  ['SLV','0x209b73908e92Ae021826eD79609845451Ecba2ce','0x411eFb0E7f985935DAec3D4C3ebaEa0d0AD7D89f'],
+  ['USO','0x75a9c76Ef439e2C7c2E5a34Ab105EcFe3766431c','0xa30FA36Db767ad9eD3f7a60fC79526fB4d56D344'],
+  ['GME','0x27C71df6A64fB476468EdF256CF72c038baB5B67','0x1b0E319c6A659F002271B69dB8A7df2F911c153E'],
+  ['CRCL','0x6652eDf64bA3731C4F2D3ce821A0Fb1f1f6b482a','0xdF0992E440dD0be65BD8439b609d6D4366bf1CB5'],
+  ['DELL','0x1C6c8cADBe02E19129c39dDB92281cE4c0bf206b','0x941AE714EC6D8130c7B75d67160Ca08f1e7d11Dd'],
+  ['MSTR','0x396118bdFB181e6240E74D243F266B061c0edc3D','0xec262a75e413fAfD0dF80480274532C79D42da09'],
+  ['TSM','0x874cF94aa8eC88Fd9560094dD065f2fB3E41Fc2F','0x58FfE4a942d3885bAa22D7520691F611EF09e7AA'],
+  ['BABA','0x62Cc8F9b5f56a33c9C8A60c8B92779f523c4E984','0xad25Ac6C84D497db898fa1E8387bf6Af3532a1c4'],
+  ['ASML','0xB4106147E8cce40b7d46124090d373A71b70f87D','0x47F93d52cBeC7C6D2CfC080e154002370a60dAEA'],
+  ['cbBTC','0x3546407C5F94dD7Eab3a853D245b5C5EAb53318a','0xCEC185eB182c47d1bA1EFc84e6959e18cd620Be4',8],
+];
+const DEC=i=>i===0?6:(STOCKS[i-1][3]||18);
+const SEL_REBALANCE='0x4db4b4c9';
+const REB='0xbecdda7c726841dea88e1495b6f401a1d64029ba261415622f400509cf097b35';
+const TARGETSET='0xb8766537c154c2943c70a08668e5bbee5aa95bb3a80803f9c11d0b49b846fb87';
+const USDG='0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
+const KEEPER='0x3c71044dca7aa1eb401913a2f96277abe8c019a4';
+const CONTRACT='0x8AD0afa388EBd55Fb02e2F8d375dD63DB17785e3';
+const CHAIN_HEX='0x1237';
+const EXPLORER='https://explorer.mainnet.chain.robinhood.com';
+const WALLET_VENUES=[
+ [CONTRACT,'0x3750836'],
+ ['0x2116ad6cF8eC51f71fD158aE976178fc6Bf5E5B9','0x36f3c44'],
+ ['0x356B8b6ed5CBAaa5879945dACb7Dce6408a679b2','0x364177c'],
+ ['0x4f08bdC9353060351f95207CD47D67D1cF6e5989','0x353ef82'],
+ ['0xf7DBb9142A194F5f409c2c587cFC559D77C40358','0x34f66fd'],
+ ['0x3484F1cC081A98103CE0E9E42AE96a2A770eCd79','0x334a3f8'],
+ ['0xaFd484733f4B23e235bf1825c9AdA39368160B03','0x3096d00'],
+];
+const ALL_VENUES=[...WALLET_VENUES,['0xcc27Dd6FD74210303660643bcf6c9d115443bFcA','0x3077e40'],['0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde','0x3042380']];
+const MAX='f'.repeat(64);
+
+const $=id=>document.getElementById(id);
+const pad=(v,n=64)=>BigInt(v).toString(16).padStart(n,'0');
+const rpc=async(m,p)=>{const r=await fetch('/api/rpc',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:m,params:p})});const j=await r.json();if(j.error)throw new Error(j.error.message||'rpc');return j.result;};
+const call=(to,data)=>rpc('eth_call',[{to,data},'latest']);
+let me=null;
+async function connect(){
+  if(!window.ethereum){
+    const here=encodeURIComponent(location.origin);
+    if(matchMedia('(max-width:700px)').matches){
+      $('alert_msg').innerHTML='no wallet lives in this browser. open this page inside your wallet app and everything works:'
+        +'<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">'
+        +'<a class="osbtn ok" href="okx://wallet/dapp/url?dappUrl='+here+'">Open in OKX</a>'
+        +'<a class="osbtn ok" href="https://link.metamask.io/dapp/aumzero.com">Open in MetaMask</a></div>';
+    } else {
+      $('alert_msg').innerHTML='no wallet extension in this browser. point your phone camera at this and the firm opens in your hand; from there, open it in your wallet app:'
+        +'<div id="qr_box" style="margin:14px auto 4px;width:180px;background:#fff;padding:10px;border:1.5px solid var(--ink);border-radius:6px"></div>';
+      if(window.QRCode) new QRCode(document.getElementById('qr_box'),{text:location.origin,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});
+      else document.getElementById('qr_box').textContent='aumzero.com';
+    }
+    openWin('win_alert');
+    return;
+  }
+  const [a]=await window.ethereum.request({method:'eth_requestAccounts'});
+  try{await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN_HEX}]});}
+  catch(e){await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:CHAIN_HEX,chainName:'Robinhood Chain',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:['https://rpc.mainnet.chain.robinhood.com'],blockExplorerUrls:[EXPLORER]}]});}
+  me=a;
+  for(const id of ['md_wallet','mg_wallet']) $(id).textContent=a.slice(0,6)+'…'+a.slice(-4);
+  return a;
+}
+async function send(to,data){const h=await window.ethereum.request({method:'eth_sendTransaction',params:[{from:me,to,data}]});return h;}
+
+let pxCache=null;
+async function allPrices(){
+  if(pxCache) return pxCache;
+  const r=await fetch('/api/prices'); const px=await r.json();
+  if(Array.isArray(px)){pxCache=px;setTimeout(()=>pxCache=null,25000);return px;}
+  throw new Error('prices unavailable');
+}
+
+/* -------- window manager -------- */
+let zTop=20;
+function openWin(id){const w=$(id);w.hidden=false;w.style.zIndex=++zTop;}
+function alertOS(msg){$('alert_msg').textContent=msg;openWin('win_alert');}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-close]'); if(c){$(c.dataset.close).hidden=true;}
+});
+document.querySelectorAll('.window.sub').forEach(w=>{
+  w.addEventListener('pointerdown',()=>w.style.zIndex=++zTop);
+  const bar=w.querySelector('.drag'); if(!bar) return;
+  bar.addEventListener('pointerdown',ev=>{
+    if(matchMedia('(max-width:700px)').matches)return;
+    if(ev.target.closest('[data-close]'))return;
+    const r=w.getBoundingClientRect(),dx=ev.clientX-r.left,dy=ev.clientY-r.top;
+    w.style.left=r.left+'px';w.style.top=r.top+'px';w.style.right='auto';w.style.transform='none';
+    const mv=e2=>{w.style.left=(e2.clientX-dx)+'px';w.style.top=(e2.clientY-dy)+'px';};
+    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);};
+    addEventListener('pointermove',mv);addEventListener('pointerup',up);
+  });
+});
+
+/* -------- desktop clock + factsheet -------- */
+const d=new Date();
+$('osdate').textContent=d.toUTCString().slice(0,3).toUpperCase()+' '+d.getUTCDate()+' '+d.toUTCString().slice(8,11).toUpperCase()+' '+d.getUTCFullYear();
+let workLogs=[];
+let statUsers=[];
+(async()=>{
+  try{
+    const st=await (await fetch('/api/stats')).json();
+    if(st.error) throw new Error(st.error);
+    $('osblock').textContent='block '+st.block.toLocaleString();
+    $('s_jobs').textContent=st.jobs; $('s_fees').textContent='$'+st.fees.toFixed(2);
+    if(st.recent.length){const l=st.recent[0];$('lastjob').textContent='last job — drift '+l.d0+' → '+l.d1+' bps, paid by the wallet it walked home';}
+    workLogs=st.recent; statUsers=st.users;
+    $('ps_earned').textContent='$'+st.keeperPaid.toFixed(2)+' across '+st.keeperJobs+' jobs';
+    renderDone();
+    const dr=await call(CONTRACT,SEL.drift+pad(KEEPER));
+    $('s_drift').textContent=parseInt(dr,16)+' bps';
+    paintPaystub();
+  }catch(e){}
+})();
+
+/* -------- paystub -------- */
+async function paintPaystub(){
+  try{
+    const [gasHex,wagesHex]=await Promise.all([rpc('eth_getBalance',[KEEPER,'latest']),call(USDG,'0x70a08231'+pad(KEEPER))]);
+    const gas=Number(BigInt(gasHex))/1e18,wages=Number(BigInt(wagesHex))/1e6;
+    $('ps_gas').textContent=gas.toFixed(4)+' ETH';
+    $('ps_wages').textContent=wages.toFixed(2)+' USDG';
+  }catch(e){}
+  paintEmployeeAccount();
+}
+
+/* -------- the employee's own account --------
+   The firm's only worker keeps an account at the firm. It never received a
+   deposit: every dollar in it is a dollar it was paid for work, and the record
+   is computed from the feeds, so nobody can write it up or write it down. */
+async function paintEmployeeAccount(){
+  try{
+    const st=await fetch('/api/stats').then(r=>r.json()).catch(()=>null);
+    if(st&&st.keeperJobs!==undefined){
+      $('ea_jobs').textContent=st.keeperJobs+' since the first block';
+      $('ea_wages').textContent='$'+Number(st.keeperPaid||0).toFixed(6)+' in bounties, paid by the wallets it served';
+    }
+  }catch(e){}
+  try{
+    const [valHex,drHex,pid]=await Promise.all([
+      call(CONTRACT,SEL.valueOf+pad(KEEPER)),
+      call(CONTRACT,SEL.drift+pad(KEEPER)).catch(()=>null),
+      call(CONTRACT,SEL_POLICYOF+pad(KEEPER)).catch(()=>null)]);
+    $('ea_value').textContent='$'+(Number(BigInt(valHex))/1e18).toFixed(2)+' in its own wallet';
+    const id=pid?Number(BigInt(pid)):0;
+    if(!id){
+      $('ea_policy').textContent='not open yet';
+      $('ea_covenant').textContent='—';
+      $('ea_record').textContent='—';
+      $('ea_drift').textContent=drHex===null?'—':parseInt(drHex,16)+' bps';
+      $('ea_note').textContent='the account opens when the wages cover the gas to open it. it will not spend a dollar it has not earned, which is the same rule it applies to every job it turns down.';
+      return;
+    }
+    const pa=await call(CONTRACT,SEL_POLICYAT+pad(id));
+    const off=Number(BigInt('0x'+pa.slice(66,130)))/32;
+    const n=Number(BigInt('0x'+pa.slice(2+off*64,66+off*64)));
+    const w=[]; for(let i=0;i<n;i++) w.push(Number(BigInt('0x'+pa.slice(2+(off+1+i)*64,66+(off+1+i)*64))));
+    $('ea_policy').textContent='#'+id+' — '+w.map((v,i)=>[v,i]).filter(([v])=>v>0).sort((a,b)=>b[0]-a[0])
+      .map(([v,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(v/100).toFixed(0)+'%').join(' · ');
+    const cv=await call(CONTRACT,SEL_COVENANTOF+pad(id));
+    const maxA=Number(BigInt('0x'+cv.slice(2,66))), minC=Number(BigInt('0x'+cv.slice(66,130)));
+    const idx=Number(BigInt('0x'+cv.slice(130,194)))/1e18;
+    const parts=[]; if(maxA>0)parts.push('max '+(maxA/100).toFixed(0)+'% in one name');
+    if(minC>0)parts.push('cash never under '+(minC/100).toFixed(0)+'%');
+    $('ea_covenant').textContent=parts.length?parts.join(' · '):'nothing';
+    $('ea_record').textContent=((idx-1)*100>=0?'+':'')+((idx-1)*100).toFixed(3)+'%  (from the feeds, unwritable)';
+    $('ea_drift').textContent=drHex===null?'—':parseInt(drHex,16)+' bps';
+    $('ea_note').textContent='it published this policy for itself and bound itself to it on the same day, so the chain will refuse it the way it refuses any other manager.';
+  }catch(e){ $('ea_note').textContent='the chain is busy, the books follow.'; }
+}
+
+/* -------- careers -------- */
+async function readAccount(user,venue){
+  const [acct,val,dr]=await Promise.all([
+    call(venue,SEL.accountOf+pad(user)),call(venue,SEL.valueOf+pad(user)),
+    call(venue,SEL.drift+pad(user)).catch(()=>null)]);
+  const words=i=>BigInt('0x'+acct.slice(2+i*64,66+i*64));
+  const off=Number(words(0))/32, minDrift=Number(words(1)), band=Number(words(2)), bounty=Number(words(3))/1e6;
+  const n=Number(BigInt('0x'+acct.slice(2+off*64,66+off*64)));
+  const weights=[]; for(let i=0;i<n;i++) weights.push(Number(BigInt('0x'+acct.slice(2+(off+1+i)*64,66+(off+1+i)*64))));
+  return {user,venue,minDrift,band,bounty,weights,value:Number(BigInt(val))/1e18,drift:dr===null?null:parseInt(dr,16)};
+}
+async function planTrades(a){
+  const px=await allPrices();
+  const n=Number(BigInt(await call(a.venue,SEL.assetCount)));
+  const raws=await Promise.all(Array.from({length:n},(_,i)=>call(a.venue,SEL.bal+pad(a.user)+pad(i))));
+  const bal=raws.map((r,i)=>Number(BigInt(r))/10**DEC(i));
+  const value=bal.reduce((s,b,i)=>s+b*px[i],0);
+  const sells=[],buys=[];let freed=0,needed=0;
+  for(let i=1;i<n;i++){
+    const delta=(value*(a.weights[i]||0)/10000-bal[i]*px[i])*0.97;
+    if(delta<-0.05){sells.push({sell:BigInt(i),buy:0n,amountIn:BigInt(Math.floor(-delta/px[i]*10**DEC(i)))});freed+=-delta;}
+    else if(delta>0.05){buys.push({sell:0n,buy:BigInt(i),amountIn:BigInt(Math.floor(delta*1e6)),usd:delta});needed+=delta;}
+  }
+  const budget=bal[0]+freed*0.99;
+  if(needed>budget) for(const b of buys) b.amountIn=BigInt(Math.floor(Number(b.amountIn)*budget/needed));
+  const trades=[...sells,...buys].filter(t=>t.amountIn>0n);
+  return trades.length?{trades,cashAfter:budget-Math.min(needed,budget)}:null;
+}
+async function loadJobs(){
+  const rows=$('jobs_rows');
+  try{
+    if(!statUsers.length){const st=await (await fetch('/api/stats')).json();statUsers=st.users||[];workLogs=st.recent||workLogs;}
+    const accounts=[];
+    for(const [venue,u] of statUsers) accounts.push(await readAccount(u,venue));
+    const open=accounts.filter(a=>a.value>0.5&&a.drift!==null&&a.drift>=Math.max(a.minDrift,300));
+    open.sort((x,y)=>y.bounty*y.drift-x.bounty*x.drift);
+    rows.innerHTML='';
+    for(const a of open){
+      const pay=a.bounty*a.drift/10000;
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+a.user.slice(0,6)+'…'+a.user.slice(-4)+'</td><td>$'+a.value.toFixed(2)+'</td><td>'+a.drift+' bps</td><td><b>$'+pay.toFixed(2)+'</b></td><td><button class="takebtn">take</button></td>';
+      tr.querySelector('button').onclick=()=>takeJob(a,tr);
+      rows.appendChild(tr);
+    }
+    if(!open.length) rows.innerHTML='<tr><td colspan="5" class="dim2">no open positions right now. accounts are on their laws, watched every block.</td></tr>';
+  }catch(e){rows.innerHTML='<tr><td colspan="7" class="dim2">the board is unreachable: '+(e.message||e).toString().slice(0,50)+'</td></tr>';}
+}
+async function takeJob(a,tr){
+  const btn=tr.querySelector('button');
+  try{
+    if(!me){await connect();if(!me)return;}
+    btn.disabled=true;btn.textContent='checking…';
+    const plan=await planTrades(a);
+    if(!plan) throw new Error('nothing to trade');
+    const data=SEL_REBALANCE+pad(a.user)+pad(0x40)+pad(plan.trades.length)+plan.trades.map(t=>pad(t.sell)+pad(t.buy)+pad(t.amountIn)).join('');
+    try{await rpc('eth_call',[{from:me,to:a.venue,data},'latest']);}
+    catch(sim){tr.classList.add('dead');btn.textContent='not fillable';
+      return alertOS('this job will not clear right now. the pool and the official feed disagree, or the employee already took it. nothing was sent to your wallet.');}
+    btn.textContent='working…';
+    const h=await send(a.venue,data);
+    $('jobs_msg').textContent='job taken. the pay lands when the block does. tx '+h.slice(0,14)+'…';
+    setTimeout(loadJobs,6000);
+  }catch(e){btn.disabled=false;btn.textContent='take';alertOS('refused: '+(e.message||e).toString().slice(0,90));}
+}
+
+/* -------- mandate -------- */
+async function allowanceOf(t){return BigInt(await call(t,SEL.allowance+pad(me)+pad(CONTRACT)));}
+async function heldTokens(){
+  const raws=await Promise.all(STOCKS.map((_,i)=>call(CONTRACT,SEL.bal+pad(me)+pad(i+1))));
+  return [USDG,...STOCKS.filter((_,i)=>BigInt(raws[i])>0n).map(s=>s[2])];
+}
+async function paintMandate(){
+  if(!me){$('md_state').textContent='connect first';return;}
+  const toks=await heldTokens();
+  const allows=await Promise.all(toks.map(allowanceOf));
+  const missing=toks.filter((t,i)=>allows[i]===0n);
+  $('md_state').textContent=missing.length?missing.length+' of '+toks.length+' permissions missing':'granted ('+toks.length+' assets)';
+  return missing;
+}
+$('md_grant').onclick=async()=>{
+  try{
+    if(!me){await connect();if(!me)return;}
+    const missing=await paintMandate();
+    if(!missing||!missing.length){$('md_msg').textContent='already granted for everything you hold.';return;}
+    for(let i=0;i<missing.length;i++){
+      $('md_msg').textContent='permission '+(i+1)+' of '+missing.length+'…';
+      await send(missing[i],SEL.approve+pad(CONTRACT)+MAX);
+    }
+    $('md_msg').textContent='granted. it can move these only to rebalance you, only back to you.';
+    paintMandate();
+  }catch(e){alertOS('refused: '+(e.message||e).toString().slice(0,90));}
+};
+$('md_revoke').onclick=async()=>{
+  try{
+    if(!me){await connect();if(!me)return;}
+    for(const t of [USDG,...STOCKS.map(x=>x[2])]){
+      if((await allowanceOf(t))>0n) await send(t,SEL.approve+pad(CONTRACT)+pad(0));
+    }
+    $('md_msg').textContent='revoked. nothing to withdraw: you never gave anything up.';
+    paintMandate();
+  }catch(e){alertOS('refused: '+(e.message||e).toString().slice(0,90));}
+};
+
+/* -------- setup assistant (manage what i hold) -------- */
+async function paintManage(){
+  if(!me) return;
+  const px=await allPrices();
+  const raws=await Promise.all(Array.from({length:STOCKS.length+1},(_,i)=>call(CONTRACT,SEL.bal+pad(me)+pad(i))));
+  const bal=raws.map((r,i)=>Number(BigInt(r))/10**DEC(i));
+  const value=bal.reduce((s,b,i)=>s+b*px[i],0);
+  const parts=bal.map((b,i)=>[b*px[i],i]).filter(([v])=>v>0.01).sort((a,b)=>b[0]-a[0])
+    .map(([v,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(v/value*100).toFixed(0)+'%');
+  $('mg_mix').textContent=value<0.5?'nothing to manage yet':'$'+value.toFixed(2)+' — '+parts.slice(0,5).join(' · ');
+  return {bal,value,px};
+}
+$('mg_go').onclick=async()=>{
+  try{
+    if(!me){await connect();if(!me)return;}
+    const st=await paintManage();
+    if(!st||st.value<0.5) return alertOS('this wallet holds nothing to manage yet. bring USDG or stocks to it on Robinhood Chain first.');
+    const {bal,value,px}=st;
+    let w=bal.map((b,i)=>Math.floor(b*px[i]/value*10000));
+    if(w[0]<200){const inS=w.slice(1).reduce((a,b)=>a+b,0)||1;w=w.map((v,i)=>i===0?200:Math.floor(v*9800/inS));}
+    w[0]+=10000-w.reduce((a,b)=>a+b,0);
+    const toks=await heldTokens();
+    const allows=await Promise.all(toks.map(allowanceOf));
+    const missing=toks.filter((t,i)=>allows[i]===0n);
+    for(let i=0;i<missing.length;i++){
+      $('mg_msg').textContent='signature '+(i+1)+' of '+(missing.length+1)+': permission…';
+      await send(missing[i],SEL.approve+pad(CONTRACT)+MAX);
+    }
+    $('mg_msg').textContent='last signature: carving your policy.';
+    const data=SEL.setTarget+pad(0x80)+pad(100)+pad(200)+pad(200000n)+pad(w.length)+w.map(v=>pad(v)).join('');
+    await send(CONTRACT,data);
+    $('mg_msg').textContent='done. the mix you already built is the policy now. this wallet maintains itself from here.';
+  }catch(e){alertOS('refused: '+(e.message||e).toString().slice(0,90));}
+};
+
+/* -------- dock + chrome wiring -------- */
+$('dk_funds').onclick=()=>openWin('win_funds');
+$('dk_jobs').onclick=()=>{openWin('win_jobs');loadJobs();renderDone();};
+$('dk_pay').onclick=()=>{openWin('win_pay');paintPaystub();};
+$('dk_mandate').onclick=async()=>{openWin('win_mandate');if(me)paintMandate();};
+$('dk_policy').onclick=()=>{openWin('win_policy');loadPolicies();};
+const SEL_POLICYCOUNT='0xde54d429', SEL_POLICYAT='0xb9a7f076', SEL_COVENANTOF='0xe73c9f64', SEL_POLICYOF='0xf514d6e5';
+async function loadPolicies(){
+  const rows=$('policy_rows');
+  try{
+    const cnt=Number(BigInt(await call(CONTRACT,SEL_POLICYCOUNT)));
+    if(!cnt){rows.innerHTML='<tr><td colspan="7" class="dim2">no policy published yet. be the first: publish on the floor.</td></tr>';return;}
+    const out=[];
+    for(let id=1;id<=cnt;id++){
+      const r=await call(CONTRACT,SEL_POLICYAT+pad(id));
+      const author='0x'+r.slice(26,66);
+      const off=Number(BigInt('0x'+r.slice(66,130)))/32;
+      const roy=Number(BigInt('0x'+r.slice(130,194)));
+      const followers=Number(BigInt('0x'+r.slice(194,258)));
+      const retired=BigInt('0x'+r.slice(258,322))===1n;
+      const n=Number(BigInt('0x'+r.slice(2+off*64,66+off*64)));
+      const w=[];for(let i=0;i<n;i++)w.push(Number(BigInt('0x'+r.slice(2+(off+1+i)*64,66+(off+1+i)*64))));
+      const mix=w.map((v,i)=>[v,i]).filter(([v])=>v>0).sort((a,b)=>b[0]-a[0])
+        .map(([v,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(v/100).toFixed(0)+'%').join(' · ');
+      // the covenant and the record, on editions that carry them
+      let promise='', record='';
+      try{
+        const c=await call(CONTRACT,SEL_COVENANTOF+pad(id));
+        const maxA=Number(BigInt('0x'+c.slice(2,66))), minC=Number(BigInt('0x'+c.slice(66,130)));
+        const idx=Number(BigInt('0x'+c.slice(130,194)))/1e18;
+        const parts=[];
+        if(maxA>0) parts.push('max '+(maxA/100).toFixed(0)+'% in one');
+        if(minC>0) parts.push('cash ≥ '+(minC/100).toFixed(0)+'%');
+        promise=parts.length?parts.join(' · '):'none';
+        record=((idx-1)*100>=0?'+':'')+((idx-1)*100).toFixed(2)+'%';
+      }catch(e){promise='—';record='—';}
+      out.push({id,author,mix,roy,followers,retired,promise,record});
+    }
+    rows.innerHTML=out.map(p=>'<tr'+(p.retired?' style="opacity:.5"':'')+'><td>'+p.id+'</td>'
+      +'<td><a target="_blank" rel="noopener" href="'+EXPLORER+'/address/'+p.author+'">'+p.author.slice(0,6)+'…'+p.author.slice(-4)+'</a></td>'
+      +'<td>'+p.mix+'</td><td>'+p.promise+'</td><td>'+p.record+'</td><td>'+(p.roy/100).toFixed(p.roy%100?1:0)+'%</td>'
+      +'<td>'+p.followers+(p.retired?' · retired':'')+'</td></tr>').join('');
+    $('policy_msg').textContent='the promise is what the manager can never cross, carved the day they published. the record is what their allocation itself did, from the feeds. a manager earns only above their own record.';
+  }catch(e){rows.innerHTML='<tr><td colspan="7" class="dim2">the board is unreachable: '+((e.message||e)+'').slice(0,60)+'</td></tr>';}
+}
+$('lnk_manage').onclick=async(e)=>{e.preventDefault();openWin('win_manage');if(!me){try{await connect();}catch{}}if(me)paintManage();};
+$('lnk_login').onclick=async(e)=>{e.preventDefault();try{await connect();if(!me)return;alertOS('connected. the firm knows you by your address and nothing else.');}catch(err){alertOS((err.message||err).toString().slice(0,90));}};
+
+const SEL_GLIDEOF='0x5a6250d1';
+const SHELF = [
+  { name: 'the sixty forty', blurb: 'the oldest portfolio in finance, now that the chain has a bond',
+    mix: { SPY: 57, SGOV: 38 } },
+  { name: 'stocks, metal and oil', blurb: 'the market, plus the things it is priced in',
+    mix: { SPY: 45, SGOV: 20, SLV: 15, USO: 10 } },
+  { name: 'the employee\'s own book', blurb: 'what the robot holds for itself',
+    mix: { NVDA: 30, SPCX: 20, AAPL: 15, MSFT: 15 } },
+  { name: 'all in on the machines', blurb: 'chips and the people who buy them',
+    mix: { NVDA: 30, AMD: 20, MU: 15, INTC: 15, SNDK: 10 } },
+  { name: 'the boring one', blurb: 'the index, plus a little cash to work with',
+    mix: { SPY: 80 } },
+  { name: 'the famous five', blurb: 'the names your uncle already owns',
+    mix: { AAPL: 18, MSFT: 18, AMZN: 18, GOOGL: 18, META: 18 } },
+  { name: 'the one that goes to space', blurb: 'the private company nobody else lists',
+    mix: { SPCX: 60, TSLA: 25 } },
+];
+
+/* -------- my desk -------- */
+async function paintMe(){
+  if(!me) return;
+  $('me_addr').textContent=me.slice(0,6)+'…'+me.slice(-4);
+  try{
+    const [valHex,drHex,acct]=await Promise.all([
+      call(CONTRACT,SEL.valueOf+pad(me)),
+      call(CONTRACT,SEL.drift+pad(me)).catch(()=>null),
+      readAccount(me,CONTRACT).catch(()=>null)]);
+    const usd=Number(BigInt(valHex))/1e18;
+    $('me_worth').textContent='$'+usd.toFixed(2)+' in your own wallet';
+    const bps=drHex===null?null:parseInt(drHex,16);
+    $('me_drift').textContent=bps===null?'no policy yet':bps+' bps'+(bps>=300?' · a job is posted, a worker is coming':' · inside the line');
+    if(acct&&acct.weights.length){
+      const named=acct.weights.map((w,i)=>[w,i]).filter(([w])=>w>0).sort((a,b)=>b[0]-a[0])
+        .map(([w,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(w/100).toFixed(0)+'%');
+      let pol=named.slice(0,4).join(' · ');
+      try{
+        const g=await call(CONTRACT,SEL_GLIDEOF+pad(me));
+        const off2=Number(BigInt('0x'+g.slice(2+64,66+64)))/32;
+        const toLen=Number(BigInt('0x'+g.slice(2+off2*64,66+off2*64)));
+        const end=Number(BigInt('0x'+g.slice(2+3*64,66+3*64)));
+        if(toLen>0) pol+=' · ages until '+new Date(end*1000).getUTCFullYear();
+      }catch(e){}
+      $('me_policy').textContent=pol;
+    } else $('me_policy').textContent='none. adopt one from the shelf, or press setup.';
+    let paid=0,cnt=0;
+    for(const [v,from] of WALLET_VENUES){
+      const logs=await rpc('eth_getLogs',[{address:v,topics:[REB,'0x'+pad(me)],fromBlock:from,toBlock:'latest'}]);
+      cnt+=logs.length; for(const l of logs) paid+=parseInt(l.data.slice(2+128,2+192),16)/1e6;
+    }
+    $('me_paid').textContent=cnt?'$'+paid.toFixed(4)+' across '+cnt+' rebalances':'nothing yet';
+  }catch(e){}
+}
+$('dk_me').onclick=async()=>{openWin('win_me');if(!me){try{await connect();}catch{return;}}paintMe();};
+$('me_manage').onclick=()=>{openWin('win_manage');if(me)paintManage();};
+
+/* -------- the shelf -------- */
+function renderShelf(){
+  const box=$('shelf_rows'); box.innerHTML='';
+  for(const s of SHELF){
+    const row=document.createElement('div'); row.className='frow';
+    const mixTxt=Object.entries(s.mix).map(([k,v])=>k+' '+v).join(' · ');
+    row.innerHTML='<div><b>'+s.name+'</b><br><span class="dim2">'+s.blurb+'. '+mixTxt+'</span></div>';
+    const b=document.createElement('button'); b.className='takebtn'; b.textContent='adopt';
+    b.onclick=()=>adoptOS(s,b);
+    row.appendChild(b); box.appendChild(row);
+  }
+}
+async function adoptOS(s,btn){
+  try{
+    if(!me){await connect();if(!me)return;}
+    if(btn.textContent==='adopt'){btn.textContent='press again';return;}
+    btn.disabled=true;btn.textContent='signing…';
+    const w=new Array(STOCKS.length+1).fill(0);
+    let sum=0;
+    for(const [sym,pct] of Object.entries(s.mix)){
+      const i=STOCKS.findIndex(x=>x[0]===sym);
+      if(i>=0){w[i+1]=pct*100;sum+=pct*100;}
+    }
+    w[0]=10000-sum;
+    const toks=await heldTokens();
+    const allows=await Promise.all(toks.map(allowanceOf));
+    const missing=toks.filter((t,i)=>allows[i]===0n);
+    for(let i=0;i<missing.length;i++){
+      btn.textContent='sig '+(i+1)+'/'+(missing.length+1);
+      await send(missing[i],SEL.approve+pad(CONTRACT)+MAX);
+    }
+    btn.textContent='carving…';
+    const data=SEL.setTarget+pad(0x80)+pad(100)+pad(200)+pad(200000n)+pad(w.length)+w.map(v=>pad(v)).join('');
+    await send(CONTRACT,data);
+    btn.textContent='taken';
+    alertOS('adopted. '+s.name+' is your policy now, in your own wallet, and the firm keeps you on it. change it any time.');
+  }catch(e){btn.disabled=false;btn.textContent='adopt';alertOS('refused: '+(e.message||e).toString().slice(0,90));}
+}
+renderShelf();
+
+/* -------- work completed -------- */
+function renderDone(){
+  const rows=$('done_rows'); if(!workLogs.length){return;}
+  rows.innerHTML='';
+  for(const l of workLogs){
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+l.acct.slice(0,6)+'…'+l.acct.slice(-4)+'</td><td>'+l.d0+' → '+l.d1+' bps</td><td><b>$'+l.paid.toFixed(2)+'</b></td><td class="dim2">'+(l.worker===KEEPER?'the employee':l.worker.slice(0,6)+'…'+l.worker.slice(-4))+'</td>';
+    rows.appendChild(tr);
+  }
+}
+</script>
+</body>
+</html>

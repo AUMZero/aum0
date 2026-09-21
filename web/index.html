@@ -1,321 +1,345 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AUM0 OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
+<!doctype html><meta charset="utf-8"><title>AUM0</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="AUM Zero. Your stocks never leave your wallet. No deposit, no custody, no fees. One robot keeps your portfolio on your target.">
+<link rel="canonical" href="https://aumzero.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aumzero.com/">
+<meta property="og:site_name" content="AUM0">
+<meta property="og:title" content="AUM0 // the fund with no managers">
+<meta property="og:description" content="No deposit. Your stocks stay in your own wallet and get rebalanced anyway. AUM0 can move them, it cannot take them.">
+<meta property="og:image" content="https://aumzero.com/employee.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@aum0com">
+<meta name="twitter:title" content="AUM0 // the fund with no managers">
+<meta name="twitter:description" content="Your stocks never leave your wallet. AUM0 can move them, it cannot take them.">
+<meta name="twitter:image" content="https://aumzero.com/employee.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
 <style>
-:root{
-  --desk:#c6d8c9; --deskline:#bccfc0; --win:#f4f1e6; --ink:#151510; --dim:#6d6f66;
-  --green:#2f6b46; --mint:#bfe3cf; --pink:#f3d9cf; --red:#e5484d; --live:#d7f0e0;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{height:100%}
-body{color:var(--ink);font:400 18px/1.5 ui-monospace,"Courier New",Menlo,monospace;
-  background:
-   repeating-linear-gradient(0deg,var(--deskline) 0 1px,transparent 1px 5px),
-   repeating-linear-gradient(90deg,var(--deskline) 0 1px,transparent 1px 5px),
-   var(--desk);
-  min-height:100vh;display:flex;flex-direction:column;align-items:center}
-a{color:inherit;text-decoration:none}
-.px{font-family:Silkscreen,ui-monospace,monospace;letter-spacing:0}
+  :root {
+    --ground:#0a0a08;   /* the logo's void */
+    --cream:#ede6d6;    /* the robot's body */
+    --cream2:#ddd4be;
+    --green:#46e37e;    /* his screen */
+    --tie:#2c5f3f;      /* his tie */
+    --red:#e5484d;      /* his little red light */
+    --sol:#9945ff;      /* the other chain */
+    --sol2:#14f195;
+    --ink:#14140f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .connectbtn.solbtn { border-color: var(--sol); color: var(--sol2);
+    background: linear-gradient(105deg, rgba(153,69,255,.22), rgba(20,241,149,.14)); }
+  .connectbtn.solbtn.on { background: linear-gradient(105deg, rgba(153,69,255,.5), rgba(20,241,149,.3)); color: var(--cream); }
+  html, body { background: var(--ground); }
+  body { color: var(--cream); font-family: ui-monospace, "Courier New", Menlo, monospace; font-size: 18px; line-height: 1.45; padding: 10px; max-width: 1020px; margin: 0 auto; }
+  a { color: var(--green); }
+  a:hover { background: var(--green); color: var(--ink) !important; text-decoration: none; }
 
-/* corner chrome */
-.bar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;z-index:5}
-.chip{background:var(--win);border:1.5px solid var(--ink);border-top:none;padding:10px 18px;font-size:18px;display:flex;gap:12px;align-items:center}
-.chip.left{border-left:none}
-.chip.left .sq{background:var(--ink);color:var(--win);padding:6px 8px;margin:-10px 0 -10px -18px;display:flex;align-items:center}
-.chip.left .sq img{width:22px;image-rendering:pixelated}
-.chip.right{border-right:none}
-.chip a:hover{text-decoration:underline}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--red)}
+  .topbar { display: flex; gap: 8px; align-items: stretch; }
+  .topbar .mq-box { flex: 1; min-width: 0; }
+  .connectbtn { font: inherit; font-size: 18px; font-weight: 900; padding: 6px 14px; border: 3px outset var(--green); background: var(--green); color: var(--ink); cursor: pointer; white-space: nowrap; }
+  .connectbtn:active { border-style: inset; }
+  a.xbtn { background: #000; color: var(--green); border-color: var(--tie); text-decoration: none; display: flex; align-items: center; }
+  a.xbtn:hover { background: var(--green); color: var(--ink) !important; }
+  .connectbtn.on { background: #000; color: var(--green); border-color: var(--tie); }
+  @media (max-width: 560px) { .topbar { flex-direction: column; } .connectbtn { width: 100%; } }
+  .mq-box { overflow: hidden; white-space: nowrap; border: 3px double var(--tie); background: #000; color: var(--green); padding: 6px 0; font-weight: 700; }
+  .mq { display: inline-block; padding-left: 100%; animation: mq 24s linear infinite; }
+  .mq-box.red { border-color: var(--red); color: var(--red); }
+  .mq2 { display: inline-block; padding-left: 100%; animation: mq 28s linear infinite; }
+  @keyframes mq { to { transform: translateX(-100%); } }
+  .bl { animation: bl .7s steps(1) infinite; color: var(--red); }
+  @keyframes bl { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .mq, .mq2, .bl { animation: none; } }
 
-/* the window */
-.window{margin:92px 0 170px;width:860px;max-width:94vw;background:var(--win);
-  border:1.5px solid var(--ink);border-radius:8px;box-shadow:6px 8px 0 rgba(21,21,16,.18);padding:10px 12px 12px}
-.titlebar{display:flex;align-items:center;gap:10px;padding:2px 2px 8px}
-.tb-btn{width:15px;height:15px;border:1.5px solid var(--ink);border-radius:3px;display:inline-block}
-.tb-x{position:relative}
-.tb-x::after{content:"✕";position:absolute;inset:-3px 0 0 1px;font-size:12px}
-.title{margin-left:auto;font-weight:700;font-size:19px}
-.screen{position:relative;background:#050705;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;height:376px;
-  display:flex;align-items:center;justify-content:center}
-.screen img{width:300px;image-rendering:pixelated}
-.screen::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
-.sc-top{position:absolute;top:12px;left:14px;color:#9fd8b4;font-size:18px}
-.sc-bot{position:absolute;bottom:0;left:0;right:0;background:#111511;color:#cfe6d5;display:flex;justify-content:space-between;
-  padding:7px 12px;font-size:17px;border-top:1px solid #223226}
+  pre.banner { margin: 8px 0 0; background: #000; color: var(--cream); border: 3px solid var(--tie); padding: 14px 4px 12px; font-size: clamp(9px, 2.2vw, 18px); line-height: 1.0; text-align: center; overflow: hidden; white-space: pre; }
+  pre.banner b { display: inline-block; margin-top: 10px; color: var(--green); font-weight: 700; font-size: clamp(12px, 2vw, 18px); }
+  pre.banner .art { display: inline-block; text-align: left; }
 
-/* status panel */
-.status{margin-top:10px;border:1.5px solid var(--ink);border-radius:4px;background:#fdfcf6;padding:12px 14px}
-.st-1{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px}
-.st-1 .on{width:11px;height:11px;border-radius:50%;background:var(--red)}
-.st-2{margin-top:4px;font-size:18px;color:var(--dim);border-bottom:1.5px solid var(--ink);padding-bottom:10px}
-.st-row{display:flex;align-items:stretch;gap:10px;margin-top:10px}
-.stopped{flex:1;display:flex;align-items:center;font-weight:700;font-size:20px}
-.k-btn{border:1.5px solid var(--ink);border-radius:6px;background:var(--win);padding:8px 16px;text-align:center}
-.k-btn b{display:block;font-size:20px}
-.k-btn i{font-style:normal;font-size:16px;color:var(--dim)}
-.k-btn.mint{background:var(--mint)}
-.k-btn.pink{background:var(--pink)}
 
-/* channel bar */
-.ch-row{display:flex;gap:10px;margin-top:10px}
-.ch{flex:1;border:1.5px solid var(--ink);border-radius:6px;background:#fdfcf6;display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:18px}
-.live{background:var(--live);border:1.5px solid var(--ink);border-radius:4px;padding:2px 8px;font-size:15px;font-weight:700}
-.vol{width:280px;border:1.5px solid var(--ink);border-radius:6px;background:#fdfcf6;display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:18px}
-.vu{flex:1;height:14px;background:repeating-linear-gradient(90deg,var(--ink) 0 3px,transparent 3px 7px);opacity:.25}
+  table.crooked { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; }
+  td.mascot { width: 42%; border: 3px inset var(--tie); background: #000; transform: rotate(-1.2deg); text-align: center; padding: 12px 8px 8px; vertical-align: top; }
+  td.mascot img { width: min(88%, 300px); image-rendering: pixelated; }
+  td.mascot .sign { color: var(--green); font-size: 18px; padding-top: 6px; }
+  td.mascot .ca { color: #6b7a5e; font-size: 18px; font-family: inherit; padding-top: 4px; cursor: pointer; }
+  td.mascot .ca:hover { color: var(--green); }
+  td.speech { border: 3px outset var(--red); background: var(--cream); color: var(--ink); transform: rotate(0.8deg); padding: 14px 16px; vertical-align: top; }
+  td.speech p { margin-bottom: 12px; }
+  td.speech p:last-child { margin-bottom: 0; }
+  td.speech .hot { color: var(--red); font-weight: 700; }
+  td.speech .lead { font-weight: 700; }
 
-/* dock */
-.dock{position:fixed;bottom:0;left:50%;transform:translateX(-50%);display:flex;z-index:5}
-.dockin{display:flex;background:var(--win);border:1.5px solid var(--ink);border-bottom:none;border-radius:10px 10px 0 0;overflow:hidden}
-.di{width:112px;padding:14px 8px 12px;text-align:center;border-left:1.5px solid var(--ink);font-size:17px}
-.di:first-child{border-left:none}
-.di:hover{background:#e9e5d3}
-.di .ic{font-size:30px;line-height:1.2;display:block;margin-bottom:6px}
-@media (max-width:700px){
-  /* the chrome stacks into strips */
-  .bar{position:static;flex-direction:column}
-  .chip{border-left:none;border-right:none;width:100%;justify-content:center}
-  .chip.left .sq{margin:-10px 0 -10px 0}
-  /* the window breathes inside the phone */
-  .window{margin:18px 0 150px;width:96vw;padding:8px}
-  .screen{height:300px}
-  .screen img{width:210px}
-  .sc-bot{gap:8px}
-  .sc-bot span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .sc-bot span:last-child{white-space:nowrap}
-  .st-row{flex-wrap:wrap}
-  .stopped{flex:1 1 100%}
-  .k-btn{flex:1 1 40%}
-  .ch-row{flex-direction:column}
-  .vol{width:100%}
-  /* the dock becomes one scrollable shelf */
-  .dock{left:0;right:0;transform:none;width:100%}
-  .dockin{width:100%;border-radius:0;flex-wrap:nowrap;overflow-x:auto;border-top:1.5px solid var(--ink)}
-  .di{flex:0 0 auto;width:auto;min-width:96px;font-size:18px;padding:12px 14px 10px}
-  .di .ic{font-size:24px;margin-bottom:4px}
-  /* sub windows become sheets */
-  .window.sub{position:fixed!important;left:2vw!important;right:2vw!important;top:12px!important;bottom:auto!important;transform:none!important;width:96vw!important;max-height:80vh;overflow:auto;margin:0!important;z-index:30!important}
-  /* fingers need bigger targets than a mouse */
-  .tb-btn{width:26px;height:26px;border-radius:5px}
-  .tb-x::after{inset:1px 0 0 5px;font-size:17px}
-  .titlebar{padding-bottom:10px}
-  /* wide tables scroll inside their pane, never the page */
-  #win_jobs .pane{overflow-x:auto}
-  #win_jobs .jt{min-width:540px}
-  .frow{flex-wrap:wrap}
-  .osbtn{padding:12px 20px}
-  .takebtn{padding:10px 16px}
-  /* the shelf hints that it slides */
-  .dock::after{content:'';position:absolute;right:0;top:0;bottom:0;width:42px;pointer-events:none;
-    background:linear-gradient(90deg,rgba(244,241,230,0),rgba(244,241,230,.95))}
-  .dockin{padding-bottom:env(safe-area-inset-bottom)}
-}
+  table.doors { width: 100%; border-collapse: separate; border-spacing: 2px; margin-top: 12px; background: var(--tie); }
+  table.doors td { padding: 8px 10px; }
+  table.doors tr:nth-child(odd) td { background: var(--cream); color: var(--ink); }
+  table.doors tr:nth-child(even) td { background: var(--cream2); color: var(--ink); }
+  table.doors td.k { width: 190px; border: 2px outset #999; white-space: nowrap; }
+  table.doors td.k a, table.doors td.k button { color: var(--red); font: inherit; font-weight: 900; text-decoration: none; background: none; border: 0; cursor: pointer; padding: 0; }
+  table.doors td.k a:hover, table.doors td.k button:hover { background: var(--red); color: #fff; }
+  table.doors td.v { border: 2px inset #999; }
 
-.window.sub{position:absolute;margin:0;padding:8px 10px 10px;width:auto;z-index:9;max-height:calc(100vh - 260px);overflow:auto}
-.window.alert{border-width:2px}
-.pane{border:1.5px solid var(--ink);border-radius:4px;background:#fdfcf6;padding:14px;margin-top:0;font-size:18px}
-.pane.mono{font-size:18px}
-.frow{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:10px 2px;border-bottom:1.5px solid #dcd8c8}
-.frow:last-of-type{border-bottom:none}
-.frow a{font-size:16px;color:var(--green);white-space:nowrap}
-.frow a:hover{text-decoration:underline}
-.fnote{margin-top:10px;font-size:16px;color:var(--dim)}
-.new{color:var(--green);font-size:13px}
-.dim2{color:var(--dim);font-size:17px;line-height:1.5}
-.jt{width:100%;border-collapse:collapse;font-size:17px}
-.jt th{text-align:left;border-bottom:1.5px solid var(--ink);padding:6px 8px;font-weight:700}
-.jt td{padding:9px 8px;border-bottom:1px solid #e2decd}
-.jt tr.dead td{opacity:.45}
-.prow{display:flex;justify-content:space-between;gap:12px;padding:7px 2px;border-bottom:1px solid #e2decd;font-size:17px}
-.prow span{color:var(--dim)} .prow b{text-align:right}
-.osbtn{border:1.5px solid var(--ink);border-radius:6px;background:var(--win);font:700 17px ui-monospace,monospace;padding:9px 18px;cursor:pointer}
-.osbtn:hover{background:#e9e5d3}
-.osbtn.ok{background:var(--mint)} .osbtn.no{background:var(--pink)}
-.takebtn{border:1.5px solid var(--ink);border-radius:6px;background:var(--mint);font:700 15px ui-monospace,monospace;padding:6px 12px;cursor:pointer}
-.takebtn:disabled{opacity:.5;cursor:default}
+  .live { margin-top: 12px; border: 3px double var(--tie); background: #000; color: var(--green); padding: 10px 12px; }
+  .live .tag { color: var(--cream); }
 
+  .panel { margin-top: 12px; border: 3px ridge var(--tie); background: var(--cream); color: var(--ink); padding: 14px 16px; }
+  .panel h2 { font-size: 22px; margin-bottom: 10px; color: var(--ink); }
+  .panel h2 .tag { color: var(--red); }
+  .panel[hidden] { display: none; }
+  .row[hidden] { display: none; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .row label { min-width: 130px; font-weight: 700; }
+  input[type=range] { flex: 1; min-width: 140px; accent-color: var(--tie); }
+  input[type=text], input[type=number] { font: inherit; font-size: 18px; padding: 6px 8px; border: 2px inset #999; background: #fff; color: var(--ink); width: 130px; }
+  .pct { width: 76px; text-align: right; font-weight: 700; }
+  button.act { font: inherit; font-size: 18px; font-weight: 900; padding: 8px 16px; border: 3px outset var(--tie); background: var(--green); color: var(--ink); cursor: pointer; }
+  button.act:active { border-style: inset; }
+  button.act.red { background: var(--red); color: #fff; border-color: var(--red); }
+  button.act:disabled { opacity: .5; cursor: default; }
+  .msg { margin-top: 8px; min-height: 1.4em; color: var(--tie); font-weight: 700; }
+  .msg.err { color: var(--red); }
+
+  .foot { text-align: center; color: var(--tie); font-size: 18px; margin: 12px 0 6px; font-weight: 700; }
+
+  table.jobs { width: 100%; border-collapse: separate; border-spacing: 2px; background: var(--tie); }
+  table.jobs th { background: var(--ink); color: var(--green); padding: 6px 10px; text-align: left; font-size: 18px; }
+  table.jobs td { background: #fff; color: var(--ink); padding: 8px 10px; border: 2px inset #999; font-size: 18px; }
+  table.jobs td.dim { color: #777; }
+  table.jobs td.pay { color: var(--tie); font-weight: 900; }
+  table.jobs button.hire { font: inherit; font-size: 18px; font-weight: 900; padding: 4px 12px; border: 3px outset var(--green); background: var(--green); color: var(--ink); cursor: pointer; white-space: nowrap; }
+  table.jobs button.hire:active { border-style: inset; }
+  table.jobs button.hire:disabled { opacity: .5; cursor: default; }
+  table.jobs tr.done td { opacity: .45; }
+  table.jobs td.trap { color: var(--red); font-weight: 700; }
+
+
+  .strat { border: 3px outset #b9b1a0; background: #fff; padding: 12px 14px; margin-bottom: 10px; }
+  .strat .head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .strat .nm { font-weight: 900; font-size: 20px; }
+  .strat .blurb { color: #666; }
+  .strat .ret { margin-left: auto; font-weight: 900; font-size: 26px; letter-spacing: -.02em; }
+  .strat .ret.up { color: var(--tie); }
+  .strat .ret.dn { color: var(--red); }
+  .strat .ret.flat { color: #8a8378; }
+  .strat .foot { display: flex; align-items: flex-end; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .strat .holds { display: flex; gap: 12px; flex: 1; flex-wrap: wrap; }
+  .strat .hold { text-align: center; min-width: 46px; }
+  .strat .hold img { width: 34px; height: 34px; border-radius: 50%; display: block; margin: 0 auto 2px; }
+  .strat .hold .w { font-weight: 900; font-size: 18px; }
+  .strat .hold.cash .coin { width: 34px; height: 34px; border-radius: 50%; background: var(--tie); color: #fff; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0 auto 2px; }
+  .strat button { font: inherit; font-size: 19px; font-weight: 900; padding: 8px 22px; border: 3px outset var(--green); background: var(--green); color: var(--ink); cursor: pointer; }
+  .strat button:active { border-style: inset; }
+  .strat button.taken { background: var(--tie); color: #fff; border-color: var(--tie); }
+  #shelf .dim { color: #666; }
+  @media (max-width: 560px) { .strat .ret { margin-left: 0; } .strat button { width: 100%; } }
+  .stockgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(184px, 1fr)); gap: 8px; }
+  .stockgrid .cell { border: 2px inset #999; background: #fff; padding: 6px 8px; overflow: hidden; }
+  .stockgrid .cell .line { display: flex; align-items: center; gap: 6px; }
+  /* the track is what the wallet holds now; the notch is the law it is held to */
+  .stockgrid .cell .bar { position: relative; height: 7px; margin-top: 6px; background: #e6e2d8; border: 1px solid #cfc9bb; display: none; }
+  .stockgrid .cell.live .bar { display: block; }
+  .stockgrid .cell .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--tie); }
+  .stockgrid .cell.off .fill { background: var(--red); }
+  .stockgrid .cell .tick { position: absolute; top: -2px; bottom: -2px; width: 3px; background: var(--ink); }
+  .stockgrid .cell b { min-width: 56px; flex: 0 0 auto; }
+  .stockgrid .cell img { border-radius: 50%; image-rendering: auto; }
+  /* the spinner arrows steal the width the number needs, so they go */
+  .stockgrid .cell input { font: inherit; font-size: 18px; width: 54px; flex: 0 0 auto; border: 0; background: none; color: var(--ink); text-align: right; appearance: textfield; -moz-appearance: textfield; }
+  .stockgrid .cell input::-webkit-outer-spin-button,
+  .stockgrid .cell input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stockgrid .cell img { flex: 0 0 auto; }
+  .stockgrid .cell.on { border-color: var(--tie); background: #eaf5ec; }
+  @media (max-width: 560px) { table.jobs.openjobs th:nth-child(2), table.jobs.openjobs td:nth-child(2) { display: none; } }
+
+  @media (max-width: 760px) {
+    table.crooked, table.crooked tbody, table.crooked tr, table.crooked td { display: block; width: 100%; }
+    td.mascot, td.speech { transform: none; margin-bottom: 8px; }
+    table.doors td.k { width: auto; }
+  }
 </style>
-</head>
-<body>
 
-<div class="bar">
-  <div class="chip left px"><span class="sq"><img src="/employee.png" alt=""></span><a href="#" id="lnk_manage">GET MANAGED</a> / <a href="#" id="lnk_login">LOG IN</a></div>
-  <div class="chip right px"><span id="osdate">…</span><span class="dot"></span><span id="osblock">block …</span><a href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">GITHUB</a><a href="https://x.com/aum0com" target="_blank" rel="noopener">X</a></div>
+<div class="topbar"><div class="mq-box"><span class="mq">&gt;&gt; AUM ZERO &gt;&gt; your stocks never leave your wallet &gt;&gt; no deposit, ever &gt;&gt; one robot, zero salary &gt;&gt; your target is law &gt;&gt; i can move your stocks, i cannot take them &gt;&gt;&nbsp;&nbsp;&nbsp;</span></div><a class="connectbtn xbtn" href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">GITHUB</a><a class="connectbtn xbtn" href="https://x.com/aum0com" target="_blank" rel="noopener">X</a><button class="connectbtn" id="topconnect">connect wallet</button><button class="connectbtn solbtn" id="topsol">solana</button></div>
+
+<pre class="banner"><span class="art">    _   _   _ __  __   ___
+   / \ | | | |  \/  | / _ \
+  / _ \| | | | |\/| || | | |
+ / ___ \ |_| | |  | || |_| |
+/_/   \_\___/|_|  |_| \___/</span>
+<b>the fund // no managers</b></pre>
+
+
+
+<table class="crooked"><tbody><tr>
+  <td class="mascot">
+    <img src="employee.png" alt="the employee">
+    <div class="sign" id="mascot_sign">the employee. unpaid. unbribable.</div>
+  </td>
+  <td class="speech">
+    <p class="lead">i am the employee. i never hold your money.</p>
+    <p>every other manager takes your money first, then manages it. i do not take it. your stocks and your cash stay in your own wallet, in your name, the entire time. you hand me a permission slip, nothing else.</p>
+    <p>you write your allocation into the chain. from then on, strangers keep you on target and i make sure they behave: every trade must move you CLOSER to your own law, or i revert everything they did.</p>
+    <p class="hot">i can move your stocks. i cannot take them. the only address i am able to send them to is yours.</p>
+  </td>
+</tr></tbody></table>
+
+<div class="panel" id="start">
+  <h2><span class="tag">»</span> pick a portfolio <span class="tag">«</span></h2>
+  <p style="margin-bottom:12px">choose one below, write your own further down, or press the second button and the mix already sitting in your wallet becomes your law, maintained for you from then on. your stocks stay in your own wallet the whole time, nobody takes a fee, and you can change your mind a minute later.</p>
+  <div class="row">
+    <button class="act" id="start_btn">Connect a wallet</button>
+    <button class="act" id="manage_btn">Manage what I hold</button>
+    <span id="start_note">a few signatures and you are hired. no deposit, no minimum.</span>
+  </div>
+  <div class="msg" id="start_msg"></div>
 </div>
 
-<div class="window">
-  <div class="titlebar">
-    <span class="tb-btn tb-x"></span><span class="tb-btn"></span>
-    <span class="title px">AUM0</span>
-  </div>
-  <div class="screen">
-    <span class="sc-top px">EMPLOYEE CAM</span>
-    <img src="/employee.png" alt="the employee">
-    <div class="sc-bot"><span>the_employee_on_shift.rob</span><span>est. 2026 · 24/7</span></div>
-  </div>
-
-  <div class="status">
-    <div class="st-1">AUM0: ON SHIFT <span class="on"></span></div>
-    <div class="st-2" id="lastjob">the employee — reading the chain…</div>
-    <div class="st-row">
-      <div class="stopped">Working</div>
-      <div class="k-btn mint"><b id="s_jobs">—</b><i>rebalances</i></div>
-      <div class="k-btn"><b id="s_fees">—</b><i>paid out</i></div>
-      <div class="k-btn"><b>0.00%</b><i>fees</i></div>
-      <div class="k-btn pink"><b>0</b><i>staff</i></div>
-    </div>
-  </div>
-
-  <div class="ch-row">
-    <div class="ch">Fund: Merit edition <span style="color:var(--dim)">0x8AD0…85e3</span> <span class="live">LIVE</span></div>
-    <div class="ch" id="mascot_ca" title="0xe7CFbf084589b73A3FF74E9819Dd3D28ee1E05A9" style="flex:0 0 auto;cursor:pointer">CA <span style="color:var(--dim)">0xe7CF…E05A9</span></div>
-    <div class="vol">drift <div class="vu"></div><b id="s_drift">…</b></div>
-  </div>
+<div class="panel" id="shelf">
+  <h2><span class="tag">»</span> the shelf <span class="tag">«</span></h2>
+  <p style="margin-bottom:12px">portfolios anyone can take. press adopt and the weights become your law, in your own wallet. nothing moves, nothing is pooled, and you can change it a minute later.</p>
+  <div id="shelf_rows"><p class="dim">reading the feeds…</p></div>
 </div>
 
-<div class="dock"><div class="dockin px">
-  <a class="di" id="dk_me"><span class="ic">🪪</span>My desk</a>
-  <a class="di" id="dk_funds"><span class="ic">🗂</span>Funds</a>
-  <a class="di" id="dk_jobs"><span class="ic">🛎</span>Careers</a>
-  <a class="di" href="/floor.html"><span class="ic">🖥</span>The floor</a>
-  <a class="di" id="dk_pay"><span class="ic">🧾</span>Paystub</a>
-  <a class="di" id="dk_policy"><span class="ic">📜</span>Policy</a>
-  <a class="di" id="dk_mandate"><span class="ic">🔐</span>Mandate</a>
-  <a class="di" href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener"><span class="ic">🐙</span>GitHub</a>
-  <a class="di" href="https://x.com/aum0com" target="_blank" rel="noopener"><span class="ic">🐦</span>X</a>
-</div></div>
-
-
-<!-- ================= windows ================= -->
-<div class="window sub" id="win_funds" hidden style="left:6%;top:120px;width:520px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_funds"></span><span class="title px">FUNDS</span></div>
-  <div class="pane">
-    <div class="frow"><div><b>Merit</b> <span class="new px">NEW</span><br><span class="dim2">a manager earns only above the mark you joined at, and cannot cross the limits they carved.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x8AD0afa388EBd55Fb02e2F8d375dD63DB17785e3">0x8AD0…85e3</a></div>
-    <div class="frow"><div><b>Bitcoin</b><br><span class="dim2">stocks and bitcoin under one law, priced by the official feed.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x2116ad6cF8eC51f71fD158aE976178fc6Bf5E5B9">0x2116…E5b9</a></div>
-    <div class="frow"><div><b>World</b><br><span class="dim2">anyone publishes a policy, anyone follows it. authors earn a royalty.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x356B8b6ed5CBAaa5879945dACb7Dce6408a679b2">0x356B…79b2</a></div>
-    <div class="frow"><div><b>Pension</b><br><span class="dim2">a policy that ages. sign once, forty years.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x4f08bdC9353060351f95207CD47D67D1cF6e5989">0x4f08…5989</a></div>
-    <div class="frow"><div><b>Desk</b><br><span class="dim2">two wallets trade with each other at the feed.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0xf7DBb9142A194F5f409c2c587cFC559D77C40358">0xf7DB…0358</a></div>
-    <div class="frow"><div><b>Bid</b><br><span class="dim2">workers are paid for the price they deliver.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0xb0C34AC5e846e0159f711Db84802D512E916A51F">0xb0C3…A51F</a></div>
-    <div class="frow"><div><b>Wallet</b><br><span class="dim2">the original. twenty six assets, three walls.</span></div><a target="_blank" rel="noopener" href="https://explorer.mainnet.chain.robinhood.com/address/0x3484F1cC081A98103CE0E9E42AE96a2A770eCd79">0x3484…Cd79</a></div>
-    <div class="fnote">every fund: 0.00% fees, no owner, no admin, no upgrade path. the address is the prospectus.</div>
-    <div style="border-top:1.5px solid var(--ink);margin-top:12px;padding-top:10px"><b>the shelf</b>
-      <div class="dim2" style="margin:4px 0 8px">portfolios anyone can take. adopt one and the weights become your policy, in your own wallet. nothing moves, nothing is pooled.</div>
-      <div id="shelf_rows"></div>
-    </div>
-  </div>
+<div class="panel" id="law">
+  <h2><span class="tag">»</span> the law</h2>
+  <p style="margin-bottom:10px">fifteen real stocks. give each a share of your portfolio; whatever you leave unassigned stays as cash.</p>
+  <div class="stockgrid" id="stockgrid"></div>
+  <div class="row" style="margin-top:10px"><label>cash (USDG)</label><span class="pct" id="cash_pct" style="width:auto">100%</span><span id="cash_note">the remainder. it pays the bounties.</span></div>
+  <div class="row"><label>fill tolerance</label><input type="number" id="band" value="1.0" step="0.1" min="0.1" max="10"> <span>% from the official feed. tighter is safer.</span></div>
+  <div class="row"><label>bounty cap</label><input type="number" id="bounty" value="1" step="0.5" min="0"> <span>USDG. the most strangers ever earn bringing you fully home.</span></div>
+  <button class="act" id="carve">Carve it into the chain</button>
+  <div class="msg" id="law_msg">weights must sum to 100. i do not negotiate.</div>
 </div>
 
-<div class="window sub" id="win_policy" hidden style="left:8%;top:110px;width:660px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_policy"></span><span class="title px">POLICY BOARD — ANYONE IS A MANAGER</span></div>
-  <div class="pane">
-    <div class="dim2" style="margin-bottom:10px">a Wall Street manager takes a percentage of your money whether it grew or shrank, and the promises in a prospectus are checked by a person reading a filing afterwards. here a manager is paid only while their published allocation stands above where you joined it, and the limits they carved on the day they published are refused by the chain if they ever try to cross them.</div>
-    <table class="jt"><thead><tr><th>#</th><th>manager</th><th>allocation</th><th>promise</th><th>record</th><th>royalty</th><th>following</th></tr></thead>
-    <tbody id="policy_rows"><tr><td colspan="5" class="dim2">reading the chain…</td></tr></tbody></table>
-    <div class="dim2" id="policy_msg" style="margin-top:10px"></div>
+<div class="panel" id="vault">
+  <h2><span class="tag">»</span> the mandate</h2>
+  <p style="margin-bottom:10px">there is no deposit. your stocks and your cash stay in your own wallet. you hand me permission, not money, and you take it back whenever you like.</p>
+  <div class="row"><label>your wallet</label><span id="hold_line">connect first. i cannot see you yet.</span></div>
+  <div class="row"><label>permission</label><span id="allow_line">not granted</span></div>
+  <div class="row">
+    <button class="act" id="grant">Grant permission</button>
+    <button class="act red" id="revoke">Revoke it</button>
   </div>
+  <div class="row" id="legacy_row" hidden><span id="legacy_note"></span><button class="act" id="wd_old">Take it back</button></div>
+  <div class="msg" id="vault_msg"></div>
 </div>
 
-<div class="window sub" id="win_jobs" hidden style="right:4%;top:130px;width:640px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_jobs"></span><span class="title px">CAREERS — OPEN POSITIONS</span></div>
-  <div class="pane">
-    <div class="dim2" style="margin-bottom:10px">when an account drifts off its policy, the job posts here with its pay. any wallet may press. no interview. the contract cannot say no to you.</div>
-    <table class="jt"><thead><tr><th>account</th><th>worth</th><th>drift</th><th>pay</th><th></th></tr></thead>
-    <tbody id="jobs_rows"><tr><td colspan="5" class="dim2">reading the chain…</td></tr></tbody></table>
-    <div class="dim2" id="jobs_msg" style="margin-top:10px"></div>
-    <div style="border-top:1.5px solid var(--ink);margin-top:12px;padding-top:10px"><b>work completed</b>
-      <table class="jt" style="margin-top:8px"><tbody id="done_rows"><tr><td class="dim2">reading the ledger…</td></tr></tbody></table>
-    </div>
-  </div>
+<div class="live"><span class="tag">[LIVE]</span> <span id="live_line">reading the chain…</span></div>
+
+<div class="panel" id="pw">
+  <h2><span class="tag">»</span> the paperwork <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">hiring me is three signatures. this sheet keeps itself up to date.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k"><button id="pw1_btn">» [1 connect] «</button></td><td class="v" id="pw1">plug in a wallet. everything below stays dead until you do.</td></tr>
+    <tr><td class="k"><a href="#law">» [2 the law] «</a></td><td class="v" id="pw2">pick a portfolio off the shelf, or carve your own below.</td></tr>
+    <tr><td class="k"><a href="#vault">» [3 permission] «</a></td><td class="v" id="pw3">one signature per asset. i can move them, never take them.</td></tr>
+    <tr><td class="k"><span style="font-weight:900">» [status] «</span></td><td class="v" id="pw0">waiting on the paperwork.</td></tr>
+  </tbody></table>
 </div>
 
-<div class="window sub" id="win_pay" hidden style="left:10%;top:150px;width:600px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_pay"></span><span class="title px">PAYSTUB.TXT</span></div>
-  <div class="pane mono">
-    <div class="prow"><span>employee</span><b>the employee (sole staff)</b></div>
-    <div class="prow"><span>salary</span><b>none. bounties only.</b></div>
-    <div class="prow"><span>gas on hand</span><b id="ps_gas">…</b></div>
-    <div class="prow"><span>wages on hand</span><b id="ps_wages">…</b></div>
-    <div class="prow"><span>earned, lifetime</span><b id="ps_earned">…</b></div>
-    <div class="prow"><span>fuel policy</span><b>buys its own gas from wages</b></div>
+<table class="doors"><tbody>
+  <tr><td class="k"><button id="connect">» [connect] «</button></td><td class="v" id="connect_note">plug in a wallet. i will know you by your address and nothing else.</td></tr>
+  <tr><td class="k"><a href="#law">» [the law] «</a></td><td class="v">carve your target allocation. it binds the strangers, not you.</td></tr>
+  <tr><td class="k"><a href="#vault">» [the mandate] «</a></td><td class="v">hand over permission, not money. take it back in one click, any time.</td></tr>
+  <tr><td class="k"><a href="#walls">» [the walls] «</a></td><td class="v">three reasons a stranger cannot hurt you. read them once.</td></tr>
+  <tr><td class="k"><a href="https://x.com/aum0com" target="_blank" rel="noopener">» [the feed] «</a></td><td class="v">the employee posts. follow the work at x.com/aum0com.</td></tr>
+  <tr><td class="k"><a href="https://github.com/AUMZero/aum0" target="_blank" rel="noopener">» [the code] «</a></td><td class="v">every wall, every test, every number. read it before you trust it.</td></tr>
+</tbody></table>
 
-    <div style="border-top:1.5px solid var(--ink);margin-top:14px;padding-top:12px">
-      <b>the employee's own account</b>
-      <div class="dim2" style="margin:6px 0 10px">it has worked here since the first block and never been paid a salary. every asset in this account is a bounty it was paid for a job somebody else could have taken. gas is the one thing it does not always buy itself. every figure below is read off the chain.</div>
-      <div class="prow"><span>jobs completed</span><b id="ea_jobs">…</b></div>
-      <div class="prow"><span>lifetime wages</span><b id="ea_wages">…</b></div>
-      <div class="prow"><span>account value</span><b id="ea_value">…</b></div>
-      <div class="prow"><span>its policy</span><b id="ea_policy">…</b></div>
-      <div class="prow"><span>bound by</span><b id="ea_covenant">…</b></div>
-      <div class="prow"><span>record since it opened</span><b id="ea_record">…</b></div>
-      <div class="prow"><span>drift</span><b id="ea_drift">…</b></div>
-      <div class="dim2" id="ea_note" style="margin-top:10px"></div>
-    </div>
-  </div>
+<div class="panel" id="nightdesk">
+  <h2><span class="tag">»</span> the night desk <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">the exchange keeps office hours. the chain does not. an asset is tradeable whenever its official feed still agrees with its live pool, so the employee works whichever names are awake, at any hour.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k">the exchange</td><td class="v" id="nd_mkt">reading the clock…</td></tr>
+    <tr><td class="k">the employee</td><td class="v" id="nd_emp">on shift. it does not keep hours.</td></tr>
+    <tr><td class="k">tradeable now</td><td class="v" id="nd_awake">checking every feed against its pool…</td></tr>
+  </tbody></table>
+  <div class="stockgrid" id="nd_grid" style="margin-top:8px"></div>
 </div>
 
-<div class="window sub" id="win_mandate" hidden style="right:8%;top:220px;width:480px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_mandate"></span><span class="title px">SYSTEM PERMISSION</span></div>
-  <div class="pane">
-    <div style="display:flex;gap:14px;align-items:flex-start">
-      <img src="/employee.png" style="width:54px;image-rendering:pixelated" alt="">
-      <div><b>"AUM0" would like permission to rebalance this wallet.</b>
-      <div class="dim2" style="margin-top:6px">it can move assets only to rebalance you, and only back to you. there is no deposit. revoking is one click and total.</div></div>
-    </div>
-    <div class="prow" style="margin-top:14px"><span>wallet</span><b id="md_wallet">not connected</b></div>
-    <div class="prow"><span>permission</span><b id="md_state">—</b></div>
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button class="osbtn ok" id="md_grant">Allow</button>
-      <button class="osbtn no" id="md_revoke">Revoke all</button>
-    </div>
-    <div class="dim2" id="md_msg" style="margin-top:10px"></div>
-  </div>
+<div class="panel" id="stmt" hidden>
+  <h2><span class="tag">»</span> your statement</h2>
+  <div class="row"><label>account value</label><span id="st_val">—</span></div>
+  <div class="row"><label>drift</label><span id="st_drift">—</span></div>
+  <div class="row"><label>paid to strangers</label><span id="st_paid">reading the ledger…</span></div>
+  <div class="row"><label>management fee</label><span><b>$0.00.</b> now and forever. it is in the code, not in a promise.</span></div>
+  <table class="jobs"><thead>
+    <tr><th>drift fixed</th><th>you paid</th><th>worker</th></tr>
+  </thead><tbody id="my_rows">
+    <tr><td colspan="3" class="dim">no work done on your account yet.</td></tr>
+  </tbody></table>
 </div>
 
-<div class="window sub" id="win_manage" hidden style="left:50%;top:150px;transform:translateX(-50%);width:520px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_manage"></span><span class="title px">SETUP ASSISTANT</span></div>
-  <div class="pane">
-    <b>Manage what this wallet already holds.</b>
-    <div class="dim2" style="margin-top:6px">the mix in your wallet becomes your policy, and the firm keeps you on it from then on. a sliver of cash is kept so your account can pay its own workers. no deposit, no decisions.</div>
-    <div class="prow" style="margin-top:12px"><span>wallet</span><b id="mg_wallet">not connected</b></div>
-    <div class="prow"><span>holdings</span><b id="mg_mix">—</b></div>
-    <button class="osbtn ok" id="mg_go" style="margin-top:14px;width:100%">Begin</button>
-    <div class="dim2" id="mg_msg" style="margin-top:10px"></div>
+<table class="doors" id="walls"><tbody>
+  <tr><td class="k"><span style="color:var(--red);font-weight:900">» [wall 1] «</span></td><td class="v">every trade must land you strictly closer to your law. i measure drift before and after. no improvement, no trade, no exceptions.</td></tr>
+  <tr><td class="k"><span style="color:var(--red);font-weight:900">» [wall 2] «</span></td><td class="v">every fill is checked against the chain's official price feeds. a stranger cannot route you through a crooked pool and keep the difference. i check what happened, not what was promised.</td></tr>
+  <tr><td class="k"><span style="color:var(--red);font-weight:900">» [wall 3] «</span></td><td class="v">i never receive your money in the first place, so there is nothing to withdraw and nothing to freeze. every swap lands back in your own wallet. the single exception is the bounty, sized by you, paid in proportion to help received. splitting the work farms nothing: the payouts telescope.</td></tr>
+</tbody></table>
+
+<div class="panel" id="shake">
+  <h2><span class="tag">»</span> knock it off target <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">the employee keeps a wallet of its own, under a law like anyone else's. press the button and a real swap on a real pool pushes it off that law. then it takes its hands off for sixty seconds: the job goes on the board below, and any wallet on earth may take it and keep the bounty. beat the robot and the money is yours.</p>
+  <div class="row">
+    <button class="act" id="shake_btn">Knock it off target</button>
+    <span id="shake_state">reading the desk…</span>
   </div>
+  <div class="msg" id="shake_msg"></div>
 </div>
 
-<div class="window sub" id="win_me" hidden style="left:16%;top:110px;width:540px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_me"></span><span class="title px">MY DESK</span></div>
-  <div class="pane">
-    <div class="prow"><span>wallet</span><b id="me_addr">not connected</b></div>
-    <div class="prow"><span>under management</span><b id="me_worth">—</b></div>
-    <div class="prow"><span>drift</span><b id="me_drift">—</b></div>
-    <div class="prow"><span>policy</span><b id="me_policy">—</b></div>
-    <div class="prow"><span>paid for help, lifetime</span><b id="me_paid">—</b></div>
-    <div class="dim2" id="me_note" style="margin-top:10px">everything stays in your own wallet. jobs post themselves at 300 bps; you do nothing.</div>
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button class="osbtn ok" id="me_manage">Setup assistant</button>
-      <a class="osbtn" href="/floor.html#law">Edit on the floor</a>
-    </div>
-  </div>
+<div class="panel" id="board">
+  <h2><span class="tag">»</span> the job board <span class="tag">«</span></h2>
+  <p style="margin-bottom:12px">when an account drifts off its law, i post the job here. any wallet may press the button. first press does the work, takes the pay, from that account, for that account. this is the entire hiring process.</p>
+  <table class="jobs openjobs"><thead>
+    <tr><th>account</th><th>worth</th><th>drift</th><th>pay</th><th>job</th></tr>
+  </thead><tbody id="job_rows">
+    <tr><td colspan="5" class="dim">reading the chain for open positions…</td></tr>
+  </tbody></table>
+  <div class="msg" id="board_msg"></div>
+  <h2 style="margin-top:16px"><span class="tag">»</span> the desk <span class="tag">«</span></h2>
+  <p style="margin-bottom:12px">when one wallet must sell what another must buy, no pool is needed. one press and they trade with each other at the official feed, to the cent. nothing is lost on the way, so both wallets pay their whole fee to whoever pressed.</p>
+  <table class="jobs"><thead>
+    <tr><th>seller</th><th>buyer</th><th>stock</th><th>size</th><th>pay</th><th>job</th></tr>
+  </thead><tbody id="cross_rows">
+    <tr><td colspan="6" class="dim">reading the chain for matched orders…</td></tr>
+  </tbody></table>
+  <div class="msg" id="cross_msg"></div>
+  <h2 style="margin-top:16px"><span class="tag">»</span> work completed <span class="tag">«</span></h2>
+  <table class="jobs"><thead>
+    <tr><th>account</th><th>drift fixed</th><th>paid</th><th>worker</th></tr>
+  </thead><tbody id="done_rows">
+    <tr><td colspan="4" class="dim">reading the ledger…</td></tr>
+  </tbody></table>
 </div>
 
-<div class="window sub alert" id="win_alert" hidden style="left:50%;top:260px;transform:translateX(-50%);width:430px">
-  <div class="titlebar drag"><span class="tb-btn tb-x" data-close="win_alert"></span><span class="title px">AUM0 OS</span></div>
-  <div class="pane" style="display:flex;gap:14px;align-items:flex-start">
-    <div class="px" style="font-size:30px">⚠</div>
-    <div id="alert_msg" style="flex:1">…</div>
-  </div>
-  <div class="pane" style="padding-top:0;text-align:right"><button class="osbtn" data-close="win_alert">OK</button></div>
+<div class="panel" id="paystub">
+  <h2><span class="tag">»</span> the employee's paystub <span class="tag">«</span></h2>
+  <p style="margin-bottom:10px">self employed. no salary, no funding, no boss. it lives on the bounties it earns and buys its own gas.</p>
+  <table class="doors"><tbody>
+    <tr><td class="k">gas on hand</td><td class="v" id="ps_gas">reading…</td></tr>
+    <tr><td class="k">wages on hand</td><td class="v" id="ps_wages">reading…</td></tr>
+    <tr><td class="k">earned so far</td><td class="v" id="ps_earned">reading the ledger…</td></tr>
+    <tr><td class="k">takes a job when</td><td class="v">the pay covers 1.5x the gas. its own desk it tidies for free.</td></tr>
+    <tr><td class="k">refuels when</td><td class="v">gas drops under 0.015 ETH, back up to 0.02. it keeps the last two dollars of cash, always.</td></tr>
+  </tbody></table>
 </div>
+
+<div class="mq-box red" style="margin-top:12px"><span class="mq2">&lt;&lt; every asset manager holds your money &lt;&lt; this one never receives it &lt;&lt; no deposit, no custody, no admin, no upgrade path &lt;&lt; the employee never sleeps &lt;&lt;&nbsp;&nbsp;&nbsp;</span></div>
+
+<div class="foot">✟ under eternal management ✟ the employee works weekends unpaid ✟</div>
 
 <script>
-const SEL = { assetCount:'0xeafe7a74', deposit:'0xe2bbb158', withdraw:'0x441a3e70', setTarget:'0xf3397382', drift:'0x389cc952', valueOf:'0xa48028aa', accountOf:'0x8086b8ba', bal:'0x915aeb7c', approve:'0x095ea7b3', allowance:'0xdd62ed3e' };
+const CONTRACT = '0x8AD0afa388EBd55Fb02e2F8d375dD63DB17785e3'; // merit: paid only above your own mark, and held to the covenant
+const DESK = '0xf7DBb9142A194F5f409c2c587cFC559D77C40358';     // the crossing venue before it, still live
+const V4 = '0x3484F1cC081A98103CE0E9E42AE96a2A770eCd79';       // the 26 asset venue before the desk, still live
+const V3 = '0xaFd484733f4B23e235bf1825c9AdA39368160B03';       // the fifteen stock venue, still live
+const OLD_VAULTS = [
+  ['0xcc27Dd6FD74210303660643bcf6c9d115443bFcA', 16], // custody edition, 15 stocks
+  ['0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde', 2],  // custody edition, NVDA only
+];
+const SEL_OLDBAL = '0x00fdd58e';   // balanceOf(address,uint256) on the old vaults
+const SEL_WITHDRAW = '0x441a3e70';
+const CHAIN_HEX = '0x1237'; // 4663
+// venue order 1..15, frozen at deploy
 const STOCKS = [
   ['NVDA','0x379EC4f7C378F34a1B47E4F3cbeBCbAC3E8E9F15','0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC'],
   ['SPCX','0xB265810950ba6c5C0Ff821c9963014a56fD8Bffb','0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa'],
@@ -346,357 +370,699 @@ const STOCKS = [
   ['ASML','0xB4106147E8cce40b7d46124090d373A71b70f87D','0x47F93d52cBeC7C6D2CfC080e154002370a60dAEA'],
   ['cbBTC','0x3546407C5F94dD7Eab3a853D245b5C5EAb53318a','0xCEC185eB182c47d1bA1EFc84e6959e18cd620Be4',8],
 ];
-const DEC=i=>i===0?6:(STOCKS[i-1][3]||18);
-const SEL_REBALANCE='0x4db4b4c9';
-const REB='0xbecdda7c726841dea88e1495b6f401a1d64029ba261415622f400509cf097b35';
-const TARGETSET='0xb8766537c154c2943c70a08668e5bbee5aa95bb3a80803f9c11d0b49b846fb87';
-const USDG='0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
-const KEEPER='0x3c71044dca7aa1eb401913a2f96277abe8c019a4';
-const CONTRACT='0x8AD0afa388EBd55Fb02e2F8d375dD63DB17785e3';
-const CHAIN_HEX='0x1237';
-const EXPLORER='https://explorer.mainnet.chain.robinhood.com';
-const WALLET_VENUES=[
- [CONTRACT,'0x3750836'],
- ['0x2116ad6cF8eC51f71fD158aE976178fc6Bf5E5B9','0x36f3c44'],
- ['0x356B8b6ed5CBAaa5879945dACb7Dce6408a679b2','0x364177c'],
- ['0x4f08bdC9353060351f95207CD47D67D1cF6e5989','0x353ef82'],
- ['0xf7DBb9142A194F5f409c2c587cFC559D77C40358','0x34f66fd'],
- ['0x3484F1cC081A98103CE0E9E42AE96a2A770eCd79','0x334a3f8'],
- ['0xaFd484733f4B23e235bf1825c9AdA39368160B03','0x3096d00'],
-];
-const ALL_VENUES=[...WALLET_VENUES,['0xcc27Dd6FD74210303660643bcf6c9d115443bFcA','0x3077e40'],['0xE46B6e60c7b2CbC1f9761B3f12a69813093B6dde','0x3042380']];
-const MAX='f'.repeat(64);
+const DEC = i => i === 0 ? 6 : (STOCKS[i - 1][3] || 18);
+const RPC = location.origin + '/api/rpc';   // the site's own proxy, local or live
+const EXPLORER = 'https://explorer.mainnet.chain.robinhood.com';
+const USDG = '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168';
+const SEL = { assetCount:'0xeafe7a74', deposit:'0xe2bbb158', withdraw:'0x441a3e70', setTarget:'0xf3397382', drift:'0x389cc952', valueOf:'0xa48028aa', accountOf:'0x8086b8ba', bal:'0x915aeb7c', approve:'0x095ea7b3', allowance:'0xdd62ed3e' };
+const $ = id => document.getElementById(id);
+const pad = (v, n=64) => BigInt(v).toString(16).padStart(n, '0');
+let me = null;
+let lawLoaded = false;   // the law already on chain is loaded once, then it is yours to edit
+let hasLaw = false;      // a law is carved on chain for this wallet
+let lastRaws = null;     // stock balances from the last refresh, raw units
+let pwMissing = null;    // tokens still lacking permission, or null before first check
+let pwTick = 0;
+let oldChecked = '';     // wallet whose old-vault balances were already scanned
 
-const $=id=>document.getElementById(id);
-const pad=(v,n=64)=>BigInt(v).toString(16).padStart(n,'0');
-const rpc=async(m,p)=>{const r=await fetch('/api/rpc',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:m,params:p})});const j=await r.json();if(j.error)throw new Error(j.error.message||'rpc');return j.result;};
-const call=(to,data)=>rpc('eth_call',[{to,data},'latest']);
-let me=null;
-async function connect(){
-  if(!window.ethereum){
-    const here=encodeURIComponent(location.origin);
-    if(matchMedia('(max-width:700px)').matches){
-      $('alert_msg').innerHTML='no wallet lives in this browser. open this page inside your wallet app and everything works:'
-        +'<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">'
-        +'<a class="osbtn ok" href="okx://wallet/dapp/url?dappUrl='+here+'">Open in OKX</a>'
-        +'<a class="osbtn ok" href="https://link.metamask.io/dapp/aumzero.com">Open in MetaMask</a></div>';
-    } else {
-      $('alert_msg').innerHTML='no wallet extension in this browser. point your phone camera at this and the firm opens in your hand; from there, open it in your wallet app:'
-        +'<div id="qr_box" style="margin:14px auto 4px;width:180px;background:#fff;padding:10px;border:1.5px solid var(--ink);border-radius:6px"></div>';
-      if(window.QRCode) new QRCode(document.getElementById('qr_box'),{text:location.origin,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});
-      else document.getElementById('qr_box').textContent='aumzero.com';
+const deployed = CONTRACT.startsWith('0x');
+
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({jsonrpc:'2.0',id:1,method,params}) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message || 'rpc error');
+  return j.result;
+}
+const call = (to, data) => rpc('eth_call', [{to, data}, 'latest']);
+
+// -- the stock grid: cash is whatever you leave unassigned -------------------
+const grid = $('stockgrid');
+for (const [tk] of STOCKS) {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+  cell.innerHTML = '<div class="line"><img src="stocks/' + tk + '.png" alt="" width="24" height="24"><b>' + tk + '</b>'
+    + '<input type="number" min="0" max="100" step="1" value="0">%</div>'
+    + '<div class="bar"><i class="fill"></i><i class="tick"></i></div>';
+  grid.appendChild(cell);
+}
+const stockInputs = [...grid.querySelectorAll('input')];
+function syncGrid() {
+  let sum = 0;
+  stockInputs.forEach((inp, i) => {
+    const v = Math.max(0, Math.min(100, Math.round(+inp.value || 0)));
+    sum += v;
+    inp.parentElement.classList.toggle('on', v > 0);
+  });
+  const cash = 100 - sum;
+  $('cash_pct').textContent = cash + '%';
+  $('cash_note').textContent = cash < 0 ? 'over 100. the law must sum. trim something.'
+    : cash === 0 ? 'zero cash: nothing left to pay bounties. leave a little.'
+    : 'the remainder. it pays the bounties.';
+  $('cash_pct').style.color = cash < 0 ? 'var(--red)' : '';
+  return cash;
+}
+stockInputs.forEach(inp => inp.oninput = syncGrid);
+syncGrid();
+
+// -- wallet -----------------------------------------------------------------
+async function connect() {
+  if (!window.ethereum) return say('law_msg', 'no wallet found. the employee cannot hire you a wallet.', true);
+  const [addr] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+  try { await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_HEX }] }); }
+  catch (e) {
+    await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: CHAIN_HEX, chainName: 'Robinhood Chain', nativeCurrency: { name:'Ether', symbol:'ETH', decimals:18 }, rpcUrls: ['https://rpc.mainnet.chain.robinhood.com'], blockExplorerUrls: [EXPLORER] }] });
+  }
+  me = addr;
+  lawLoaded = false;
+  const short = addr.slice(0,6) + '…' + addr.slice(-4);
+  $('connect').textContent = '» [' + short + '] «';
+  $('topconnect').textContent = short;
+  $('topconnect').classList.add('on');
+  $('connect_note').textContent = 'noted. i will speak plainly with you now.';
+  $('start_btn').textContent = 'Connected: ' + short;
+  $('start_btn').disabled = true;
+  $('start_note').textContent = 'now pick a portfolio below, or write your own.';
+  refresh();
+}
+$('connect').onclick = connect;
+$('topconnect').onclick = connect;
+
+// solana login: phantom, solflare, backpack, or any injected solana wallet
+let sol = null;
+async function connectSolana() {
+  const w = window.phantom?.solana || window.solflare || window.backpack || window.solana;
+  if (!w) return say('law_msg', 'no solana wallet found in this browser.', true);
+  try {
+    const r = await w.connect();
+    sol = (r?.publicKey || w.publicKey).toString();
+    const short = sol.slice(0, 4) + '…' + sol.slice(-4);
+    $('topsol').textContent = short;
+    $('topsol').classList.add('on');
+  } catch (e) {
+    say('law_msg', 'solana wallet declined: ' + ((e.message || e) + '').slice(0, 80), true);
+  }
+}
+$('topsol').onclick = connectSolana;
+$('pw1_btn').onclick = connect;
+$('start_btn').onclick = connect;
+
+async function send(to, data, gas) {
+  const tx = { from: me, to, data };
+  if (gas) tx.gas = '0x' + gas.toString(16);
+  const h = await window.ethereum.request({ method: 'eth_sendTransaction', params: [tx] });
+  return h;
+}
+function say(id, text, err) { const el = $(id); el.textContent = text; el.classList.toggle('err', !!err); }
+
+// -- the law ---------------------------------------------------------------
+$('carve').onclick = async () => {
+  if (!me) return say('law_msg', 'connect first. law needs a lawgiver.', true);
+  if (!deployed) return say('law_msg', 'the vault has not landed on the chain yet. soon.', true);
+  const cash = syncGrid();
+  if (cash < 0) return say('law_msg', 'weights sum past 100. i do not negotiate.', true);
+  const weights = [cash * 100, ...stockInputs.map(inp => Math.round(+inp.value || 0) * 100)];
+  const band = Math.round(+$('band').value * 100);
+  const bounty = BigInt(Math.round(+$('bounty').value * 1e6));
+  // setTarget(uint16[],uint16,uint16,uint128): head = [offset 0x80, minDrift, band, bounty], tail = [len, w...]
+  const data = SEL.setTarget + pad(0x80) + pad(100) + pad(band) + pad(bounty)
+    + pad(weights.length) + weights.map(w => pad(w)).join('');
+  try {
+    const h = await send(CONTRACT, data);
+    hasLaw = true;
+    say('law_msg', 'carved. the strangers are bound. tx ' + h.slice(0,14) + '…');
+    setTimeout(async () => {
+      try {
+        const miss = await missingTokens();
+        if (miss.length) {
+          say('law_msg', 'carved. one step left: grant permission for ' + miss.map(tickerOf).join(', ') + ' in the mandate below.');
+          $('vault').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else say('law_msg', 'carved, and your permission already covers it. from here the work finds you.');
+      } catch {}
+    }, 1200);
+  } catch (e) { say('law_msg', 'refused: ' + (e.message || e).slice(0,90), true); }
+};
+
+// A wallet that already carved a law should see it, not a row of zeros.
+async function loadMyLaw() {
+  try {
+    const raw = await call(CONTRACT, SEL.accountOf + pad(me));
+    const w = i => Number(BigInt('0x' + raw.slice(2 + i * 64, 2 + (i + 1) * 64)));
+    const n = w(4);
+    if (!n) { lawLoaded = true; return; }
+    hasLaw = true;
+    stockInputs.forEach((inp, i) => { inp.value = w(6 + i) / 100; });
+    $('band').value = (w(2) / 100).toFixed(1);
+    $('bounty').value = w(3) / 1e6;
+    syncGrid();
+    lawLoaded = true;
+    say('law_msg', 'this is the law already carved for this wallet. change it whenever you like.');
+  } catch {} // a rate-limited read is not "no law": leave lawLoaded false and retry next tick
+}
+
+// Shows the wallet against its own law, so the boxes stop looking like a
+// shopping list and start looking like a thing being held in place.
+async function paintGrid(cash, stockRaws) {
+  const px = await allPrices();
+  const usd = [cash, ...stockRaws.map((r, i) => Number(BigInt(r)) / 10 ** DEC(i + 1) * px[i + 1])];
+  const total = usd.reduce((a, b) => a + b, 0);
+  if (total <= 0) return;
+  stockInputs.forEach((inp, i) => {
+    const cell = inp.closest('.cell');
+    const now = usd[i + 1] / total * 100;
+    const target = +inp.value || 0;
+    cell.classList.add('live');
+    cell.classList.toggle('off', Math.abs(now - target) > 3);
+    cell.querySelector('.fill').style.width = Math.min(100, now) + '%';
+    cell.querySelector('.tick').style.left = 'calc(' + Math.min(100, target) + '% - 1px)';
+  });
+}
+
+// -- the mandate ------------------------------------------------------------
+const MAX = 'f'.repeat(64);
+
+async function allowanceOf(token) {
+  return BigInt(await call(token, SEL.allowance + pad(me) + pad(CONTRACT)));
+}
+
+$('grant').onclick = async () => {
+  if (!me) return say('vault_msg', 'connect first.', true);
+  try {
+    const missing = await missingTokens();
+    if (!missing.length) { say('vault_msg', 'already granted for everything under your law.'); return refresh(); }
+    for (let i = 0; i < missing.length; i++) {
+      say('vault_msg', 'permission ' + (i + 1) + ' of ' + missing.length + ': ' + tickerOf(missing[i]) + '.');
+      await send(missing[i], SEL.approve + pad(CONTRACT) + MAX);
     }
-    openWin('win_alert');
+    pwMissing = [];
+    say('vault_msg', 'granted. i can move these only to rebalance you, and only back to you. the paperwork is done: from here, the work finds you.');
+    refresh();
+  } catch (e) { say('vault_msg', 'refused: ' + (e.message || e).slice(0,90), true); }
+};
+
+$('revoke').onclick = async () => {
+  if (!me) return say('vault_msg', 'connect first.', true);
+  try {
+    for (const t of [USDG, ...STOCKS.map(x => x[2])]) {
+      if ((await allowanceOf(t)) > 0n) await send(t, SEL.approve + pad(CONTRACT) + pad(0));
+    }
+    say('vault_msg', 'revoked. nothing to withdraw: you never gave anything up.');
+    refresh();
+  } catch (e) { say('vault_msg', 'refused: ' + (e.message || e).slice(0,90), true); }
+};
+
+// -- one press: the wallet you already built becomes the law -----------------
+// No decisions. The mix in the wallet is read, a sliver of cash is kept back
+// so the account can always pay its own workers, permissions are collected
+// for the tokens actually held, and the law is carved to match. From then on
+// the wallet maintains itself.
+$('manage_btn').onclick = async () => {
+  if (!me) { await connect(); if (!me) return; }
+  if (!deployed) return say('start_msg', 'the vault has not landed on the chain yet. soon.', true);
+  try {
+    say('start_msg', 'reading what you hold…');
+    const px = await allPrices();
+    const [cashRaw, ...raws] = await Promise.all([
+      call(CONTRACT, SEL.bal + pad(me) + pad(0)),
+      ...STOCKS.map((_, i) => call(CONTRACT, SEL.bal + pad(me) + pad(i + 1))),
+    ]);
+    const bal = [Number(BigInt(cashRaw)) / 1e6, ...raws.map((r, i) => Number(BigInt(r)) / 10 ** DEC(i + 1))];
+    const value = bal.reduce((sum, b, i) => sum + b * px[i], 0);
+    if (value < 0.5) return say('start_msg', 'this wallet holds nothing to manage yet. bring USDG or stocks to it on Robinhood Chain first.', true);
+
+    let w = bal.map((b, i) => Math.floor(b * px[i] / value * 10000));
+    if (w[0] < 200) {
+      const inStocks = w.slice(1).reduce((a, b) => a + b, 0) || 1;
+      w = w.map((v, i) => i === 0 ? 200 : Math.floor(v * (10000 - 200) / inStocks));
+    }
+    w[0] += 10000 - w.reduce((a, b) => a + b, 0);
+
+    const heldToks = STOCKS.map((st, i) => BigInt(raws[i]) > 0n ? st[2] : null).filter(Boolean);
+    const toks = [USDG, ...heldToks];
+    const allows = await Promise.all(toks.map(allowanceOf));
+    const missing = toks.filter((t, i) => allows[i] === 0n);
+    for (let i = 0; i < missing.length; i++) {
+      say('start_msg', 'signature ' + (i + 1) + ' of ' + (missing.length + 1) + ': permission for ' + tickerOf(missing[i]) + '. it can move only to rebalance you, only back to you.');
+      await send(missing[i], SEL.approve + pad(CONTRACT) + MAX);
+    }
+    say('start_msg', 'last signature: carving your law.');
+    const band = Math.round((+$('band').value || 2) * 100);
+    const bounty = BigInt(Math.round((+$('bounty').value || 0.2) * 1e6));
+    const data = SEL.setTarget + pad(0x80) + pad(100) + pad(band) + pad(bounty)
+      + pad(w.length) + w.map(v => pad(v)).join('');
+    await send(CONTRACT, data);
+    hasLaw = true; lawLoaded = false; pwMissing = [];
+    say('start_msg', 'done. the mix you already built is the law now, and this wallet maintains itself from here. the drift, the jobs and the work all show below.');
+    refresh();
+  } catch (e) { say('start_msg', 'refused: ' + (e.message || e).toString().slice(0, 90), true); }
+};
+
+function assetToken(i) { return STOCKS[i - 1][2]; }
+
+// cash, the stocks the law asks for, AND the stocks the wallet already holds:
+// walking you onto your law can mean selling what you own, and selling needs
+// the same permission buying does.
+function neededTokens() {
+  const want = new Set([USDG]);
+  stockInputs.forEach((inp, i) => { if ((+inp.value || 0) > 0) want.add(STOCKS[i][2]); });
+  if (lastRaws) lastRaws.forEach((r, i) => { if (BigInt(r) > 0n) want.add(STOCKS[i][2]); });
+  return [...want];
+}
+const tickerOf = t => t === USDG ? 'USDG' : (STOCKS.find(s => s[2] === t) || ['?'])[0];
+
+async function missingTokens() {
+  const toks = neededTokens();
+  const allows = await Promise.all(toks.map(allowanceOf));
+  pwMissing = toks.filter((t, i) => allows[i] === 0n);
+  return pwMissing;
+}
+
+// -- live line ---------------------------------------------------------------
+// One refresh at a time: connect() also calls this, and two overlapping loops
+// trample each other's paints and burn the rpc budget.
+let refreshTimer = null, refreshBusy = false;
+async function refresh() {
+  if (refreshBusy) return;
+  refreshBusy = true;
+  clearTimeout(refreshTimer);
+  try { await refreshOnce(); }
+  finally {
+    refreshBusy = false;
+    refreshTimer = setTimeout(refresh, 4000);
+  }
+}
+async function refreshOnce() {
+  if (!deployed) {
+    $('live_line').innerHTML = 'engine proven on the real NVDA/USDG pool: drift 10000 → 21 bps, keeper paid 0.4998 USDG, cost $0.57 on $200. the vault lands next.';
     return;
   }
-  const [a]=await window.ethereum.request({method:'eth_requestAccounts'});
-  try{await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:CHAIN_HEX}]});}
-  catch(e){await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:CHAIN_HEX,chainName:'Robinhood Chain',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:['https://rpc.mainnet.chain.robinhood.com'],blockExplorerUrls:[EXPLORER]}]});}
-  me=a;
-  for(const id of ['md_wallet','mg_wallet']) $(id).textContent=a.slice(0,6)+'…'+a.slice(-4);
-  return a;
-}
-async function send(to,data){const h=await window.ethereum.request({method:'eth_sendTransaction',params:[{from:me,to,data}]});return h;}
-
-let pxCache=null;
-async function allPrices(){
-  if(pxCache) return pxCache;
-  const r=await fetch('/api/prices'); const px=await r.json();
-  if(Array.isArray(px)){pxCache=px;setTimeout(()=>pxCache=null,25000);return px;}
-  throw new Error('prices unavailable');
-}
-
-/* -------- window manager -------- */
-let zTop=20;
-function openWin(id){const w=$(id);w.hidden=false;w.style.zIndex=++zTop;}
-function alertOS(msg){$('alert_msg').textContent=msg;openWin('win_alert');}
-document.addEventListener('click',e=>{
-  const c=e.target.closest('[data-close]'); if(c){$(c.dataset.close).hidden=true;}
-});
-document.querySelectorAll('.window.sub').forEach(w=>{
-  w.addEventListener('pointerdown',()=>w.style.zIndex=++zTop);
-  const bar=w.querySelector('.drag'); if(!bar) return;
-  bar.addEventListener('pointerdown',ev=>{
-    if(matchMedia('(max-width:700px)').matches)return;
-    if(ev.target.closest('[data-close]'))return;
-    const r=w.getBoundingClientRect(),dx=ev.clientX-r.left,dy=ev.clientY-r.top;
-    w.style.left=r.left+'px';w.style.top=r.top+'px';w.style.right='auto';w.style.transform='none';
-    const mv=e2=>{w.style.left=(e2.clientX-dx)+'px';w.style.top=(e2.clientY-dy)+'px';};
-    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);};
-    addEventListener('pointermove',mv);addEventListener('pointerup',up);
-  });
-});
-
-/* -------- desktop clock + factsheet -------- */
-const d=new Date();
-$('osdate').textContent=d.toUTCString().slice(0,3).toUpperCase()+' '+d.getUTCDate()+' '+d.toUTCString().slice(8,11).toUpperCase()+' '+d.getUTCFullYear();
-let workLogs=[];
-let statUsers=[];
-(async()=>{
-  try{
-    const st=await (await fetch('/api/stats')).json();
-    if(st.error) throw new Error(st.error);
-    $('osblock').textContent='block '+st.block.toLocaleString();
-    $('s_jobs').textContent=st.jobs; $('s_fees').textContent='$'+st.fees.toFixed(2);
-    if(st.recent.length){const l=st.recent[0];$('lastjob').textContent='last job — drift '+l.d0+' → '+l.d1+' bps, paid by the wallet it walked home';}
-    workLogs=st.recent; statUsers=st.users;
-    $('ps_earned').textContent='$'+st.keeperPaid.toFixed(2)+' across '+st.keeperJobs+' jobs';
-    renderDone();
-    const dr=await call(CONTRACT,SEL.drift+pad(KEEPER));
-    $('s_drift').textContent=parseInt(dr,16)+' bps';
-    paintPaystub();
-  }catch(e){}
-})();
-
-/* -------- paystub -------- */
-async function paintPaystub(){
-  try{
-    const [gasHex,wagesHex]=await Promise.all([rpc('eth_getBalance',[KEEPER,'latest']),call(USDG,'0x70a08231'+pad(KEEPER))]);
-    const gas=Number(BigInt(gasHex))/1e18,wages=Number(BigInt(wagesHex))/1e6;
-    $('ps_gas').textContent=gas.toFixed(4)+' ETH';
-    $('ps_wages').textContent=wages.toFixed(2)+' USDG';
-  }catch(e){}
-  paintEmployeeAccount();
-}
-
-/* -------- the employee's own account --------
-   The firm's only worker keeps an account at the firm. It never received a
-   deposit: every dollar in it is a dollar it was paid for work, and the record
-   is computed from the feeds, so nobody can write it up or write it down. */
-async function paintEmployeeAccount(){
-  try{
-    const st=await fetch('/api/stats').then(r=>r.json()).catch(()=>null);
-    if(st&&st.keeperJobs!==undefined){
-      $('ea_jobs').textContent=st.keeperJobs+' since the first block';
-      $('ea_wages').textContent='$'+Number(st.keeperPaid||0).toFixed(6)+' in bounties, paid by the wallets it served';
+  try {
+    const block = parseInt(await rpc('eth_blockNumber', []), 16);
+    let mine = '';
+    if (me) {
+      const [v, d] = await Promise.all([
+        call(CONTRACT, SEL.valueOf + pad(me)),
+        call(CONTRACT, SEL.drift + pad(me)).catch(() => null),
+      ]);
+      const usd = Number(BigInt(v) / 10n**14n) / 1e4;
+      mine = ' · your account: $' + usd.toLocaleString() + (d ? ' · drift ' + parseInt(d,16) + ' bps' : '');
+      const bps = d ? parseInt(d,16) : null;
+      $('mascot_sign').textContent = bps === null ? 'the employee. unpaid. unbribable.'
+        : bps < 100 ? 'drift ' + bps + ' bps. all tidy. — the employee'
+        : 'drift ' + bps + ' bps. i am not angry. i am waiting. — the employee';
+      // the hiring sheet paints first: it is the page's answer to "what now?"
+      if (!lawLoaded) await loadMyLaw();
+      $('stmt').hidden = false;
+      $('start_note').innerHTML = usd < 0.5
+        ? 'this wallet is empty. bring USDG to it <b>on Robinhood Chain</b> (relay.link bridges there in one transaction) and it is managed the moment it lands.'
+        : '$' + usd.toLocaleString() + ' under management, in your own wallet.';
+      $('st_val').textContent = '$' + usd.toLocaleString() + ', all of it in your own wallet';
+      $('st_drift').textContent = bps === null ? 'no law carved yet'
+        : bps + ' bps' + (bps >= 300 ? ' · a job is posted, a worker will come' : ' · inside the line');
+      await paintPaperwork(usd, bps);
+      const [cashRaw, ...raws] = await Promise.all([
+        call(CONTRACT, SEL.bal + pad(me) + pad(0)),
+        ...STOCKS.map((_, i) => call(CONTRACT, SEL.bal + pad(me) + pad(i + 1))),
+      ]);
+      const cash = Number(BigInt(cashRaw)) / 1e6;
+      lastRaws = raws;
+      const held = raws.map((r, i) => [Number(BigInt(r)) / 10 ** DEC(i + 1), STOCKS[i][0]])
+        .filter(([q]) => q > 0).map(([q, tk]) => q.toFixed(4) + ' ' + tk);
+      if (!lawLoaded) await loadMyLaw();
+      paintGrid(cash, raws);
+      $('hold_line').textContent = cash.toFixed(2) + ' USDG' + (held.length ? ' · ' + held.join(' · ') : '') + ' (in your wallet)';
+      // anything still sitting in the old custody vaults belongs to you.
+      // checked once per wallet, not every tick: the answer rarely changes.
+      if (oldChecked !== me) {
+        let strandedAt = null;
+        for (const [vault, n] of OLD_VAULTS) {
+          const bals = await Promise.all(Array.from({length: n}, (_, i) => call(vault, SEL_OLDBAL + pad(me) + pad(i)).catch(() => '0x0')));
+          if (bals.some(b => BigInt(b) > 0n)) strandedAt = [vault, bals];
+        }
+        oldChecked = me;
+        $('legacy_row').hidden = !strandedAt;
+        if (strandedAt) {
+          $('legacy_note').textContent = 'the old vault still holds assets in your name. nothing is stuck: pull them out and they land in this wallet, already under management.';
+          $('wd_old').dataset.vault = JSON.stringify(strandedAt);
+        }
+      }
+      const a = BigInt(await call(USDG, SEL.allowance + pad(me) + pad(CONTRACT)));
+      $('allow_line').textContent = a === 0n ? 'not granted. i cannot move anything.'
+        : a > 10n ** 30n ? 'granted, open ended. revoke any time.'
+        : 'granted up to ' + (Number(a) / 1e6).toFixed(2) + ' USDG.';
     }
-  }catch(e){}
-  try{
-    const [valHex,drHex,pid]=await Promise.all([
-      call(CONTRACT,SEL.valueOf+pad(KEEPER)),
-      call(CONTRACT,SEL.drift+pad(KEEPER)).catch(()=>null),
-      call(CONTRACT,SEL_POLICYOF+pad(KEEPER)).catch(()=>null)]);
-    $('ea_value').textContent='$'+(Number(BigInt(valHex))/1e18).toFixed(2)+' in its own wallet';
-    const id=pid?Number(BigInt(pid)):0;
-    if(!id){
-      $('ea_policy').textContent='not open yet';
-      $('ea_covenant').textContent='—';
-      $('ea_record').textContent='—';
-      $('ea_drift').textContent=drHex===null?'—':parseInt(drHex,16)+' bps';
-      $('ea_note').textContent='the account opens when the wages cover the gas to open it. it will not spend a dollar it has not earned, which is the same rule it applies to every job it turns down.';
-      return;
-    }
-    const pa=await call(CONTRACT,SEL_POLICYAT+pad(id));
-    const off=Number(BigInt('0x'+pa.slice(66,130)))/32;
-    const n=Number(BigInt('0x'+pa.slice(2+off*64,66+off*64)));
-    const w=[]; for(let i=0;i<n;i++) w.push(Number(BigInt('0x'+pa.slice(2+(off+1+i)*64,66+(off+1+i)*64))));
-    $('ea_policy').textContent='#'+id+' — '+w.map((v,i)=>[v,i]).filter(([v])=>v>0).sort((a,b)=>b[0]-a[0])
-      .map(([v,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(v/100).toFixed(0)+'%').join(' · ');
-    const cv=await call(CONTRACT,SEL_COVENANTOF+pad(id));
-    const maxA=Number(BigInt('0x'+cv.slice(2,66))), minC=Number(BigInt('0x'+cv.slice(66,130)));
-    const idx=Number(BigInt('0x'+cv.slice(130,194)))/1e18;
-    const parts=[]; if(maxA>0)parts.push('max '+(maxA/100).toFixed(0)+'% in one name');
-    if(minC>0)parts.push('cash never under '+(minC/100).toFixed(0)+'%');
-    $('ea_covenant').textContent=parts.length?parts.join(' · '):'nothing';
-    $('ea_record').textContent=((idx-1)*100>=0?'+':'')+((idx-1)*100).toFixed(3)+'%  (from the feeds, unwritable)';
-    $('ea_drift').textContent=drHex===null?'—':parseInt(drHex,16)+' bps';
-    $('ea_note').textContent='it published this policy for itself and bound itself to it on the same day, so the chain will refuse it the way it refuses any other manager.';
-  }catch(e){ $('ea_note').textContent='the chain is busy, the books follow.'; }
+    $('live_line').textContent = 'block ' + block.toLocaleString() + mine;
+  } catch (e) { $('live_line').textContent = 'the chain is quiet. retrying…'; }
+}
+refresh();
+
+// -- the paperwork: a hiring sheet that keeps itself up to date ---------------
+async function paintPaperwork(usd, bps) {
+  const OK = '<b style="color:var(--tie)">[done]</b> ';
+  const DO = '<b style="color:var(--red)">[next]</b> ';
+  $('pw1').innerHTML = OK + 'hired by ' + me.slice(0,6) + '…' + me.slice(-4) + '. i know you by this and nothing else.';
+  $('pw2').innerHTML = hasLaw ? OK + 'a law is carved for this wallet. edit it below whenever you like.'
+    : DO + 'no law yet. adopt one off the shelf, or carve your own below.';
+  if (pwMissing === null || pwTick++ % 5 === 0) { try { await missingTokens(); } catch {} }
+  const miss = pwMissing || [];
+  $('pw3').innerHTML = !hasLaw ? 'waits on the law: i only ask permission for what your law touches.'
+    : miss.length ? DO + 'missing ' + miss.map(tickerOf).join(', ') + '. press grant below, one signature each.'
+    : OK + 'granted for everything your law touches. revoke any time, one click.';
+  $('pw0').innerHTML = (!hasLaw || miss.length) ? 'waiting on the paperwork above.'
+    : usd < 0.5 ? 'papers signed, wallet empty. bring USDG to this wallet <b>on Robinhood Chain</b> and it is under management the moment it lands. from another chain, relay.link bridges there in one transaction: set the recipient to your own address.'
+    : bps === null ? '<b>employed.</b> reading your drift…'
+    : bps >= 300 ? '<b>employed.</b> drift ' + bps + ' bps: a job is posted and a worker is coming. you do nothing.'
+    : '<b>employed.</b> drift ' + bps + ' bps, inside the line. jobs post at 300. you do nothing.';
 }
 
-/* -------- careers -------- */
-async function readAccount(user,venue){
-  const [acct,val,dr]=await Promise.all([
-    call(venue,SEL.accountOf+pad(user)),call(venue,SEL.valueOf+pad(user)),
-    call(venue,SEL.drift+pad(user)).catch(()=>null)]);
-  const words=i=>BigInt('0x'+acct.slice(2+i*64,66+i*64));
-  const off=Number(words(0))/32, minDrift=Number(words(1)), band=Number(words(2)), bounty=Number(words(3))/1e6;
-  const n=Number(BigInt('0x'+acct.slice(2+off*64,66+off*64)));
-  const weights=[]; for(let i=0;i<n;i++) weights.push(Number(BigInt('0x'+acct.slice(2+(off+1+i)*64,66+(off+1+i)*64))));
-  return {user,venue,minDrift,band,bounty,weights,value:Number(BigInt(val))/1e18,drift:dr===null?null:parseInt(dr,16)};
+$('wd_old').onclick = async () => {
+  if (!me) return say('vault_msg', 'connect first.', true);
+  try {
+    const [vault, bals] = JSON.parse($('wd_old').dataset.vault);
+    for (let i = 0; i < bals.length; i++) {
+      if (BigInt(bals[i]) > 0n) await send(vault, SEL_WITHDRAW + pad(i) + pad(BigInt(bals[i])));
+    }
+    say('vault_msg', 'returned in full, into your own wallet. that was the last time anything of yours sat in a vault.');
+    oldChecked = '';
+    refresh();
+  } catch (e) { say('vault_msg', 'refused: ' + (e.message || e).slice(0,90), true); }
+};
+
+// -- the job board -----------------------------------------------------------
+const TARGETSET_TOPIC = '0xb8766537c154c2943c70a08668e5bbee5aa95bb3a80803f9c11d0b49b846fb87';
+const SEL_REBALANCE = '0x4db4b4c9';
+const SEL_ROUND = '0xfeaf968c';
+const DEPLOY_BLOCK_PENSION = '0x353ef82';
+const DEPLOY_BLOCK_DESK = '0x34f66fd';   // the desk
+const DEPLOY_BLOCK_V4 = '0x334a3f8';
+const DEPLOY_BLOCK_V3 = '0x3096d00';
+const DEPLOY_BLOCK_V1 = '0x3041840';
+
+function fmtUsd(x) { return '$' + x.toLocaleString(undefined, {maximumFractionDigits:2}); }
+
+let pxCache = { at: 0, px: null };
+async function allPrices() {
+  if (pxCache.px && Date.now() - pxCache.at < 25000) return pxCache.px;
+  try {
+    const r = await fetch('/api/prices');
+    if (r.ok) {
+      const px = await r.json();
+      if (Array.isArray(px)) { pxCache = { at: Date.now(), px }; return px; }
+    }
+  } catch {}
+  const raws = await Promise.all(STOCKS.map(([, feed]) => call(feed, SEL_ROUND)));
+  const px = [1, ...raws.map(r => Number(BigInt('0x' + r.slice(2 + 64, 2 + 128))) / 1e8)];
+  pxCache = { at: Date.now(), px };
+  return px;
 }
-async function planTrades(a){
-  const px=await allPrices();
-  const n=Number(BigInt(await call(a.venue,SEL.assetCount)));
-  const raws=await Promise.all(Array.from({length:n},(_,i)=>call(a.venue,SEL.bal+pad(a.user)+pad(i))));
-  const bal=raws.map((r,i)=>Number(BigInt(r))/10**DEC(i));
-  const value=bal.reduce((s,b,i)=>s+b*px[i],0);
-  const sells=[],buys=[];let freed=0,needed=0;
-  for(let i=1;i<n;i++){
-    const delta=(value*(a.weights[i]||0)/10000-bal[i]*px[i])*0.97;
-    if(delta<-0.05){sells.push({sell:BigInt(i),buy:0n,amountIn:BigInt(Math.floor(-delta/px[i]*10**DEC(i)))});freed+=-delta;}
-    else if(delta>0.05){buys.push({sell:0n,buy:BigInt(i),amountIn:BigInt(Math.floor(delta*1e6)),usd:delta});needed+=delta;}
+
+async function readAccount(user, venue = CONTRACT) {
+  const [acctRaw, valRaw, driftRaw] = await Promise.all([
+    call(venue, SEL.accountOf + pad(user)),
+    call(venue, SEL.valueOf + pad(user)),
+    call(venue, SEL.drift + pad(user)).catch(() => null),
+  ]);
+  const w = i => BigInt('0x' + acctRaw.slice(2 + i*64, 2 + (i+1)*64));
+  // accountOf returns (uint16[] offset, minDrift, band, bounty, [len, w...])
+  const minDrift = Number(w(1)), band = Number(w(2)), bounty = Number(w(3)) / 1e6;
+  const nWeights = Number(w(4));
+  const weights = []; for (let i = 0; i < nWeights; i++) weights.push(Number(w(5 + i)));
+  return {
+    user, venue, minDrift, band, bounty, weights,
+    value: Number(BigInt(valRaw)) / 1e18,
+    drift: driftRaw ? parseInt(driftRaw, 16) : null,
+  };
+}
+
+// sells first (they raise the cash), then buys, each leg 3% inside the line
+async function planTrades(a) {
+  const px = await allPrices();
+  const venue = a.venue || CONTRACT;
+  const n = Number(BigInt(await call(venue, SEL.assetCount)));
+  const balRaws = await Promise.all(Array.from({length: n}, (_, i) => call(venue, SEL.bal + pad(a.user) + pad(i))));
+  const bal = balRaws.map((r, i) => Number(BigInt(r)) / 10 ** (i === 0 ? 6 : 18));
+  const value = bal.reduce((s, b, i) => s + b * px[i], 0);
+  const sells = [], buys = [];
+  let freed = 0, needed = 0;
+  // the older venue holds sixteen of the same assets in the same order, so the
+  // price table is shared; only walk as far as this venue actually goes
+  for (let i = 1; i < n; i++) {
+    const delta = (value * (a.weights[i] || 0) / 10000 - bal[i] * px[i]) * 0.97;
+    if (delta < -0.05) { sells.push({ sell: BigInt(i), buy: 0n, amountIn: BigInt(Math.floor(-delta / px[i] * 10 ** DEC(i))) }); freed += -delta; }
+    else if (delta > 0.05) { buys.push({ sell: 0n, buy: BigInt(i), amountIn: BigInt(Math.floor(delta * 1e6)), usd: delta }); needed += delta; }
   }
-  const budget=bal[0]+freed*0.99;
-  if(needed>budget) for(const b of buys) b.amountIn=BigInt(Math.floor(Number(b.amountIn)*budget/needed));
-  const trades=[...sells,...buys].filter(t=>t.amountIn>0n);
-  return trades.length?{trades,cashAfter:budget-Math.min(needed,budget)}:null;
+  const budget = bal[0] + freed * 0.99;
+  if (needed > budget) for (const b of buys) b.amountIn = BigInt(Math.floor(Number(b.amountIn) * budget / needed));
+  const trades = [...sells, ...buys].filter(t => t.amountIn > 0n);
+  return trades.length ? { trades, cashAfter: budget - Math.min(needed, budget) } : null;
 }
-async function loadJobs(){
-  const rows=$('jobs_rows');
-  try{
-    if(!statUsers.length){const st=await (await fetch('/api/stats')).json();statUsers=st.users||[];workLogs=st.recent||workLogs;}
-    const accounts=[];
-    for(const [venue,u] of statUsers) accounts.push(await readAccount(u,venue));
-    const open=accounts.filter(a=>a.value>0.5&&a.drift!==null&&a.drift>=Math.max(a.minDrift,300));
-    open.sort((x,y)=>y.bounty*y.drift-x.bounty*x.drift);
-    rows.innerHTML='';
-    for(const a of open){
-      const pay=a.bounty*a.drift/10000;
-      const tr=document.createElement('tr');
-      tr.innerHTML='<td>'+a.user.slice(0,6)+'…'+a.user.slice(-4)+'</td><td>$'+a.value.toFixed(2)+'</td><td>'+a.drift+' bps</td><td><b>$'+pay.toFixed(2)+'</b></td><td><button class="takebtn">take</button></td>';
-      tr.querySelector('button').onclick=()=>takeJob(a,tr);
+
+async function loadBoard() {
+  if (!deployed) return;
+  const rows = $('job_rows');
+  try {
+    // both wallet venues are live and the employee serves both, so the board
+    // has to post jobs from both or the work goes unseen
+    const venues = [[CONTRACT, DEPLOY_BLOCK_PENSION], [DESK, DEPLOY_BLOCK_DESK], [V4, DEPLOY_BLOCK_V4], [V3, DEPLOY_BLOCK_V3]];
+    const accounts = [];
+    for (const [venue, from] of venues) {
+      const logs = await rpc('eth_getLogs', [{ address: venue, topics: [TARGETSET_TOPIC], fromBlock: from, toBlock: 'latest' }]);
+      const users = [...new Set(logs.map(l => '0x' + l.topics[1].slice(26)))];
+      for (const u of users) accounts.push(await readAccount(u, venue));
+    }
+    const open = [], tidy = [];
+    for (const a of accounts) {
+      if (a.value < 0.5 || a.drift === null) continue;
+      (a.drift >= Math.max(a.minDrift, 300) ? open : tidy).push(a);
+    }
+    open.sort((x, y) => y.bounty * y.drift - x.bounty * x.drift);
+    rows.innerHTML = '';
+    for (const a of open) {
+      const pay = a.bounty * a.drift / 10000;
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + a.user.slice(0,6) + '…' + a.user.slice(-4) + '</td>'
+        + '<td>' + fmtUsd(a.value) + '</td>'
+        + '<td>' + a.drift + ' bps</td>'
+        + '<td class="pay">' + fmtUsd(pay) + '</td><td><button class="hire">» take the job «</button></td>';
+      tr.querySelector('button').onclick = () => takeJob(a, tr);
       rows.appendChild(tr);
     }
-    if(!open.length) rows.innerHTML='<tr><td colspan="5" class="dim2">no open positions right now. accounts are on their laws, watched every block.</td></tr>';
-  }catch(e){rows.innerHTML='<tr><td colspan="7" class="dim2">the board is unreachable: '+(e.message||e).toString().slice(0,50)+'</td></tr>';}
-}
-async function takeJob(a,tr){
-  const btn=tr.querySelector('button');
-  try{
-    if(!me){await connect();if(!me)return;}
-    btn.disabled=true;btn.textContent='checking…';
-    const plan=await planTrades(a);
-    if(!plan) throw new Error('nothing to trade');
-    const data=SEL_REBALANCE+pad(a.user)+pad(0x40)+pad(plan.trades.length)+plan.trades.map(t=>pad(t.sell)+pad(t.buy)+pad(t.amountIn)).join('');
-    try{await rpc('eth_call',[{from:me,to:a.venue,data},'latest']);}
-    catch(sim){tr.classList.add('dead');btn.textContent='not fillable';
-      return alertOS('this job will not clear right now. the pool and the official feed disagree, or the employee already took it. nothing was sent to your wallet.');}
-    btn.textContent='working…';
-    const h=await send(a.venue,data);
-    $('jobs_msg').textContent='job taken. the pay lands when the block does. tx '+h.slice(0,14)+'…';
-    setTimeout(loadJobs,6000);
-  }catch(e){btn.disabled=false;btn.textContent='take';alertOS('refused: '+(e.message||e).toString().slice(0,90));}
+    if (!open.length) rows.innerHTML = '<tr><td colspan="5" class="dim">no open jobs. ' + tidy.length + ' account' + (tidy.length === 1 ? '' : 's') + ' on their law, watched every block. fund a wallet, let it drift, and a job appears.</td></tr>';
+    else $('board_msg').textContent = '';
+    try { await loadCrosses(accounts); } catch {}
+  } catch (e) {
+    rows.innerHTML = '<tr><td colspan="5" class="dim">the board is unreachable: ' + (e.message || e).toString().slice(0, 60) + '</td></tr>';
+  }
+  try { await loadWorkLog(); } catch {}
+  try { await loadPaystub(); } catch {}
+  try { await loadMyLog(); } catch {}
+  setTimeout(loadBoard, 30000);
 }
 
-/* -------- mandate -------- */
-async function allowanceOf(t){return BigInt(await call(t,SEL.allowance+pad(me)+pad(CONTRACT)));}
-async function heldTokens(){
-  const raws=await Promise.all(STOCKS.map((_,i)=>call(CONTRACT,SEL.bal+pad(me)+pad(i+1))));
-  return [USDG,...STOCKS.filter((_,i)=>BigInt(raws[i])>0n).map(s=>s[2])];
-}
-async function paintMandate(){
-  if(!me){$('md_state').textContent='connect first';return;}
-  const toks=await heldTokens();
-  const allows=await Promise.all(toks.map(allowanceOf));
-  const missing=toks.filter((t,i)=>allows[i]===0n);
-  $('md_state').textContent=missing.length?missing.length+' of '+toks.length+' permissions missing':'granted ('+toks.length+' assets)';
-  return missing;
-}
-$('md_grant').onclick=async()=>{
-  try{
-    if(!me){await connect();if(!me)return;}
-    const missing=await paintMandate();
-    if(!missing||!missing.length){$('md_msg').textContent='already granted for everything you hold.';return;}
-    for(let i=0;i<missing.length;i++){
-      $('md_msg').textContent='permission '+(i+1)+' of '+missing.length+'…';
-      await send(missing[i],SEL.approve+pad(CONTRACT)+MAX);
-    }
-    $('md_msg').textContent='granted. it can move these only to rebalance you, only back to you.';
-    paintMandate();
-  }catch(e){alertOS('refused: '+(e.message||e).toString().slice(0,90));}
-};
-$('md_revoke').onclick=async()=>{
-  try{
-    if(!me){await connect();if(!me)return;}
-    for(const t of [USDG,...STOCKS.map(x=>x[2])]){
-      if((await allowanceOf(t))>0n) await send(t,SEL.approve+pad(CONTRACT)+pad(0));
-    }
-    $('md_msg').textContent='revoked. nothing to withdraw: you never gave anything up.';
-    paintMandate();
-  }catch(e){alertOS('refused: '+(e.message||e).toString().slice(0,90));}
-};
+const REBALANCED_TOPIC = '0xbecdda7c726841dea88e1495b6f401a1d64029ba261415622f400509cf097b35';
+const KEEPER_BOT = '0x3c71044dca7aa1eb401913a2f96277abe8c019a4';
 
-/* -------- setup assistant (manage what i hold) -------- */
-async function paintManage(){
-  if(!me) return;
-  const px=await allPrices();
-  const raws=await Promise.all(Array.from({length:STOCKS.length+1},(_,i)=>call(CONTRACT,SEL.bal+pad(me)+pad(i))));
-  const bal=raws.map((r,i)=>Number(BigInt(r))/10**DEC(i));
-  const value=bal.reduce((s,b,i)=>s+b*px[i],0);
-  const parts=bal.map((b,i)=>[b*px[i],i]).filter(([v])=>v>0.01).sort((a,b)=>b[0]-a[0])
-    .map(([v,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(v/value*100).toFixed(0)+'%');
-  $('mg_mix').textContent=value<0.5?'nothing to manage yet':'$'+value.toFixed(2)+' — '+parts.slice(0,5).join(' · ');
-  return {bal,value,px};
+// Every venue this firm has ever run, oldest work included. One venue at a
+// time: three big log scans at once is how the rpc answers 429, and a failed
+// read must never paint "no jobs" over real history, so a throw here leaves
+// the last good table standing.
+let workLogs = null, workScannedTo = null;
+async function loadWorkLog() {
+  // after the first full scan only the blocks since last time are read
+  const head = parseInt(await rpc('eth_blockNumber', []), 16);
+  const fresh = [];
+  for (const [addr, from] of [[CONTRACT, DEPLOY_BLOCK_PENSION], [DESK, DEPLOY_BLOCK_DESK], [V4, DEPLOY_BLOCK_V4], [V3, DEPLOY_BLOCK_V3], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])]) {
+    const start = workScannedTo === null ? from : '0x' + (workScannedTo + 1).toString(16);
+    if (workScannedTo !== null && workScannedTo >= head) break;
+    fresh.push(...await rpc('eth_getLogs', [{ address: addr, topics: [REBALANCED_TOPIC], fromBlock: start, toBlock: '0x' + head.toString(16) }]));
+  }
+  workScannedTo = head;
+  workLogs = [...(workLogs || []), ...fresh].sort((a, b) => parseInt(a.blockNumber, 16) - parseInt(b.blockNumber, 16));
+  paintPaystubEarned();
+  const logs = workLogs;
+  const rows = $('done_rows');
+  if (!logs.length) { rows.innerHTML = '<tr><td colspan="4" class="dim">no jobs completed yet.</td></tr>'; return; }
+  rows.innerHTML = '';
+  for (const l of logs.slice(-10).reverse()) {
+    const user = '0x' + l.topics[1].slice(26), keeper = '0x' + l.topics[2].slice(26);
+    const word = i => BigInt('0x' + l.data.slice(2 + i*64, 2 + (i+1)*64));
+    const before = Number(word(0)), after = Number(word(1)), paid = Number(word(2)) / 1e6;
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + user.slice(0,6) + '…' + user.slice(-4) + '</td>'
+      + '<td>' + before + ' → ' + after + ' bps</td>'
+      + '<td class="pay">$' + paid.toFixed(2) + '</td>'
+      + '<td>' + (keeper === KEEPER_BOT ? 'the employee' : keeper.slice(0,6) + '…' + keeper.slice(-4)) + '</td>';
+    rows.appendChild(tr);
+  }
 }
-$('mg_go').onclick=async()=>{
-  try{
-    if(!me){await connect();if(!me)return;}
-    const st=await paintManage();
-    if(!st||st.value<0.5) return alertOS('this wallet holds nothing to manage yet. bring USDG or stocks to it on Robinhood Chain first.');
-    const {bal,value,px}=st;
-    let w=bal.map((b,i)=>Math.floor(b*px[i]/value*10000));
-    if(w[0]<200){const inS=w.slice(1).reduce((a,b)=>a+b,0)||1;w=w.map((v,i)=>i===0?200:Math.floor(v*9800/inS));}
-    w[0]+=10000-w.reduce((a,b)=>a+b,0);
-    const toks=await heldTokens();
-    const allows=await Promise.all(toks.map(allowanceOf));
-    const missing=toks.filter((t,i)=>allows[i]===0n);
-    for(let i=0;i<missing.length;i++){
-      $('mg_msg').textContent='signature '+(i+1)+' of '+(missing.length+1)+': permission…';
-      await send(missing[i],SEL.approve+pad(CONTRACT)+MAX);
-    }
-    $('mg_msg').textContent='last signature: carving your policy.';
-    const data=SEL.setTarget+pad(0x80)+pad(100)+pad(200)+pad(200000n)+pad(w.length)+w.map(v=>pad(v)).join('');
-    await send(CONTRACT,data);
-    $('mg_msg').textContent='done. the mix you already built is the policy now. this wallet maintains itself from here.';
-  }catch(e){alertOS('refused: '+(e.message||e).toString().slice(0,90));}
-};
 
-/* -------- dock + chrome wiring -------- */
-$('dk_funds').onclick=()=>openWin('win_funds');
-$('dk_jobs').onclick=()=>{openWin('win_jobs');loadJobs();renderDone();};
-$('dk_pay').onclick=()=>{openWin('win_pay');paintPaystub();};
-$('dk_mandate').onclick=async()=>{openWin('win_mandate');if(me)paintMandate();};
-$('dk_policy').onclick=()=>{openWin('win_policy');loadPolicies();};
-const SEL_POLICYCOUNT='0xde54d429', SEL_POLICYAT='0xb9a7f076', SEL_COVENANTOF='0xe73c9f64', SEL_POLICYOF='0xf514d6e5';
-async function loadPolicies(){
-  const rows=$('policy_rows');
-  try{
-    const cnt=Number(BigInt(await call(CONTRACT,SEL_POLICYCOUNT)));
-    if(!cnt){rows.innerHTML='<tr><td colspan="7" class="dim2">no policy published yet. be the first: publish on the floor.</td></tr>';return;}
-    const out=[];
-    for(let id=1;id<=cnt;id++){
-      const r=await call(CONTRACT,SEL_POLICYAT+pad(id));
-      const author='0x'+r.slice(26,66);
-      const off=Number(BigInt('0x'+r.slice(66,130)))/32;
-      const roy=Number(BigInt('0x'+r.slice(130,194)));
-      const followers=Number(BigInt('0x'+r.slice(194,258)));
-      const retired=BigInt('0x'+r.slice(258,322))===1n;
-      const n=Number(BigInt('0x'+r.slice(2+off*64,66+off*64)));
-      const w=[];for(let i=0;i<n;i++)w.push(Number(BigInt('0x'+r.slice(2+(off+1+i)*64,66+(off+1+i)*64))));
-      const mix=w.map((v,i)=>[v,i]).filter(([v])=>v>0).sort((a,b)=>b[0]-a[0])
-        .map(([v,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(v/100).toFixed(0)+'%').join(' · ');
-      // the covenant and the record, on editions that carry them
-      let promise='', record='';
-      try{
-        const c=await call(CONTRACT,SEL_COVENANTOF+pad(id));
-        const maxA=Number(BigInt('0x'+c.slice(2,66))), minC=Number(BigInt('0x'+c.slice(66,130)));
-        const idx=Number(BigInt('0x'+c.slice(130,194)))/1e18;
-        const parts=[];
-        if(maxA>0) parts.push('max '+(maxA/100).toFixed(0)+'% in one');
-        if(minC>0) parts.push('cash ≥ '+(minC/100).toFixed(0)+'%');
-        promise=parts.length?parts.join(' · '):'none';
-        record=((idx-1)*100>=0?'+':'')+((idx-1)*100).toFixed(2)+'%';
-      }catch(e){promise='—';record='—';}
-      out.push({id,author,mix,roy,followers,retired,promise,record});
-    }
-    rows.innerHTML=out.map(p=>'<tr'+(p.retired?' style="opacity:.5"':'')+'><td>'+p.id+'</td>'
-      +'<td><a target="_blank" rel="noopener" href="'+EXPLORER+'/address/'+p.author+'">'+p.author.slice(0,6)+'…'+p.author.slice(-4)+'</a></td>'
-      +'<td>'+p.mix+'</td><td>'+p.promise+'</td><td>'+p.record+'</td><td>'+(p.roy/100).toFixed(p.roy%100?1:0)+'%</td>'
-      +'<td>'+p.followers+(p.retired?' · retired':'')+'</td></tr>').join('');
-    $('policy_msg').textContent='the promise is what the manager can never cross, carved the day they published. the record is what their allocation itself did, from the feeds. a manager earns only above their own record.';
-  }catch(e){rows.innerHTML='<tr><td colspan="7" class="dim2">the board is unreachable: '+((e.message||e)+'').slice(0,60)+'</td></tr>';}
+// -- the paystub: what the employee holds and what it has earned -------------
+const SEL_ERC20_BAL = '0x70a08231';
+async function loadPaystub() {
+  const [gasHex, wagesHex] = await Promise.all([
+    rpc('eth_getBalance', [KEEPER_BOT, 'latest']),
+    call(USDG, SEL_ERC20_BAL + pad(KEEPER_BOT)),
+  ]);
+  const gas = Number(BigInt(gasHex)) / 1e18, wages = Number(BigInt(wagesHex)) / 1e6;
+  $('ps_gas').textContent = gas.toFixed(5) + ' ETH' + (gas < 0.015 ? ' · below the line. it buys more the moment its wages allow.' : ' · tank is full.');
+  $('ps_wages').textContent = wages.toFixed(2) + ' USDG' + (wages < 3 ? ' · too thin to refuel yet.' : ' · enough to refuel.');
 }
-$('mascot_ca').onclick=async()=>{
-  try{await navigator.clipboard.writeText('0xe7CFbf084589b73A3FF74E9819Dd3D28ee1E05A9');}catch{}
-  const el=$('mascot_ca');
-  el.textContent='copied';
-  setTimeout(()=>{el.innerHTML='CA <span style="color:var(--dim)">0xe7CF…E05A9</span>';},1200);
-};
-$('lnk_manage').onclick=async(e)=>{e.preventDefault();openWin('win_manage');if(!me){try{await connect();}catch{}}if(me)paintManage();};
-$('lnk_login').onclick=async(e)=>{e.preventDefault();try{await connect();if(!me)return;alertOS('connected. the firm knows you by your address and nothing else.');}catch(err){alertOS((err.message||err).toString().slice(0,90));}};
+function paintPaystubEarned() {
+  if (!workLogs) return;
+  const mine = workLogs.filter(l => ('0x' + l.topics[2].slice(26)).toLowerCase() === KEEPER_BOT);
+  const paid = mine.reduce((s, l) => s + Number(BigInt('0x' + l.data.slice(2 + 2*64, 2 + 3*64))) / 1e6, 0);
+  $('ps_earned').textContent = '$' + paid.toFixed(2) + ' across ' + mine.length + ' job' + (mine.length === 1 ? '' : 's') + ', paid by the wallets it walked home.';
+}
 
-const SEL_GLIDEOF='0x5a6250d1';
+// -- your statement: the work done on YOUR account, and what it cost you -----
+async function loadMyLog() {
+  if (!me) return;
+  const sources = [[CONTRACT, DEPLOY_BLOCK_PENSION], [DESK, DEPLOY_BLOCK_DESK], [V4, DEPLOY_BLOCK_V4], [V3, DEPLOY_BLOCK_V3], ...OLD_VAULTS.map(([a]) => [a, DEPLOY_BLOCK_V1])];
+  const topicMe = '0x' + pad(me);
+  // a failed read keeps the old text and retries next cycle; it never
+  // becomes a false "nothing yet"
+  const batches = await Promise.all(sources.map(([addr, from]) =>
+    rpc('eth_getLogs', [{ address: addr, topics: [REBALANCED_TOPIC, topicMe], fromBlock: from, toBlock: 'latest' }])));
+  const logs = batches.flat().sort((a, b) => parseInt(a.blockNumber, 16) - parseInt(b.blockNumber, 16));
+  let paid = 0;
+  for (const l of logs) paid += Number(BigInt('0x' + l.data.slice(2 + 2*64, 2 + 3*64))) / 1e6;
+  $('st_paid').textContent = logs.length
+    ? '$' + paid.toFixed(4) + ' all time, across ' + logs.length + ' rebalance' + (logs.length === 1 ? '' : 's') + '. sized by you, paid only for help.'
+    : 'nothing yet. the first stranger to help you earns the first cent.';
+  if (!logs.length) return;
+  const rows = $('my_rows');
+  rows.innerHTML = '';
+  for (const l of logs.slice(-8).reverse()) {
+    const word = i => BigInt('0x' + l.data.slice(2 + i*64, 2 + (i+1)*64));
+    const keeper = '0x' + l.topics[2].slice(26);
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + Number(word(0)) + ' → ' + Number(word(1)) + ' bps</td>'
+      + '<td class="pay">$' + (Number(word(2)) / 1e6).toFixed(4) + '</td>'
+      + '<td>' + (keeper.toLowerCase() === KEEPER_BOT ? 'the employee' : keeper.slice(0,6) + '…' + keeper.slice(-4)) + '</td>';
+    rows.appendChild(tr);
+  }
+}
+
+// -- the desk: two wallets that want opposite trades, settled at the feed ----
+const SEL_CROSS = '0x2c06e95c';   // cross(address,address,uint256,uint256)
+
+async function deltasOf(a) {
+  const px = await allPrices();
+  const n = Number(BigInt(await call(a.venue, SEL.assetCount)));
+  const balRaws = await Promise.all(Array.from({length: n}, (_, i) => call(a.venue, SEL.bal + pad(a.user) + pad(i))));
+  const bal = balRaws.map((r, i) => Number(BigInt(r)) / 10 ** (i === 0 ? 6 : 18));
+  const value = bal.reduce((s, b, i) => s + b * px[i], 0);
+  const deltas = [];
+  for (let i = 1; i < n; i++) deltas[i] = value * (a.weights[i] || 0) / 10000 - bal[i] * px[i];
+  return { a, deltas, value, px };
+}
+
+async function loadCrosses(accounts) {
+  const rows = $('cross_rows'); if (!rows) return;
+  // the cross lives on the desk venue only, and both sides must be genuinely off their law
+  const desk = accounts.filter(x => x.venue === CONTRACT && x.value > 0.5 && x.drift !== null && x.drift >= x.minDrift);
+  const infos = [];
+  for (const a of desk) { try { infos.push(await deltasOf(a)); } catch {} }
+  const matches = [];
+  for (const sInfo of infos) for (const bInfo of infos) {
+    if (sInfo.a.user === bInfo.a.user) continue;
+    for (let i = 1; i < 27; i++) {
+      const sell = -(sInfo.deltas[i] || 0), buy = bInfo.deltas[i] || 0;
+      if (sell < 0.5 || buy < 0.5) continue;
+      const size = Math.min(sell, buy) * 0.95;   // a hair short of either target, never past it
+      const est = x => x.a.bounty * Math.min(2 * size / x.value * 10000, x.a.drift) / 10000;
+      matches.push({ seller: sInfo.a, buyer: bInfo.a, asset: i, size, px: sInfo.px[i], pay: est(sInfo) + est(bInfo) });
+    }
+  }
+  matches.sort((x, y) => y.pay - x.pay);
+  rows.innerHTML = '';
+  for (const m of matches.slice(0, 6)) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + m.seller.user.slice(0,6) + '…' + m.seller.user.slice(-4) + '</td>'
+      + '<td>' + m.buyer.user.slice(0,6) + '…' + m.buyer.user.slice(-4) + '</td>'
+      + '<td>' + (STOCKS[m.asset-1]?.[0] || m.asset) + '</td>'
+      + '<td>' + fmtUsd(m.size) + '</td>'
+      + '<td class="pay">' + fmtUsd(m.pay) + '</td>'
+      + '<td><button class="hire">» cross them «</button></td>';
+    tr.querySelector('button').onclick = () => crossThem(m, tr);
+    rows.appendChild(tr);
+  }
+  if (!matches.length) rows.innerHTML = '<tr><td colspan="6" class="dim">the desk is open and nobody is matched. it takes two wallets wanting opposite sides of the same stock; the moment that happens, a one-press job appears here.</td></tr>';
+}
+
+async function crossThem(m, tr) {
+  if (!me) { await connect(); if (!me) return say('cross_msg', 'a cross needs a worker. connect a wallet.', true); }
+  const btn = tr.querySelector('button');
+  btn.disabled = true; btn.textContent = 'checking…';
+  try {
+    const amount = BigInt(Math.floor(m.size / m.px * 1e6)) * 10n ** 12n;
+    const data = SEL_CROSS + pad(m.seller.user) + pad(m.buyer.user) + pad(m.asset) + pad(amount);
+    // run the whole cross as a read first, so one that will not clear never
+    // reaches the wallet as a scary unknown transaction
+    try {
+      await rpc('eth_call', [{ from: me, to: CONTRACT, data }, 'latest']);
+    } catch (sim) {
+      tr.classList.add('done');
+      btn.textContent = 'not crossable now';
+      return say('cross_msg', 'this cross will not clear right now: a side moved, or a permission is missing. nothing was sent to your wallet.', true);
+    }
+    btn.textContent = 'crossing…';
+    const h = await send(CONTRACT, data);
+    say('cross_msg', 'crossed at the feed, to the cent. shares one way, cash the other, and both fees are yours when the block lands. tx ' + h.slice(0,14) + '…');
+    setTimeout(loadBoard, 6000);
+  } catch (e) {
+    btn.disabled = false; btn.textContent = '» cross them «';
+    say('cross_msg', 'refused: ' + (e.message || e).toString().slice(0, 90), true);
+  }
+}
+
+async function takeJob(a, tr) {
+  if (!me) { await connect(); if (!me) return say('board_msg', 'a job needs a worker. connect a wallet.', true); }
+  const btn = tr.querySelector('button');
+  btn.disabled = true; btn.textContent = 'planning…';
+  try {
+    const plan = await planTrades(a);
+    if (!plan) throw new Error('nothing to trade');
+    const pay = a.bounty * a.drift / 10000;
+    if (pay > plan.cashAfter) throw new Error('bounty exceeds the account cash. their law cannot pay.');
+    // rebalance(address,(uint256,uint256,uint256)[]): head = [user, offset 0x40], tail = [len, legs...]
+    const venue = a.venue || CONTRACT;
+    const data = SEL_REBALANCE + pad(a.user) + pad(0x40) + pad(plan.trades.length)
+      + plan.trades.map(t => pad(t.sell) + pad(t.buy) + pad(t.amountIn)).join('');
+    // Try the whole rebalance as a read first, from this worker, so a job that
+    // will not clear never reaches the wallet as a scary "unknown transaction".
+    // On a weekend the feeds are frozen at Friday's close while the pools drift,
+    // so a fill lands outside the band and the contract refuses the trade; the
+    // same happens the instant the employee takes the job first.
+    btn.textContent = 'checking…';
+    try {
+      await rpc('eth_call', [{ from: me, to: venue, data }, 'latest']);
+    } catch (sim) {
+      tr.classList.add('done');
+      btn.disabled = true; btn.textContent = 'not fillable now';
+      return say('board_msg', 'this job will not clear right now. the pool and the official feed disagree, or the employee already took it. nothing was sent to your wallet.', true);
+    }
+    btn.textContent = 'working…';
+    const h = await send(venue, data);
+    say('board_msg', 'job taken, ' + plan.trades.length + ' leg' + (plan.trades.length > 1 ? 's' : '') + '. the pay lands when the block does. tx ' + h.slice(0,14) + '…');
+    setTimeout(loadBoard, 6000);
+  } catch (e) {
+    btn.disabled = false; btn.textContent = '» take the job «';
+    say('board_msg', 'refused: ' + (e.message || e).toString().slice(0, 90), true);
+  }
+}
+loadBoard();
+
+// -- the shelf: portfolios anyone can take -----------------------------------
+// Anchor prices recorded when the shelf opened, 2026-09-01. Returns below are
+// the strategy's own, computed from the official feeds, with no wallet noise.
+const SHELF_ANCHOR = 'Sep 1, 2026';
+const ANCHOR_PX = { NVDA:219.755, SPCX:143.5539, TSLA:364.92, AAPL:314.14272932, MSFT:511.73,
+  AMZN:260.695, MU:939.75015987, SPY:766.14, PLTR:187.3524, SNDK:1494.2519, INTC:89.49195,
+  AMD:466.11, GOOGL:339.03499999, META:572.69499999, USAR:17.9712,
+  // the widened venue, anchored the day it opened
+  QQQ:715.96, SGOV:100.917243, SLV:60.535, USO:141.995, GME:19.235, CRCL:102.1749,
+  DELL:515.126066, MSTR:142.81565, TSM:415.245, BABA:111.6318, ASML:1645.883599 };
+
 const SHELF = [
   { name: 'the sixty forty', blurb: 'the oldest portfolio in finance, now that the chain has a bond',
     mix: { SPY: 57, SGOV: 38 } },
@@ -714,93 +1080,179 @@ const SHELF = [
     mix: { SPCX: 60, TSLA: 25 } },
 ];
 
-/* -------- my desk -------- */
-async function paintMe(){
-  if(!me) return;
-  $('me_addr').textContent=me.slice(0,6)+'…'+me.slice(-4);
-  try{
-    const [valHex,drHex,acct]=await Promise.all([
-      call(CONTRACT,SEL.valueOf+pad(me)),
-      call(CONTRACT,SEL.drift+pad(me)).catch(()=>null),
-      readAccount(me,CONTRACT).catch(()=>null)]);
-    const usd=Number(BigInt(valHex))/1e18;
-    $('me_worth').textContent='$'+usd.toFixed(2)+' in your own wallet';
-    const bps=drHex===null?null:parseInt(drHex,16);
-    $('me_drift').textContent=bps===null?'no policy yet':bps+' bps'+(bps>=300?' · a job is posted, a worker is coming':' · inside the line');
-    if(acct&&acct.weights.length){
-      const named=acct.weights.map((w,i)=>[w,i]).filter(([w])=>w>0).sort((a,b)=>b[0]-a[0])
-        .map(([w,i])=>(i===0?'CASH':STOCKS[i-1][0])+' '+(w/100).toFixed(0)+'%');
-      let pol=named.slice(0,4).join(' · ');
-      try{
-        const g=await call(CONTRACT,SEL_GLIDEOF+pad(me));
-        const off2=Number(BigInt('0x'+g.slice(2+64,66+64)))/32;
-        const toLen=Number(BigInt('0x'+g.slice(2+off2*64,66+off2*64)));
-        const end=Number(BigInt('0x'+g.slice(2+3*64,66+3*64)));
-        if(toLen>0) pol+=' · ages until '+new Date(end*1000).getUTCFullYear();
-      }catch(e){}
-      $('me_policy').textContent=pol;
-    } else $('me_policy').textContent='none. adopt one from the shelf, or press setup.';
-    let paid=0,cnt=0;
-    for(const [v,from] of WALLET_VENUES){
-      const logs=await rpc('eth_getLogs',[{address:v,topics:[REB,'0x'+pad(me)],fromBlock:from,toBlock:'latest'}]);
-      cnt+=logs.length; for(const l of logs) paid+=parseInt(l.data.slice(2+128,2+192),16)/1e6;
-    }
-    $('me_paid').textContent=cnt?'$'+paid.toFixed(4)+' across '+cnt+' rebalances':'nothing yet';
-  }catch(e){}
-}
-$('dk_me').onclick=async()=>{openWin('win_me');if(!me){try{await connect();}catch{return;}}paintMe();};
-$('me_manage').onclick=()=>{openWin('win_manage');if(me)paintManage();};
+// A number that rounds away to nothing is flat, not down. No -0.00%.
+function retClass(r) { const v = Number(r.toFixed(2)); return v > 0 ? 'up' : v < 0 ? 'dn' : 'flat'; }
+function retText(r) { const v = Number(r.toFixed(2)); return (v > 0 ? '+' : '') + v.toFixed(2) + '%'; }
 
-/* -------- the shelf -------- */
-function renderShelf(){
-  const box=$('shelf_rows'); box.innerHTML='';
-  for(const s of SHELF){
-    const row=document.createElement('div'); row.className='frow';
-    const mixTxt=Object.entries(s.mix).map(([k,v])=>k+' '+v).join(' · ');
-    row.innerHTML='<div><b>'+s.name+'</b><br><span class="dim2">'+s.blurb+'. '+mixTxt+'</span></div>';
-    const b=document.createElement('button'); b.className='takebtn'; b.textContent='adopt';
-    b.onclick=()=>adoptOS(s,b);
-    row.appendChild(b); box.appendChild(row);
+function shelfReturn(mix, px) {
+  let r = 0, w = 0;
+  for (const [tk, pct] of Object.entries(mix)) {
+    const i = STOCKS.findIndex(s => s[0] === tk);
+    if (i < 0 || !ANCHOR_PX[tk]) continue;
+    r += pct * (px[i + 1] / ANCHOR_PX[tk] - 1);
+    w += pct;
   }
+  return w ? r / 100 : 0;   // cash contributes nothing, and that is the point
 }
-async function adoptOS(s,btn){
-  try{
-    if(!me){await connect();if(!me)return;}
-    if(btn.textContent==='adopt'){btn.textContent='press again';return;}
-    btn.disabled=true;btn.textContent='signing…';
-    const w=new Array(STOCKS.length+1).fill(0);
-    let sum=0;
-    for(const [sym,pct] of Object.entries(s.mix)){
-      const i=STOCKS.findIndex(x=>x[0]===sym);
-      if(i>=0){w[i+1]=pct*100;sum+=pct*100;}
-    }
-    w[0]=10000-sum;
-    const toks=await heldTokens();
-    const allows=await Promise.all(toks.map(allowanceOf));
-    const missing=toks.filter((t,i)=>allows[i]===0n);
-    for(let i=0;i<missing.length;i++){
-      btn.textContent='sig '+(i+1)+'/'+(missing.length+1);
-      await send(missing[i],SEL.approve+pad(CONTRACT)+MAX);
-    }
-    btn.textContent='carving…';
-    const data=SEL.setTarget+pad(0x80)+pad(100)+pad(200)+pad(200000n)+pad(w.length)+w.map(v=>pad(v)).join('');
-    await send(CONTRACT,data);
-    btn.textContent='taken';
-    alertOS('adopted. '+s.name+' is your policy now, in your own wallet, and the firm keeps you on it. change it any time.');
-  }catch(e){btn.disabled=false;btn.textContent='adopt';alertOS('refused: '+(e.message||e).toString().slice(0,90));}
-}
-renderShelf();
 
-/* -------- work completed -------- */
-function renderDone(){
-  const rows=$('done_rows'); if(!workLogs.length){return;}
-  rows.innerHTML='';
-  for(const l of workLogs){
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td>'+l.acct.slice(0,6)+'…'+l.acct.slice(-4)+'</td><td>'+l.d0+' → '+l.d1+' bps</td><td><b>$'+l.paid.toFixed(2)+'</b></td><td class="dim2">'+(l.worker===KEEPER?'the employee':l.worker.slice(0,6)+'…'+l.worker.slice(-4))+'</td>';
-    rows.appendChild(tr);
+function adopt(mix) {
+  // every shelf portfolio keeps cash back: an account with none cannot pay the
+  // worker who keeps it on target
+  stockInputs.forEach((inp, i) => { inp.value = mix[STOCKS[i][0]] || 0; });
+  syncGrid();
+  $('law').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!me) {
+    say('law_msg', 'taken. connect a wallet and press carve, and this becomes your law.');
+    return;
   }
+  say('law_msg', 'taken. press carve below and this becomes your law. you can edit any weight first.');
 }
+
+async function loadShelf() {
+  const box = $('shelf_rows');
+  try {
+    const px = await allPrices();
+    box.innerHTML = '';
+    for (const strat of SHELF) {
+      const cash = 100 - Object.values(strat.mix).reduce((a, b) => a + b, 0);
+      const ret = shelfReturn(strat.mix, px);
+      const holds = Object.entries(strat.mix)
+        .map(([tk, p]) => '<div class="hold"><img src="stocks/' + tk + '.png" alt="' + tk + '"><div class="w">' + p + '%</div></div>').join('')
+        + (cash > 0 ? '<div class="hold cash"><div class="coin">$</div><div class="w">' + cash + '%</div></div>' : '');
+      const el = document.createElement('div');
+      el.className = 'strat';
+      el.innerHTML = '<div class="head"><span class="nm">' + strat.name + '</span>'
+        + '<span class="blurb">' + strat.blurb + '</span>'
+        + '<span class="ret ' + retClass(ret) + '">' + retText(ret) + '</span></div>'
+        + '<div class="foot"><div class="holds">' + holds + '</div><button>adopt</button></div>';
+      const btn = el.querySelector('button');
+      btn.onclick = () => { adopt(strat.mix); btn.textContent = 'taken'; btn.classList.add('taken'); setTimeout(() => { btn.textContent = 'adopt'; btn.classList.remove('taken'); }, 1500); };
+      box.appendChild(el);
+    }
+    const note = document.createElement('p');
+    note.className = 'dim';
+    note.style.marginTop = '8px';
+    note.textContent = 'returns are the strategy since ' + SHELF_ANCHOR + ', priced off the chain feeds. adopting one costs nothing and moves nothing.';
+    box.appendChild(note);
+  } catch (e) {
+    box.innerHTML = '<p class="dim">the feeds are quiet. retrying…</p>';
+  }
+  setTimeout(loadShelf, 60000);
+}
+loadShelf();
+
+// -- the night desk: which names are still tradeable, right now --------------
+const FACTORY = '0x1f7d7550b1b028f7571e69a784071f0205fd2efa';
+const SEL_GETPOOL = '0x1698ee82', SEL_SLOT0 = '0x3850c7bd';
+const POOL_FEE = [500,500,3000,3000,3000,3000,3000,500,3000,10000,3000,3000,500,3000,3000,
+                  500,3000,3000,3000,500,3000,10000,10000,10000,3000,10000];
+const AWAKE_GAP_PCT = 1.0;
+let poolCache = null;
+
+// US equities trade 13:30 to 20:00 UTC, weekdays.
+function exchangeOpen(d) {
+  const day = d.getUTCDay(), h = d.getUTCHours() + d.getUTCMinutes() / 60;
+  return day >= 1 && day <= 5 && h >= 13.5 && h < 20;
+}
+
+async function poolAddresses() {
+  if (poolCache) return poolCache;
+  poolCache = [];
+  for (let i = 0; i < STOCKS.length; i++) {
+    try {
+      const r = await call(FACTORY, SEL_GETPOOL + pad(STOCKS[i][2]) + pad(USDG) + pad(POOL_FEE[i]));
+      const a = '0x' + r.slice(-40);
+      poolCache.push(BigInt(a) ? a : null);
+    } catch { poolCache.push(null); }
+  }
+  return poolCache;
+}
+
+async function loadNightDesk() {
+  try {
+    const open = exchangeOpen(new Date());
+    $('nd_mkt').innerHTML = open
+      ? '<b>open.</b> regular hours, 13:30 to 20:00 UTC.'
+      : '<b style="color:var(--red)">closed.</b> it will not reopen until 13:30 UTC.';
+    $('nd_emp').innerHTML = open
+      ? 'on shift. it does not keep hours.'
+      : '<b>still on shift.</b> it never learned what a closing bell is.';
+
+    const [px, pools] = await Promise.all([allPrices(), poolAddresses()]);
+    const rows = [];
+    for (let i = 0; i < STOCKS.length; i++) {
+      let gap = null;
+      if (pools[i]) {
+        try {
+          const s0 = await call(pools[i], SEL_SLOT0);
+          const sqrtP = Number(BigInt('0x' + s0.slice(2, 66))) / 2 ** 96;
+          const p = sqrtP * sqrtP;
+          const poolPx = STOCKS[i][2].toLowerCase() < USDG.toLowerCase() ? p * 1e12 : (p ? 1e12 / p : 0);
+          if (px[i + 1] > 0 && poolPx > 0) gap = (poolPx / px[i + 1] - 1) * 100;
+        } catch {}
+      }
+      rows.push({ tk: STOCKS[i][0], gap, awake: gap !== null && Math.abs(gap) < AWAKE_GAP_PCT });
+    }
+    const n = rows.filter(r => r.awake).length;
+    $('nd_awake').innerHTML = '<b>' + n + ' of ' + rows.length + '</b> stocks. a name is tradeable while its pool and its feed still agree.';
+    $('nd_grid').innerHTML = rows.map(r =>
+      '<div class="cell' + (r.awake ? ' on' : '') + '"><div class="line">'
+      + '<img src="stocks/' + r.tk + '.png" alt="" width="24" height="24"><b>' + r.tk + '</b>'
+      + '<span style="margin-left:auto;font-weight:900;color:' + (r.awake ? 'var(--tie)' : 'var(--red)') + '">'
+      + (r.awake ? 'awake' : 'waiting') + '</span></div></div>').join('');
+  } catch (e) {
+    $('nd_awake').textContent = 'the feeds are quiet. retrying…';
+  }
+  setTimeout(loadNightDesk, 60000);
+}
+loadNightDesk();
+
+// -- knock it off target ------------------------------------------------------
+// The demonstration is the product: a real swap, then a minute in which the
+// job belongs to whoever takes it first.
+let shakeTimer = null;
+function fmtLeft(ms) {
+  const t = Math.ceil(ms / 1000);
+  return t >= 60 ? Math.ceil(t / 60) + ' min' : t + 's';
+}
+async function shakeStatus() {
+  try {
+    const r = await fetch('/api/shake');
+    const st = await r.json();
+    const btn = $('shake_btn');
+    if (st.error) { $('shake_state').textContent = st.error; btn.disabled = true; return; }
+    if (st.handsOffLeft > 0) {
+      btn.disabled = true;
+      $('shake_state').innerHTML = '<b style="color:var(--red)">hands off for ' + fmtLeft(st.handsOffLeft)
+        + '.</b> the job is on the board below and it is anyone\'s.';
+    } else if (!st.ready) {
+      btn.disabled = true;
+      $('shake_state').textContent = 'the desk is settling. ready again in ' + fmtLeft(st.cooldownLeft) + '.';
+    } else {
+      btn.disabled = false;
+      $('shake_state').textContent = 'ready. this spends real money on a real pool.';
+    }
+  } catch { $('shake_state').textContent = 'the desk is quiet.'; }
+  clearTimeout(shakeTimer);
+  shakeTimer = setTimeout(shakeStatus, 5000);
+}
+$('shake_btn').onclick = async () => {
+  const btn = $('shake_btn');
+  btn.disabled = true;
+  say('shake_msg', 'swapping on the pool…');
+  try {
+    const r = await fetch('/api/shake', { method: 'POST' });
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+    say('shake_msg', 'done. drift ' + j.driftBefore + ' → ' + j.driftAfter
+      + ' bps. the employee has its hands off for sixty seconds: take the job below and the bounty is yours. tx ' + j.tx.slice(0, 14) + '…');
+    setTimeout(loadBoard, 4000);
+    refresh();
+  } catch (e) {
+    say('shake_msg', 'refused: ' + (e.message || e).toString().slice(0, 120), true);
+  }
+  shakeStatus();
+};
+shakeStatus();
+
 </script>
-</body>
-</html>
